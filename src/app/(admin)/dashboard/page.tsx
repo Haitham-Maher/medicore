@@ -6,12 +6,14 @@ import LowStockAlerts from "@/components/dashboard/LowStockAlerts";
 import MedicalPointsGrid from "@/components/dashboard/MedicalPointsGrid";
 import StatsGrid from "@/components/dashboard/StatsGrid"
 import TopDepartments from "@/components/dashboard/TopDepartments";
+import RecentRequests from "@/components/dashboard/RecentRequests";
 
 // Skeletons
 import StatsGridSkeleton from "@/components/dashboard/skeletons/StatsGridSkeleton";
 import ChartsSkeleton from "@/components/dashboard/skeletons/ChartsSkeleton";
 import MedicalPointsGridSkeleton from "@/components/dashboard/skeletons/MedicalPointsGridSkeleton";
 import LowStockAlertsSkeleton from "@/components/dashboard/skeletons/LowStockAlertsSkeleton";
+import RecentRequestsSkeleton from "@/components/dashboard/skeletons/RecentRequestsSkeleton";
 
 export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function DashboardPage() {
         // Simulate loading data
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 5000);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -29,7 +31,6 @@ export default function DashboardPage() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
                 <h1 className="text-3xl font-bold text-foreground">نظرة عامة</h1>
-                <p className="text-muted-foreground mt-2">مرحباً بك مجدداً في نظام ميدي كور لإدارة النقاط الطبية.</p>
             </div>
 
             {isLoading ? <StatsGridSkeleton /> : <StatsGrid />}
@@ -49,7 +50,17 @@ export default function DashboardPage() {
 
             {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid />}
 
-            {isLoading ? <LowStockAlertsSkeleton /> : <LowStockAlerts />}
+            {isLoading ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <RecentRequestsSkeleton />
+                    <LowStockAlertsSkeleton />
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <RecentRequests />
+                    <LowStockAlerts />
+                </div>
+            )}
         </div>
     );
 }

@@ -19,10 +19,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-
 const sidebarItems = [
     { name: "لوحة التحكم", href: "/dashboard", icon: LayoutDashboard },
-    { name: "النقاط الطبية", href: "/clinics", icon: Hospital },
+    { name: "إدارة النقاط الطبية", href: "/medical-points", icon: Hospital },
     { name: "الدكاترة", href: "/doctors", icon: UserRound },
     { name: "المرضى", href: "/patients", icon: Users },
     { name: "الإعدادات", href: "/settings", icon: Settings },

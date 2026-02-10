@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { Star, UserRound, Building2, Stethoscope, MapPin } from "lucide-react";
+import { Star, UserRound, Building2, Stethoscope, MapPin, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface IMedicalPoint {
     name: string;
@@ -80,86 +81,99 @@ export default function MedicalPointsGrid() {
         <div className="space-y-6 mt-20">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-bold text-foreground">النقاط الطبية</h2>
-                    <p className="text-muted-foreground text-sm mt-1">قائمة بجميع النقاط الطبية المسجلة في النظام</p>
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground">النقاط الطبية</h2>
+                    <p className="text-muted-foreground text-xs md:text-sm mt-1">قائمة بجميع النقاط الطبية المسجلة في النظام</p>
                 </div>
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer">
-                    عرض الكل
-                </button>
+                <Link href="/medical-points">
+                    <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
+                        عرض الكل <ArrowLeft size={14} />
+                    </button>
+                </Link>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* تعديل الشبكة لتناسب البطاقات العمودية (3 أعمدة في الشاشات الكبيرة) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {medicalPoints.map((point, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{
-                            once: true,
-                            amount: 0.3 // يعني: لا تشغل الانميشن إلا لما يظهر 30% من العنصر في الشاشة
+                        whileInView={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { duration: 0.4, delay: i * 0.05 }
                         }}
+                        viewport={{ once: true }}
 
-                        // التغيير هنا: لا يوجد حركة، فقط تغيير ألوان
+                        // استخدام transition بسيطة جداً وسريعة للهوفر
                         whileHover={{
-                            borderColor: "#3b82f6", // لون أزرق (أو استخدم لون مشروعك الأساسي)
-                            boxShadow: "0 4px 12px rgba(59, 130, 246, 0.1)", // توهج خفيف جداً بنفس اللون
+                            y: -3,
+                            borderColor: "#3b82f6"
                         }}
-
-                        transition={{ delay: 0.1 * i }} // تغيير سريع وناعم
-                        className="bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-md cursor-pointer overflow-hidden flex flex-col sm:flex-row h-full group transition-colors"
+                        transition={{
+                            type: "tween", // التبديل لـ tween أحياناً يكون أخف على المتصفح من spring
+                            ease: "easeOut",
+                            duration: 0.15 // سرعة خاطفة
+                        }}
+                        // هنا التغيير الأساسي: flex-col دائماً
+                        className="bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-md cursor-pointer overflow-hidden flex flex-col h-full group"
                     >
-                        {/* Image Section */}
-                        <div className="relative w-full sm:w-48 h-40 sm:h-auto shrink-0 overflow-hidden">
+                        {/* Image Section - جعلناها عريضة وبارتفاع ثابت */}
+                        <div className="relative w-full h-48 shrink-0 overflow-hidden">
                             <img
                                 src={point.image}
                                 alt={point.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="w-full h-full object-cover duration-300 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent sm:hidden" />
-                            <div className="absolute bottom-3 right-3 sm:hidden">
-                                <RatingStars rating={point.rating} />
+
+                            {/* التقييم يظهر فوق الصورة بشكل جميل */}
+                            <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/50 shadow-sm">
+                                <div className="flex items-center gap-1">
+                                    <span className="text-[10px] font-bold">{point.rating}</span>
+                                    <Star size={10} className="fill-amber-400 text-amber-400" />
+                                </div>
                             </div>
                         </div>
 
                         {/* Content Section */}
-                        <div className="p-5 flex flex-col justify-between flex-1">
-                            <div>
-                                <div className="flex items-start justify-between gap-2">
+                        <div className="p-5 flex flex-col flex-1">
+                            <div className="flex-1">
+                                <div className="flex items-start justify-between gap-2 mb-2">
                                     <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
                                         {point.name}
                                     </h3>
-                                    <div className="hidden sm:block">
-                                        <RatingStars rating={point.rating} />
-                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1 text-muted-foreground text-sm mt-1">
-                                    <MapPin size={14} className="text-primary/60" />
-                                    <span>{point.location}</span>
+
+                                <div className="flex items-center gap-1.5 text-muted-foreground text-xs md:text-sm mb-4">
+                                    <MapPin size={14} className="text-primary/60 shrink-0" />
+                                    <span className="truncate">{point.location}</span>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 mt-6 pt-4 border-t border-border/40">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-1.5">
-                                        <UserRound size={14} className="text-chart-1" />
-                                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">المسؤول</span>
+                            {/* Stats Grid - تم تحسين المسافات للوضع العمودي */}
+                            <div className="grid grid-cols-3 gap-2 py-4 border-t border-border/40 mt-auto">
+                                <div className="space-y-1 text-center px-1">
+                                    <div className="flex items-center justify-center gap-1 mb-1">
+                                        <UserRound size={12} className="text-chart-1" />
                                     </div>
-                                    <p className="text-xs font-bold text-foreground truncate">{point.manager.split(' ').slice(1).join(' ')}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">المسؤول</p>
+                                    <p className="text-xs font-bold text-foreground truncate w-full">
+                                        {point.manager.split(' ').slice(0, 1).join(' ')} {/* الاسم الأول فقط لتوفير المساحة */}
+                                    </p>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-1.5">
-                                        <Stethoscope size={14} className="text-chart-2" />
-                                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">الأطباء</span>
+                                <div className="space-y-1 text-center px-1 border-r border-border/40">
+                                    <div className="flex items-center justify-center gap-1 mb-1">
+                                        <Stethoscope size={12} className="text-chart-2" />
                                     </div>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">الأطباء</p>
                                     <p className="text-xs font-bold text-foreground">{point.doctorsCount}</p>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-1.5">
-                                        <Building2 size={14} className="text-chart-4" />
-                                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">الأقسام</span>
+                                <div className="space-y-1 text-center px-1 border-r border-border/40">
+                                    <div className="flex items-center justify-center gap-1 mb-1">
+                                        <Building2 size={12} className="text-chart-4" />
                                     </div>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">الأقسام</p>
                                     <p className="text-xs font-bold text-foreground">{point.departmentsCount}</p>
                                 </div>
                             </div>
