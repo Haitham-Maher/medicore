@@ -1,6 +1,8 @@
 "use client";
 
-import { MoreHorizontal, Phone, Mail, User, UserCheck, UserMinus } from "lucide-react";
+import { MoreHorizontal, Phone, Mail, User, UserCheck, UserMinus, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import ClinicStaffListSkeleton from "../dashboard/skeletons/ClinicStaffListSkeleton";
 
 interface Doctor {
   id: string;
@@ -34,14 +36,40 @@ const mockStaff: Doctor[] = [
   },
 ];
 
-export default function ClinicStaffList() {
+export default function ClinicStaffList({
+  onViewAll,
+  isLoading = false
+}: {
+  onViewAll?: () => void;
+  isLoading?: boolean;
+}) {
+  if (isLoading) return <ClinicStaffListSkeleton />;
   return (
-    <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col">
+    <motion.div
+      initial={{ translateY: 30 }}
+      animate={{ translateY: 0 }}
+      transition={{ duration: .3 }}
+      className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col">
       <div className="p-6 border-b border-border/50 flex items-center justify-between">
-        <h3 className="font-bold text-lg">الكادر الطبي</h3>
-        <span className="text-sm text-muted-foreground">
-          {mockStaff.length} عضو
-        </span>
+        <div>
+          <h3 className="font-bold text-lg">الكادر الطبي</h3>
+          <span className="text-sm text-muted-foreground">
+            {mockStaff.length} عضو
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4">
+
+
+          {onViewAll && (
+            <button
+              onClick={onViewAll}
+              className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0"
+            >
+              عرض الكل <ArrowLeft size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="divide-y divide-border/50 flex-1">
@@ -67,10 +95,10 @@ export default function ClinicStaffList() {
                 <h4 className="font-semibold text-sm truncate">{staff.name}</h4>
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium ${staff.status === "available"
-                      ? "bg-green-500/10 text-green-600 border-green-500/20"
-                      : staff.status === "busy"
-                        ? "bg-red-500/10 text-red-600 border-red-500/20 "
-                        : "bg-gray-500/10 text-gray-600 border-gray-500/20 "
+                    ? "bg-green-500/10 text-green-600 border-green-500/20"
+                    : staff.status === "busy"
+                      ? "bg-red-500/10 text-red-600 border-red-500/20 "
+                      : "bg-gray-500/10 text-gray-600 border-gray-500/20 "
                     }`}
                 >
                   {staff.status === "available"
@@ -120,6 +148,6 @@ export default function ClinicStaffList() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,8 +1,10 @@
 "use client"
+import { useState } from "react";
 
 import { FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import RecentRequestsSkeleton from "./skeletons/RecentRequestsSkeleton";
 
 interface RequestItem {
     id: string;
@@ -76,7 +78,22 @@ const getStatusText = (status: RequestItem["status"]) => {
     }
 };
 
-export default function RecentRequests() {
+export default function RecentRequests({
+    onViewAll,
+    isLoading = false
+}: {
+    onViewAll?: () => void;
+    isLoading?: boolean;
+}) {
+    if (isLoading) return <RecentRequestsSkeleton />;
+    const [requests, setRequests] = useState(mockRequests);
+
+    const handleAction = (id: string, action: "approved" | "rejected") => {
+        setRequests(prev => prev.map(req =>
+            req.id === id ? { ...req, status: action } : req
+        ));
+    };
+
     return (
         <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col">
             {/* Header */}
@@ -91,19 +108,24 @@ export default function RecentRequests() {
                             {/* العنوان: text-base للصغير و text-lg للكبير */}
                             <h3 className="text-base md:text-lg font-bold text-foreground leading-tight">الطلبات الحديثة</h3>
                             <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">
-                                {mockRequests.filter(r => r.status === "pending" || r.status === "urgent").length} طلبات تحتاج مراجعة
+                                {requests.filter(r => r.status === "pending" || r.status === "urgent").length} طلبات تحتاج مراجعة
                             </p>
                         </div>
                     </div>
-                    <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
-                        عرض الكل <ArrowLeft size={14} />
-                    </button>
+                    {onViewAll && (
+                        <button
+                            onClick={onViewAll}
+                            className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0"
+                        >
+                            عرض الكل <ArrowLeft size={14} />
+                        </button>
+                    )}
                 </div>
             </div>
 
             {/* Items List */}
             <div className="p-4 md:p-6 pt-4 space-y-3 overflow-y-auto custom-scrollbar flex-1">
-                {mockRequests.map((item, i) => (
+                {requests.map((item, i) => (
                     <motion.div
                         key={item.id}
                         initial={{ opacity: 0, y: 10 }}
@@ -135,12 +157,32 @@ export default function RecentRequests() {
                                     "inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[9px] md:text-[10px] font-bold border whitespace-nowrap",
                                     getStatusColor(item.status)
                                 )}>
-                                    {/* إذا كنت تستخدم أيقونة داخل getStatusIcon تأكد من تمرير حجم صغير لها */}
+                                    {getStatusIcon(item.status)}
                                     {getStatusText(item.status)}
                                 </span>
                                 <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.date}</span>
                             </div>
                         </div>
+
+                        {/* Actions Overlay for Pending items */}
+                        {(item.status === 'pending' || item.status === 'urgent') && (
+                            <div className="absolute inset-0 bg-background/95 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'approved'); }}
+                                    className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-green-600 transition-colors cursor-pointer"
+                                >
+                                    <CheckCircle2 size={14} />
+                                    موافق
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'rejected'); }}
+                                    className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-600 transition-colors cursor-pointer"
+                                >
+                                    <XCircle size={14} />
+                                    رفض
+                                </button>
+                            </div>
+                        )}
                     </motion.div>
                 ))}
             </div>

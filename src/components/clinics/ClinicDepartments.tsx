@@ -11,6 +11,7 @@ import {
     Users
 } from "lucide-react";
 import { motion } from "framer-motion";
+import ClinicDepartmentsSkeleton from "../dashboard/skeletons/ClinicDepartmentsSkeleton";
 
 interface Department {
     id: string;
@@ -72,7 +73,8 @@ const departments: Department[] = [
     }
 ];
 
-export default function ClinicDepartments() {
+export default function ClinicDepartments({ isLoading = false }: { isLoading?: boolean }) {
+    if (isLoading) return <ClinicDepartmentsSkeleton />;
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-right">
             {departments.map((dept, i) => (
@@ -97,26 +99,27 @@ export default function ClinicDepartments() {
                     </h3>
 
                     <div className="space-y-3 mt-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-lg">
-                            <span className="font-medium text-foreground ml-auto">{dept.head}</span>
-                            <span>رئيس القسم:</span>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-lg justify-between">
+                            <div>رئيس القسم:</div>
+                            <div className="font-medium text-foreground ">{dept.head}</div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-lg">
-                            <div className="flex items-center gap-1.5 ml-auto">
+                        <div className="flex justify-between items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-lg">
+                            <div className="">عدد الموظفين:</div>
+                            <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-foreground">{dept.staffCount}</span>
                                 <Users size={14} className="text-primary" />
                             </div>
-                            <span>عدد الموظفين:</span>
+
                         </div>
                     </div>
 
-                    <div className="mt-5 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                    {/* <div className="mt-5 h-1.5 w-full bg-muted rounded-full overflow-hidden">
                         <div
                             className="h-full bg-primary rounded-full"
                             style={{ width: `${Math.random() * 40 + 60}%` }}
                         />
-                    </div>
+                    </div> */}
                 </motion.div>
             ))}
         </div>

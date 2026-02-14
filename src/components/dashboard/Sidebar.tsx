@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard,
     Hospital,
-    UserRound,
+    Package,
     Users,
     Settings,
     ChevronRight,
@@ -20,11 +20,11 @@ import {
 import { cn } from "@/lib/utils";
 
 const sidebarItems = [
-    { name: "لوحة التحكم", href: "/dashboard", icon: LayoutDashboard },
-    { name: "إدارة النقاط الطبية", href: "/medical-points", icon: Hospital },
-    { name: "الدكاترة", href: "/doctors", icon: UserRound },
-    { name: "المرضى", href: "/patients", icon: Users },
-    { name: "الإعدادات", href: "/settings", icon: Settings },
+    { name: "لوحة التحكم", href: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "إدارة النقاط الطبية", href: "/admin/medical-points", icon: Hospital },
+    { name: "المخزون المركزي", href: "/admin/inventory", icon: Package },
+    { name: "المرضى", href: "/admin/patients", icon: Users },
+    { name: "الإعدادات", href: "/admin/settings", icon: Settings },
 ];
 
 export function Sidebar() {

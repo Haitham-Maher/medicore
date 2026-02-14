@@ -1,4 +1,4 @@
-import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
+import { Skeleton, SkeletonCard } from "@/components/ui";
 
 export default function StatsGridSkeleton() {
     return (

@@ -33,7 +33,7 @@ export function AdminDashboardLayout({ children }: { children: React.ReactNode }
                                 className="p-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all shadow-sm"
                                 title={theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
                             >
-                                {theme === "dark" ? <Sun size={18} className="text-amber-500" /> : <Moon size={18} className="text-primary" />}
+                                {theme === "dark" ? <Sun size={18} className="text-orange-500" /> : <Moon size={18} className="text-primary" />}
                             </button>
                         ) : (
                             <div className="w-9 h-9 rounded-xl bg-secondary border border-border opacity-50" />

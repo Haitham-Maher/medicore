@@ -1,16 +1,8 @@
-import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
+import { Skeleton, SkeletonCard } from "@/components/ui";
 
 export default function MedicalPointsGridSkeleton() {
     return (
-        <div className="space-y-6 mt-20">
-            <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                    <Skeleton className="w-32 h-6" />
-                    <Skeleton className="w-64 h-4" />
-                </div>
-                <Skeleton className="w-24 h-10 rounded-lg" />
-            </div>
-
+        <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                     <SkeletonCard key={i} className="p-0 overflow-hidden flex flex-col h-full">

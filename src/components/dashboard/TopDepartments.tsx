@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 const departments = [
     { name: "قسم الأطفال", value: 85, count: "120 مريض", color: "bg-blue-500", icon: Baby },
     { name: "العناية المركزة", value: 62, count: "86 مريض", color: "bg-red-500", icon: Activity },
-    { name: "قسم الجراحة", value: 45, count: "54 مريض", color: "bg-amber-500", icon: Stethoscope },
+    { name: "قسم الجراحة", value: 45, count: "54 مريض", color: "bg-orange-500", icon: Stethoscope },
     { name: "قسم الطوارئ", value: 30, count: "32 مريض", color: "bg-emerald-500", icon: HeartPulse },
 ];
 
