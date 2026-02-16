@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, ArrowLeft, PackageCheck, PackageX, Boxes, Pill, Droplets, Thermometer, History, FileText, CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, PackageCheck, PackageX, Boxes, Pill, Droplets, Thermometer, History, FileText, CheckCircle2, CheckCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import ClinicInventorySkeleton from "../dashboard/skeletons/ClinicInventorySkeleton";
+import ClinicInventorySkeleton from "./ClinicInventorySkeleton";
 
 interface InventoryItem {
     id: string;
@@ -257,57 +257,63 @@ export default function ClinicInventory({
                                     <FileText size={48} className="opacity-20 mb-4" />
                                     <p className="text-sm">لا توجد طلبات معلقة</p>
                                 </div>
-                            ) : requests.map((req) => (
-                                <div key={req.id} className="p-4 group relative overflow-hidden">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div>
-                                            <h4 className="font-bold text-sm text-foreground">{req.itemName}</h4>
-                                            <p className="text-xs text-muted-foreground mt-1">الكمية المطلوبة: <span className="font-bold text-primary">{req.quantity}</span></p>
-                                            <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
-                                                <span>{req.requester}</span>
-                                                <span>•</span>
-                                                <span>{req.date}</span>
+                            ) : (
+                                requests.map((req) => (
+                                    <div key={req.id} className="p-4 group relative overflow-hidden">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <h4 className="font-bold text-sm text-foreground">{req.itemName}</h4>
+                                                <p className="text-xs text-muted-foreground mt-1">الكمية المطلوبة: <span className="font-bold text-primary">{req.quantity}</span></p>
+                                                <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
+                                                    <span>{req.requester}</span>
+                                                    <span>•</span>
+                                                    <span>{req.date}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center self-end sm:self-center">
+                                                {req.status === "pending" ? (
+                                                    <div className="flex items-center gap-1.5 md:gap-2">
+                                                        <button
+                                                            onClick={() => handleAction(req.id, "approved")}
+                                                            title="موافقة"
+                                                            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-4 rounded-xl flex items-center justify-center gap-2 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white border border-emerald-500/10 hover:border-emerald-500 transition-all duration-300 font-bold text-xs shadow-sm hover:shadow-emerald-500/20 cursor-pointer group/btn shrink-0"
+                                                        >
+                                                            <CheckCircle size={16} className="transition-transform group-hover/btn:scale-110" />
+                                                            <span className="hidden sm:inline">موافقة</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleAction(req.id, "rejected")}
+                                                            title="رفض"
+                                                            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-4 rounded-xl flex items-center justify-center gap-2 text-red-600 bg-red-500/5 hover:bg-red-500 hover:text-white border border-red-500/10 hover:border-red-500 transition-all duration-300 font-bold text-xs shadow-sm hover:shadow-red-500/20 cursor-pointer group/btn shrink-0"
+                                                        >
+                                                            <XCircle size={16} className="transition-transform group-hover/btn:scale-110" />
+                                                            <span className="hidden sm:inline">رفض</span>
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className={cn(
+                                                        "px-3 py-1.5 rounded-xl text-[10px] font-bold border flex items-center gap-2",
+                                                        req.status === "approved" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/20" : "bg-red-500/5 text-red-600 border-red-500/20"
+                                                    )}>
+                                                        {req.status === "approved" ? (
+                                                            <>
+                                                                <CheckCircle size={12} />
+                                                                تمت الموافقة
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <XCircle size={12} />
+                                                                مرفوض
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-
-                                        <div className="flex flex-col items-end gap-2">
-                                            {req.status === "pending" ? (
-                                                <span className="px-2 py-1 rounded-md bg-orange-500/10 text-orange-600 text-[10px] font-bold border border-orange-500/20">
-                                                    قيد الانتظار
-                                                </span>
-                                            ) : req.status === "approved" ? (
-                                                <span className="px-2 py-1 rounded-md bg-green-500/10 text-green-600 text-[10px] font-bold border border-green-500/20">
-                                                    تمت الموافقة
-                                                </span>
-                                            ) : (
-                                                <span className="px-2 py-1 rounded-md bg-red-500/10 text-red-600 text-[10px] font-bold border border-red-500/20">
-                                                    مرفوض
-                                                </span>
-                                            )}
-                                        </div>
                                     </div>
-
-                                    {/* Action Buttons Overlay */}
-                                    {req.status === "pending" && (
-                                        <div className="absolute inset-0 bg-card/90 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
-                                            <button
-                                                onClick={() => handleAction(req.id, "approved")}
-                                                className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-green-600 transition-colors transform hover:scale-105 cursor-pointer"
-                                            >
-                                                <CheckCircle2 size={16} />
-                                                موافق
-                                            </button>
-                                            <button
-                                                onClick={() => handleAction(req.id, "rejected")}
-                                                className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-600 transition-colors transform hover:scale-105 cursor-pointer"
-                                            >
-                                                <XCircle size={16} />
-                                                رفض
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>

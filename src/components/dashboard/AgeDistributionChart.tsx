@@ -1,5 +1,5 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import {
     BarChart,
     Bar,
@@ -9,6 +9,7 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    LabelList,
 } from "recharts";
 
 const data = [
@@ -22,93 +23,113 @@ const data = [
 ];
 
 export default function AgeDistributionChart() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 640);
+        };
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
+
     return (
-        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm h-full">
-            <div className="mb-6 flex items-center justify-between">
-                <div>
-                    <h3 className="text-lg font-bold text-foreground">
-                        التوزيع العمري للمراجعين
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                        تحليل الفئات العمرية لتوجيه صرف الأدوية
-                    </p>
-                </div>
+        <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm h-full flex flex-col">
+            <div className="mb-6">
+                <h3 className="text-lg font-bold text-foreground">
+                    التوزيع العمري للمراجعين
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                    تحليل الفئات العمرية لتوجيه صرف الأدوية
+                </p>
             </div>
 
-            <div className="h-[350px] w-full" dir="ltr">
+            <div className="h-[300px] md:h-[350px] w-full mt-auto" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                         data={data}
-                        margin={{ top: 20, right: 0, left: -20, bottom: 0 }}
-                        barSize={10} // حجم العمود (رفيع وأنيق ليناسب 3 أعمدة)
-                        barGap={4}   // المسافة بين الأعمدة في نفس اليوم
+                        margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
+                        barCategoryGap={isMobile ? "15%" : "20%"}
+                        barGap={isMobile ? 2 : 4}
                     >
                         <CartesianGrid
                             strokeDasharray="3 3"
                             vertical={false}
-                            stroke="#E5E7EB"
-                            strokeOpacity={0.6}
+                            stroke="hsl(var(--border))"
+                            strokeOpacity={0.5}
                         />
 
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: "#6B7280", fontSize: 12 }}
+                            tick={{
+                                fill: "hsl(var(--foreground))",
+                                fontSize: isMobile ? 10 : 12,
+                                fontWeight: "600"
+                            }}
                             dy={10}
+                            interval={isMobile ? "preserveStartEnd" : 0}
+                            minTickGap={10}
                         />
 
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: "#6B7280", fontSize: 12 }}
+                            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: "500" }}
+                            width={40}
                         />
 
                         <Tooltip
-                            cursor={{ fill: "transparent" }}
+                            cursor={{ fill: "hsl(var(--muted)/0.1)" }}
                             contentStyle={{
                                 backgroundColor: "hsl(var(--card))",
                                 borderRadius: "12px",
                                 border: "1px solid hsl(var(--border))",
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                color: "hsl(var(--foreground))",
+                                padding: "8px 12px",
+                                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
                             }}
-                            labelStyle={{ fontWeight: "bold", marginBottom: "5px" }}
+                            itemStyle={{ fontSize: "12px", padding: "2px 0" }}
                         />
 
                         <Legend
-                            wrapperStyle={{ paddingTop: "25px" }}
+                            wrapperStyle={{ paddingTop: "25px", fontSize: isMobile ? "10px" : "12px" }}
                             iconType="circle"
-                            iconSize={10}
+                            iconSize={8}
                         />
 
-                        {/* 1. الأطفال - لون تركواز ناعم (أدوية خفيفة) */}
                         <Bar
-                            name="أطفال (<12)"
+                            name="أطفال"
                             dataKey="children"
-                            fill="#2dd4bf" // Teal-400
+                            fill="#14b8a6"
                             radius={[4, 4, 0, 0]}
-                            animationDuration={1500}
-                        />
+                            animationDuration={1000}
+                        >
+                            {!isMobile && <LabelList dataKey="children" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                        </Bar>
 
-                        {/* 2. البالغين - لون أزرق رسمي (الفئة الأكبر) */}
                         <Bar
-                            name="بالغين (18-60)"
+                            name="بالغين"
                             dataKey="adults"
-                            fill="#3b82f6" // Blue-500
+                            fill="#3b82f6"
                             radius={[4, 4, 0, 0]}
-                            animationDuration={1500}
-                        />
+                            animationDuration={1000}
+                            animationBegin={100}
+                        >
+                            {!isMobile && <LabelList dataKey="adults" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                        </Bar>
 
-                        {/* 3. كبار السن - لون نيلي/بنفسجي (أدوية مزمنة) */}
                         <Bar
-                            name="كبار السن (60+)"
+                            name="كبار السن"
                             dataKey="elderly"
-                            fill="#6366f1" // Indigo-500
+                            fill="#8b5cf6"
                             radius={[4, 4, 0, 0]}
-                            animationDuration={1500}
-                        />
-
+                            animationDuration={1000}
+                            animationBegin={200}
+                        >
+                            {!isMobile && <LabelList dataKey="elderly" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </div>

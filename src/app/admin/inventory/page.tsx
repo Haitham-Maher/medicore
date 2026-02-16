@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
-import InventoryStats from "@/components/inventory/InventoryStats";
-import InventoryTable from "@/components/inventory/InventoryTable";
-import { Button } from "@/components/ui";
+import InventoryStats from "@/components/inventory/stats/InventoryStats";
+import InventoryTable from "@/components/inventory/table/InventoryTable";
+import { Package } from "lucide-react";
+import { PageHeader } from "@/components/ui";
 
 export default function InventoryPage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -18,16 +17,12 @@ export default function InventoryPage() {
     }, []);
 
     return (
-        <div className="space-y-8 p-6 pb-20">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">المخزون المركزي</h1>
-                    <p className="text-muted-foreground mt-4 text-sm">
-                        إدارة ومراقبة المخزون الطبي لجميع النقاط والمراكز
-                    </p>
-                </div>
-            </div>
+        <div className="space-y-8 p-6 pb-20" dir="rtl">
+            <PageHeader
+                title="المخزون المركزي"
+                description="إدارة ومراقبة المخزون الطبي لجميع النقاط والمراكز"
+                icon={Package}
+            />
 
             {/* Stats Overview */}
             <section>

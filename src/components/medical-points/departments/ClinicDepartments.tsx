@@ -11,7 +11,7 @@ import {
     Users
 } from "lucide-react";
 import { motion } from "framer-motion";
-import ClinicDepartmentsSkeleton from "../dashboard/skeletons/ClinicDepartmentsSkeleton";
+import ClinicDepartmentsSkeleton from "./ClinicDepartmentsSkeleton";
 
 interface Department {
     id: string;
@@ -113,13 +113,6 @@ export default function ClinicDepartments({ isLoading = false }: { isLoading?: b
 
                         </div>
                     </div>
-
-                    {/* <div className="mt-5 h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${Math.random() * 40 + 60}%` }}
-                        />
-                    </div> */}
                 </motion.div>
             ))}
         </div>

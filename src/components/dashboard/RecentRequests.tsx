@@ -1,10 +1,11 @@
 "use client"
 import { useState } from "react";
 
-import { FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle, } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import RecentRequestsSkeleton from "./skeletons/RecentRequestsSkeleton";
+import Link from "next/link";
 
 interface RequestItem {
     id: string;
@@ -99,7 +100,7 @@ export default function RecentRequests({
             {/* Header */}
             <div className="p-4 md:p-6 pb-4 border-b border-border/50 bg-linear-to-br from-primary/5 to-transparent">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 md:gap-3">
+                    <div className="flex items-center justify-between gap-2 md:gap-3">
                         {/* تصغير حجم الأيقونة في الشاشات الصغيرة */}
                         <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                             <FileText className="text-primary w-4 h-4 md:w-5 md:h-5" />
@@ -112,13 +113,20 @@ export default function RecentRequests({
                             </p>
                         </div>
                     </div>
-                    {onViewAll && (
+                    {onViewAll ? (
                         <button
                             onClick={onViewAll}
                             className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0"
                         >
                             عرض الكل <ArrowLeft size={14} />
                         </button>
+                    ) : (
+                        <Link
+                            href="/admin/inventory/reports"
+                            className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0"
+                        >
+                            عرض الكل <ArrowLeft size={14} />
+                        </Link>
                     )}
                 </div>
             </div>
@@ -152,37 +160,37 @@ export default function RecentRequests({
                             </div>
 
                             <div className="flex flex-col items-end gap-1.5 md:gap-2 shrink-0">
-                                {/* حالة الطلب: تصغير الأيقونة والنص في الجوال */}
-                                <span className={cn(
-                                    "inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[9px] md:text-[10px] font-bold border whitespace-nowrap",
-                                    getStatusColor(item.status)
-                                )}>
-                                    {getStatusIcon(item.status)}
-                                    {getStatusText(item.status)}
-                                </span>
+                                {(item.status === 'pending' || item.status === 'urgent') ? (
+                                    <div className="flex items-center gap-1.5 md:gap-2">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'approved'); }}
+                                            title="موافقة"
+                                            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-4 rounded-xl flex items-center justify-center gap-2 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white border border-emerald-500/10 hover:border-emerald-500 transition-all duration-300 font-bold text-xs shadow-sm hover:shadow-emerald-500/20 cursor-pointer group/btn shrink-0"
+                                        >
+                                            <CheckCircle2 size={16} className="transition-transform group-hover/btn:scale-110" />
+                                            <span className="hidden sm:inline">موافقة</span>
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'rejected'); }}
+                                            title="رفض"
+                                            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-4 rounded-xl flex items-center justify-center gap-2 text-red-600 bg-red-500/5 hover:bg-red-500 hover:text-white border border-red-500/10 hover:border-red-500 transition-all duration-300 font-bold text-xs shadow-sm hover:shadow-red-500/20 cursor-pointer group/btn shrink-0"
+                                        >
+                                            <XCircle size={16} className="transition-transform group-hover/btn:scale-110" />
+                                            <span className="hidden sm:inline">رفض</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <span className={cn(
+                                        "inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[9px] md:text-[10px] font-bold border whitespace-nowrap",
+                                        getStatusColor(item.status)
+                                    )}>
+                                        {getStatusIcon(item.status)}
+                                        {getStatusText(item.status)}
+                                    </span>
+                                )}
                                 <span className="text-[9px] md:text-[10px] text-muted-foreground">{item.date}</span>
                             </div>
                         </div>
-
-                        {/* Actions Overlay for Pending items */}
-                        {(item.status === 'pending' || item.status === 'urgent') && (
-                            <div className="absolute inset-0 bg-background/95 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'approved'); }}
-                                    className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-green-600 transition-colors cursor-pointer"
-                                >
-                                    <CheckCircle2 size={14} />
-                                    موافق
-                                </button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); handleAction(item.id, 'rejected'); }}
-                                    className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-red-600 transition-colors cursor-pointer"
-                                >
-                                    <XCircle size={14} />
-                                    رفض
-                                </button>
-                            </div>
-                        )}
                     </motion.div>
                 ))}
             </div>

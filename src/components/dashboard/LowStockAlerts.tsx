@@ -3,6 +3,7 @@
 import { AlertTriangle, ArrowLeft, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface LowStockItem {
     name: string;
@@ -35,9 +36,12 @@ export default function LowStockAlerts() {
                             </p>
                         </div>
                     </div>
-                    <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
-                        عرض الكل <ArrowLeft size={14} />
-                    </button>
+                    <Link href="/admin/inventory">
+                        <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
+                            عرض الكل <ArrowLeft size={14} />
+                        </button>
+                    </Link>
+
                 </div>
             </div>
 

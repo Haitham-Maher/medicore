@@ -15,7 +15,9 @@ import {
     Menu,
     X,
     Sun,
-    Moon
+    Moon,
+    FileText,
+    ClipboardList
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +25,7 @@ const sidebarItems = [
     { name: "لوحة التحكم", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "إدارة النقاط الطبية", href: "/admin/medical-points", icon: Hospital },
     { name: "المخزون المركزي", href: "/admin/inventory", icon: Package },
+    { name: "طلبات الإمداد", href: "/admin/inventory/reports", icon: ClipboardList },
     { name: "المرضى", href: "/admin/patients", icon: Users },
     { name: "الإعدادات", href: "/admin/settings", icon: Settings },
 ];

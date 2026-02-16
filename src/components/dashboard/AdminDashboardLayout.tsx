@@ -1,17 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const pathname = usePathname();
+    const mainRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Scroll to top on route change
+    useEffect(() => {
+        if (mainRef.current) {
+            mainRef.current.scrollTo(0, 0);
+        }
+    }, [pathname]);
 
     return (
         <div className="flex h-screen bg-background text-foreground overflow-hidden" dir="rtl">
@@ -19,7 +29,10 @@ export function AdminDashboardLayout({ children }: { children: React.ReactNode }
             <Sidebar />
 
             {/* Main Content Area */}
-            <main className="flex-1 relative overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <main
+                ref={mainRef}
+                className="flex-1 relative overflow-y-auto overflow-x-hidden custom-scrollbar"
+            >
                 {/* Header */}
                 <header className="sticky top-0 z-30 flex h-16 w-full items-center bg-card/80 backdrop-blur-md px-8 justify-between border-b border-border transition-colors">
                     <div className="flex items-center gap-4">

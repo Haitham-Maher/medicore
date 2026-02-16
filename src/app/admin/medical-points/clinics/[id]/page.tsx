@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import MedicalPointHeader from "@/components/clinics/MedicalPointHeader";
-import MedicalPointStats, { ManagerSection } from "@/components/clinics/MedicalPointStats";
-import ClinicStaffList from "@/components/clinics/ClinicStaffList";
-import ClinicInventory from "@/components/clinics/ClinicInventory";
-import ClinicDepartments from "@/components/clinics/ClinicDepartments";
+import MedicalPointHeader from "@/components/medical-points/header/MedicalPointHeader";
+import MedicalPointStats, { ManagerSection } from "@/components/medical-points/stats/MedicalPointStats";
+import ClinicStaffList from "@/components/medical-points/staff/ClinicStaffList";
+import ClinicInventory from "@/components/medical-points/inventory/ClinicInventory";
+import ClinicDepartments from "@/components/medical-points/departments/ClinicDepartments";
 import { ArrowLeft, History } from "lucide-react";
 import Link from "next/link";
 import RecentRequests from "@/components/dashboard/RecentRequests";
 import { cn } from "@/lib/utils";
-import MedicalPointDetailsSkeleton from "@/components/dashboard/skeletons/MedicalPointDetailsSkeleton";
+import MedicalPointDetailsSkeleton from "@/components/medical-points/skeletons/MedicalPointDetailsSkeleton";
 import { Skeleton } from "@/components/ui";
 import { motion } from "framer-motion";
 
@@ -39,7 +39,7 @@ export default function MedicalPointDetailsPage() {
   const tabs = [
     { id: "overview", label: "نظرة عامة" },
     { id: "doctors", label: "الكادر الطبي" },
-    { id: "inventory", label: "الإمدادات والطلبات" },
+    { id: "inventory", label: "المخزون والطلبات" },
     { id: "departments", label: "الأقسام" },
     { id: "leader", label: "رئيس النقطة" },
   ];
@@ -116,6 +116,7 @@ export default function MedicalPointDetailsPage() {
               {/* Improved Layout: Staff and Inventory Side by Side */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <ClinicStaffList
+                  variant="top"
                   isLoading={isLoading}
                   onViewAll={() => {
                     handleTabChange("doctors");
@@ -152,7 +153,7 @@ export default function MedicalPointDetailsPage() {
 
           {activeTab === "doctors" && (
             <div className="animate-in fade-in duration-300">
-              <ClinicStaffList isLoading={isLoading} />
+              <ClinicStaffList variant="full" isLoading={isLoading} />
             </div>
           )}
 

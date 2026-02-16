@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui";
-import MedicalPointStatsSkeleton from "./MedicalPointStatsSkeleton";
-import ClinicStaffListSkeleton from "./ClinicStaffListSkeleton";
-import ClinicInventorySkeleton from "./ClinicInventorySkeleton";
+import MedicalPointStatsSkeleton from "../stats/MedicalPointStatsSkeleton";
+import ClinicStaffListSkeleton from "../staff/ClinicStaffListSkeleton";
+import ClinicInventorySkeleton from "../inventory/ClinicInventorySkeleton";
 
 export default function MedicalPointDetailsSkeleton() {
     return (

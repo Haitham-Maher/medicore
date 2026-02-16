@@ -10,18 +10,16 @@ import {
   Filter,
   MoreHorizontal,
   Building2,
-  Stethoscope,
-  UserRound,
   Star,
   ArrowRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import MedicalPointsGridSkeleton from "@/components/dashboard/skeletons/MedicalPointsGridSkeleton";
-import MedicalPointsTableSkeleton from "@/components/dashboard/skeletons/MedicalPointsTableSkeleton";
-import StatsBarSkeleton from "@/components/dashboard/skeletons/StatsBarSkeleton";
-import { Skeleton } from "@/components/ui";
+import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/MedicalPointsGridSkeleton";
+import MedicalPointsTableSkeleton from "@/components/medical-points/skeletons/MedicalPointsTableSkeleton";
+import StatsBarSkeleton from "@/components/medical-points/skeletons/StatsBarSkeleton";
+import { Skeleton, PageHeader } from "@/components/ui";
 
 // Mock Data
 const medicalPoints = [
@@ -176,32 +174,23 @@ export default function MedicalPointsPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          {isLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-9 w-64" />
-              <Skeleton className="h-4 w-48" />
-            </div>
-          ) : (
-            <>
-              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                <Building2 className="text-primary" />
-                إدارة النقاط الطبية
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                إدارة ومتابعة جميع الفروع والعيادات الطبية
-              </p>
-            </>
-          )}
-        </div>
-        {isLoading ? (
-          <Skeleton className="h-10 w-40 rounded-xl" />
-        ) : (
-          <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 cursor-pointer">
-            <Plus size={20} />
-            إضافة نقطة جديدة
-          </button>
-        )}
+        <PageHeader
+          title="إدارة النقاط الطبية"
+          description="إدارة ومتابعة جميع الفروع والعيادات الطبية"
+          icon={Building2}
+        />
+
+        <motion.button
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 0.1,
+            ease: "easeOut"
+          }}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 cursor-pointer md:mt-0 mt-4 self-start md:self-center">
+          <Plus size={20} />
+          إضافة نقطة جديدة
+        </motion.button>
       </div>
 
       {/* Stats Bar */}

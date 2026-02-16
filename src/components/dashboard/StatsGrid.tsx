@@ -28,24 +28,30 @@ export default function StatsGrid() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map(({ icon: Icon, ...stat }, i) => (
                 <motion.div
+                    key={i}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{
-                        opacity: 1, y: 0,
-                        transition: { delay:(i * 0.3) }
-                    }}
-                    whileHover={{ scale: 1.03 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{
                         type: "spring",
-                        stiffness: 400,
-                        damping: 18
+                        stiffness: 100,
+                        damping: 15,
+                        delay: i * 0.1
                     }}
-                    key={i}
-                    className="bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-md cursor-pointer group"
+                    whileHover={{
+                        y: -12,
+                        scale: 1.02,
+                        transition: { type: "spring", stiffness: 400, damping: 25 }
+                    }}
+                    className="bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:border-primary/20 cursor-pointer group transition-shadow duration-300"
                 >
                     <div className="flex items-center justify-between">
-                        <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center transition-all`}>
+                        <motion.div
+                            whileHover={{ rotate: 10, scale: 1.1 }}
+                            className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center transition-all group-hover:shadow-lg group-hover:shadow-primary/10`}
+                        >
                             <Icon className={`${stat.color}`} size={24} />
-                        </div>
+                        </motion.div>
                         <div className="flex items-center gap-1 text-success font-medium text-sm">
                             <span>+12%</span>
                             <TrendingUp size={14} />

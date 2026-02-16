@@ -13,9 +13,9 @@ import {
     Calendar,
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
-import { cn } from "@/lib/utils"; // Assuming cn utility is available here
-import MedicalPointStatsSkeleton from "../dashboard/skeletons/MedicalPointStatsSkeleton";
-import ManagerSectionSkeleton from "../dashboard/skeletons/ManagerSectionSkeleton";
+import { cn } from "@/lib/utils";
+import MedicalPointStatsSkeleton from "./MedicalPointStatsSkeleton";
+import ManagerSectionSkeleton from "../skeletons/ManagerSectionSkeleton";
 
 interface StatItemProps {
     label: string;

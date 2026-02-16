@@ -7,11 +7,13 @@ import MedicalPointsGrid from "@/components/dashboard/MedicalPointsGrid";
 import StatsGrid from "@/components/dashboard/StatsGrid"
 import TopDepartments from "@/components/dashboard/TopDepartments";
 import RecentRequests from "@/components/dashboard/RecentRequests";
+import { LayoutDashboard } from "lucide-react";
+import { PageHeader } from "@/components/ui";
 
 // Skeletons
 import StatsGridSkeleton from "@/components/dashboard/skeletons/StatsGridSkeleton";
 import ChartsSkeleton from "@/components/dashboard/skeletons/ChartsSkeleton";
-import MedicalPointsGridSkeleton from "@/components/dashboard/skeletons/MedicalPointsGridSkeleton";
+import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/MedicalPointsGridSkeleton";
 import LowStockAlertsSkeleton from "@/components/dashboard/skeletons/LowStockAlertsSkeleton";
 import RecentRequestsSkeleton from "@/components/dashboard/skeletons/RecentRequestsSkeleton";
 
@@ -29,9 +31,11 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div>
-                <h1 className="text-3xl font-bold text-foreground">نظرة عامة</h1>
-            </div>
+            <PageHeader
+                title="نظرة عامة"
+                description="إحصائيات وتحليلات شاملة لأداء النظام والمخزون الطبي"
+                icon={LayoutDashboard}
+            />
 
             {isLoading ? <StatsGridSkeleton /> : <StatsGrid />}
 
