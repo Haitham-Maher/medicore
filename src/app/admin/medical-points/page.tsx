@@ -20,6 +20,7 @@ import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/Med
 import MedicalPointsTableSkeleton from "@/components/medical-points/skeletons/MedicalPointsTableSkeleton";
 import StatsBarSkeleton from "@/components/medical-points/skeletons/StatsBarSkeleton";
 import { Skeleton, PageHeader } from "@/components/ui";
+import AddMedicalPointModal from "@/components/medical-points/modals/AddMedicalPointModal";
 
 // Mock Data
 const medicalPoints = [
@@ -153,6 +154,7 @@ export default function MedicalPointsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     // Simulate loading
@@ -181,6 +183,7 @@ export default function MedicalPointsPage() {
         />
 
         <motion.button
+          onClick={() => setIsAddModalOpen(true)}
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
@@ -189,7 +192,7 @@ export default function MedicalPointsPage() {
           }}
           className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 cursor-pointer md:mt-0 mt-4 self-start md:self-center">
           <Plus size={20} />
-          إضافة نقطة جديدة
+          إضافة نقطة طبية
         </motion.button>
       </div>
 
@@ -240,12 +243,6 @@ export default function MedicalPointsPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button
-            className="bg-background border border-border hover:bg-muted/50 p-2.5 rounded-xl text-muted-foreground transition-colors"
-            title="تصفية"
-          >
-            <Filter size={20} />
-          </button>
         </div>
 
         {/* View Toggle */}
@@ -454,6 +451,11 @@ export default function MedicalPointsPage() {
           )
         )}
       </AnimatePresence>
+
+      <AddMedicalPointModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </div>
   );
 }

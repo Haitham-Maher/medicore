@@ -1,5 +1,7 @@
 import { Search, FileDown, Plus } from "lucide-react";
 import { Button, Input } from "@/components/ui";
+import { useState } from "react";
+import AddItemModal from "./AddItemModal";
 
 interface InventoryToolbarProps {
     search: string;
@@ -7,6 +9,8 @@ interface InventoryToolbarProps {
 }
 
 export default function InventoryToolbar({ search, setSearch }: InventoryToolbarProps) {
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border/50 p-3 rounded-2xl shadow-sm">
             <div className="relative w-full sm:max-w-[280px] md:max-w-sm">
@@ -24,11 +28,20 @@ export default function InventoryToolbar({ search, setSearch }: InventoryToolbar
                         <FileDown className="h-4 w-4" />
                     </Button>
                 </div>
-                <Button size="sm" className="h-10 px-4 md:px-5 gap-2 font-bold cursor-pointer rounded-xl bg-primary hover:bg-primary/90 shadow-sm transition-all w-full sm:w-auto whitespace-nowrap">
+                <Button
+                    onClick={() => setIsAddModalOpen(true)}
+                    size="sm"
+                    className="h-10 px-4 md:px-5 gap-2 font-bold cursor-pointer rounded-xl bg-primary hover:bg-primary/90 shadow-sm transition-all w-full sm:w-auto whitespace-nowrap"
+                >
                     <Plus className="h-4 w-4" />
                     إضافة صنف
                 </Button>
             </div>
+
+            <AddItemModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+            />
         </div>
     );
 }

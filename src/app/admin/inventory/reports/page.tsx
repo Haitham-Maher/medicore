@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Download, Filter, Plus, LayoutGrid, Table as TableIcon, ClipboardList } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import InventoryReports from "@/components/inventory/reports/InventoryReports";
 import SupplyRequestsSkeleton from "@/components/inventory/reports/SupplyRequestsSkeleton";
-import { Button, PageHeader } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/ui";
 
 export default function InventoryReportsPage() {
     const [isLoading, setIsLoading] = useState(true);
