@@ -1,85 +1,50 @@
-"use client"
+"use client";
+
 import { Phone, Mail, User, Star, Trophy, ArrowLeft, UserCheck, UserMinus, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ClinicStaffListSkeleton from "./ClinicStaffListSkeleton";
+import ClinicStaffListSkeleton from "../../staff/ClinicStaffListSkeleton";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface StaffMember {
+interface Doctor {
     id: string;
     name: string;
-    specialty: string;
-    department: string;
-    status: "available" | "busy" | "off-duty";
-    rating?: number;
-    reviewsCount?: number;
-    avatar?: string;
+    specialize: string;     // doctors.specialize
+    rating: number;         // doctors.rating
+    patients: number;       // COUNT from prescriptions
+    status?: "available" | "busy" | "off-duty";  // doctors.status ENUM
+    bio?: string;           // doctors.bio
 }
-
-const mockStaff: StaffMember[] = [
-    {
-        id: "1",
-        name: "د. أحمد كمال",
-        specialty: "استشاري جراحة عامة",
-        department: "قسم الجراحة",
-        status: "available",
-        rating: 4.9,
-        reviewsCount: 124,
-    },
-    {
-        id: "2",
-        name: "د. سارة علي",
-        specialty: "أخصائية طب الأطفال",
-        department: "قسم الأطفال",
-        status: "busy",
-        rating: 4.8,
-        reviewsCount: 98,
-    },
-    {
-        id: "3",
-        name: "د. خالد منصور",
-        specialty: "طبيب باطنية",
-        department: "قسم الباطنية",
-        status: "available",
-        rating: 4.7,
-        reviewsCount: 85,
-    },
-    {
-        id: "4",
-        name: "م. محمد حسن",
-        specialty: "ممرض أول",
-        department: "قسم الطوارئ",
-        status: "off-duty",
-    },
-];
 
 const getInitials = (name: string) => {
     const cleanName = name.replace(/^(د\.|م\.)\s+/, "");
     return cleanName.charAt(0);
 };
 
-export default function ClinicStaffList({
-    onViewAll,
+export default function DeptDoctorsList({
+    doctors,
     isLoading = false,
-    variant = "full"
+    variant = "full",
+    onViewAll,
 }: {
-    onViewAll?: () => void;
+    doctors: Doctor[];
     isLoading?: boolean;
     variant?: "top" | "full";
+    onViewAll?: () => void;
 }) {
     const [search, setSearch] = useState<string>("");
 
     if (isLoading) return <ClinicStaffListSkeleton />;
 
-    const mockSearch = mockStaff.filter(item =>
+    const filteredDoctors = doctors.filter(item =>
         item.name.includes(search) ||
-        item.specialty.includes(search) ||
-        item.department.includes(search)
+        item.specialize.includes(search) ||
+        (item.bio && item.bio.includes(search))
     );
 
-    const displayStaff = variant === "top"
-        ? [...mockSearch].filter(s => s.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3)
-        : mockSearch;
+    const displayDoctors = variant === "top"
+        ? [...filteredDoctors].sort((a, b) => b.rating - a.rating).slice(0, 3)
+        : filteredDoctors;
 
     return (
         <motion.div
@@ -97,7 +62,7 @@ export default function ClinicStaffList({
                         </div>
                         <div>
                             <h3 className="font-black text-lg text-foreground">أفضل الأطباء</h3>
-                            <p className="text-[10px] text-muted-foreground font-bold">الأعلى تقييماً في هذه النقطة</p>
+                            <p className="text-[10px] text-muted-foreground font-bold">الأعلى تقييماً في هذا القسم</p>
                         </div>
                     </div>
 
@@ -114,7 +79,7 @@ export default function ClinicStaffList({
                 <div className="p-6 border-b border-border/50 flex items-center justify-between">
                     <div>
                         <h3 className="font-bold text-lg text-foreground">الكادر الطبي</h3>
-                        <p className="text-sm text-muted-foreground">{mockSearch.length} عضو فريق عمل</p>
+                        <p className="text-sm text-muted-foreground">{filteredDoctors.length} عضو فريق عمل</p>
                     </div>
                 </div>
             )}
@@ -146,7 +111,7 @@ export default function ClinicStaffList({
                         transition={{ duration: 0.3 }}
                         className="divide-y divide-border/50"
                     >
-                        {displayStaff.length === 0 ? (
+                        {displayDoctors.length === 0 ? (
                             <div className="p-12 text-center flex flex-col items-center justify-center gap-4">
                                 <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center text-muted-foreground/30">
                                     <User size={32} />
@@ -154,16 +119,16 @@ export default function ClinicStaffList({
                                 <p className="text-muted-foreground font-bold italic text-sm">لا توجد نتائج تطابق معايير البحث</p>
                             </div>
                         ) : (
-                            displayStaff.map((staff) => (
+                            displayDoctors.map((doctor) => (
                                 <div
-                                    key={staff.id}
+                                    key={doctor.id}
                                     className="p-5 flex items-center gap-4 hover:bg-muted/30 transition-all group bg-card"
                                 >
                                     {/* Avatar Column */}
                                     <div className="relative">
                                         <div className="h-12 w-12 rounded-xl border-2 border-background shadow-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
                                             <span className="text-primary font-black text-lg">
-                                                {getInitials(staff.name)}
+                                                {getInitials(doctor.name)}
                                             </span>
                                         </div>
                                         {variant === "top" && (
@@ -176,33 +141,39 @@ export default function ClinicStaffList({
                                     {/* Info Column */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-0.5">
-                                            <h4 className="font-black text-sm text-foreground truncate group-hover:text-primary transition-colors">{staff.name}</h4>
-                                            {variant === "full" && (
+                                            <h4 className="font-black text-sm text-foreground truncate group-hover:text-primary transition-colors">{doctor.name}</h4>
+                                            {variant === "full" && doctor.status && (
                                                 <span className={cn(
                                                     "text-[9px] px-1.5 py-0.5 rounded-full border font-bold",
-                                                    staff.status === "available" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
-                                                        staff.status === "busy" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                                                    doctor.status === "available" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
+                                                        doctor.status === "busy" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
                                                             "bg-muted text-muted-foreground border-border"
                                                 )}>
-                                                    {staff.status === "available" ? "متاح" : staff.status === "busy" ? "مشغول" : "خارج الدوام"}
+                                                    {doctor.status === "available" ? "متاح" : doctor.status === "busy" ? "مشغول" : "خارج الدوام"}
                                                 </span>
                                             )}
                                         </div>
 
                                         {variant === "top" ? (
                                             <div className="space-y-2">
-                                                <p className="text-[11px] text-muted-foreground font-bold">{staff.specialty}</p>
+                                                <p className="text-[11px] text-muted-foreground font-bold">{doctor.specialize}</p>
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex items-center gap-1 bg-orange-500/10 px-2 py-0.5 rounded-full">
                                                         <Star size={10} className="text-orange-500 fill-orange-500" />
-                                                        <span className="text-[10px] font-black text-orange-600">{staff.rating}</span>
+                                                        <span className="text-[10px] font-black text-orange-600">{doctor.rating}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="flex flex-col gap-0.5">
-                                                <p className="text-[11px] text-muted-foreground font-bold">{staff.specialty}</p>
-                                                <p className="text-[10px] text-primary/70 font-black">{staff.department}</p>
+                                                <p className="text-[11px] text-muted-foreground font-bold">{doctor.specialize}</p>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-1 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                                                        <Star size={10} className="text-orange-500 fill-orange-500" />
+                                                        <span className="text-[10px] font-black text-orange-600">{doctor.rating}</span>
+                                                    </div>
+                                                    <span className="text-[10px] text-primary/70 font-black">{doctor.patients} مريض</span>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -234,7 +205,7 @@ export default function ClinicStaffList({
                         <UserCheck size={16} className="text-emerald-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">متاح الآن</span>
-                            <span className="text-sm font-black text-foreground">{mockSearch.filter((s) => s.status === "available").length}</span>
+                            <span className="text-sm font-black text-foreground">{filteredDoctors.filter((s) => s.status === "available").length}</span>
                         </div>
                     </div>
                     <div className="h-8 w-px bg-border/50" />
@@ -242,7 +213,7 @@ export default function ClinicStaffList({
                         <UserMinus size={16} className="text-amber-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">في مهمة</span>
-                            <span className="text-sm font-black text-foreground">{mockSearch.filter((s) => s.status === "busy").length}</span>
+                            <span className="text-sm font-black text-foreground">{filteredDoctors.filter((s) => s.status === "busy").length}</span>
                         </div>
                     </div>
                 </div>

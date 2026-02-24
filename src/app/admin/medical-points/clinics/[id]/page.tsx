@@ -9,14 +9,13 @@ import ClinicInventory from "@/components/medical-points/inventory/ClinicInvento
 import ClinicDepartments from "@/components/medical-points/departments/ClinicDepartments";
 import { ArrowLeft, History } from "lucide-react";
 import Link from "next/link";
-import RecentRequests from "@/components/dashboard/RecentRequests";
+import RecentRequests from "@/components/dashboard/admin/RecentRequests";
 import { cn } from "@/lib/utils";
 import MedicalPointDetailsSkeleton from "@/components/medical-points/skeletons/MedicalPointDetailsSkeleton";
 import { Skeleton } from "@/components/ui";
 import { motion } from "framer-motion";
 
 export default function MedicalPointDetailsPage() {
-  const params = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(true);
 

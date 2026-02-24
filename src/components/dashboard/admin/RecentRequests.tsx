@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FileText, ArrowLeft, Clock, CheckCircle2, XCircle, AlertCircle, } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import RecentRequestsSkeleton from "./skeletons/RecentRequestsSkeleton";
+import RecentRequestsSkeleton from "../skeletons/RecentRequestsSkeleton";
 import Link from "next/link";
 
 interface RequestItem {

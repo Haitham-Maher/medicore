@@ -91,21 +91,26 @@ export default function ClinicInventory({
                     {mockInventory.map((item) => (
                         <div
                             key={item.id}
-                            className="p-4 flex items-center gap-4 hover:bg-muted/30 transition-colors group"
+                            className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 hover:bg-muted/30 transition-colors group"
                         >
-                            <div className={cn(
-                                "h-12 w-12 rounded-xl border border-border/50 bg-secondary flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
-                                item.status === "critical" ? "text-red-500 bg-red-500/5 border-red-500/10" :
-                                    item.status === "low" ? "text-orange-500 bg-orange-500/5 border-orange-500/10" :
-                                        "text-green-500 bg-green-500/5 border-green-500/10"
-                            )}>
-                                <item.icon size={22} />
+                            {/* Header: Icon + Name (Flexible for mobile) */}
+                            <div className="flex items-center gap-3 shrink-0">
+                                <div className={cn(
+                                    "h-10 w-10 sm:h-12 sm:w-12 rounded-xl border border-border/50 bg-secondary flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                                    item.status === "critical" ? "text-red-500 bg-red-500/5 border-red-500/10" :
+                                        item.status === "low" ? "text-orange-500 bg-orange-500/5 border-orange-500/10" :
+                                            "text-green-500 bg-green-500/5 border-green-500/10"
+                                )}>
+                                    <item.icon size={20} className="sm:size-[22px]" />
+                                </div>
+                                <h4 className="font-semibold text-sm truncate sm:hidden">{item.name}</h4>
                             </div>
 
+                            {/* Body: Progress Bar & Status (Full width on mobile) */}
                             <div className="flex-1 min-w-0 space-y-1.5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <h4 className="font-semibold text-sm truncate">{item.name}</h4>
-                                    <div className="flex items-center gap-1.5">
+                                    <h4 className="hidden sm:block font-semibold text-sm truncate">{item.name}</h4>
+                                    <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
                                         {item.status === "critical" && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
                                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                                             {item.stock} / {item.max}
@@ -155,7 +160,7 @@ export default function ClinicInventory({
             initial={{ translateY: 30 }}
             animate={{ translateY: 0 }}
             transition={{ duration: .3 }}
-            className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col">
+            className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col w-full">
 
             {/* Header with Toggle */}
             <div className="p-4 border-b border-border/50 flex items-center justify-between gap-4">
@@ -199,21 +204,38 @@ export default function ClinicInventory({
                             {mockInventory.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="p-4 flex items-center gap-4 hover:bg-muted/30 transition-colors group"
+                                    className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-muted/30 transition-colors group"
                                 >
-                                    <div className={cn(
-                                        "h-12 w-12 rounded-xl border border-border/50 bg-secondary flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
-                                        item.status === "critical" ? "text-red-500 bg-red-500/5 border-red-500/10" :
-                                            item.status === "low" ? "text-orange-500 bg-orange-500/5 border-orange-500/10" :
-                                                "text-green-500 bg-green-500/5 border-green-500/10"
-                                    )}>
-                                        <item.icon size={22} />
+                                    {/* Header: Icon + Name + Quick Stats for mobile */}
+                                    <div className="flex items-center justify-between sm:justify-start gap-4 shrink-0">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "h-10 w-10 sm:h-12 sm:w-12 rounded-xl border border-border/50 bg-secondary flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                                                item.status === "critical" ? "text-red-500 bg-red-500/5 border-red-500/10" :
+                                                    item.status === "low" ? "text-orange-500 bg-orange-500/5 border-orange-500/10" :
+                                                        "text-green-500 bg-green-500/5 border-green-500/10"
+                                            )}>
+                                                <item.icon size={20} className="sm:size-[22px]" />
+                                            </div>
+                                            <h4 className="font-semibold text-sm truncate sm:hidden">{item.name}</h4>
+                                        </div>
+
+                                        {/* Actions: Mobile only visible actions or kept separate */}
+                                        <div className="flex items-center gap-1 sm:hidden">
+                                            <button className="p-2 rounded-lg bg-primary/5 text-primary">
+                                                <History size={14} />
+                                            </button>
+                                            <button className="p-2 rounded-lg bg-primary/5 text-primary">
+                                                <ArrowLeft size={14} />
+                                            </button>
+                                        </div>
                                     </div>
 
+                                    {/* Body: Full Width Progress Bar & Stats */}
                                     <div className="flex-1 min-w-0 space-y-1.5">
                                         <div className="flex items-center justify-between gap-2">
-                                            <h4 className="font-semibold text-sm truncate">{item.name}</h4>
-                                            <div className="flex items-center gap-1.5">
+                                            <h4 className="hidden sm:block font-semibold text-sm truncate">{item.name}</h4>
+                                            <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
                                                 {item.status === "critical" && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
                                                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                                                     {item.stock} / {item.max}
@@ -233,7 +255,8 @@ export default function ClinicInventory({
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {/* Actions: Desktop only */}
+                                    <div className="hidden sm:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                                         <button className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors cursor-pointer">
                                             <History size={16} />
                                         </button>

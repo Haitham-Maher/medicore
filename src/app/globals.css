@@ -178,3 +178,8 @@ body {
 .animate-shimmer {
   animation: shimmer 1.5s linear infinite;
 }
+
+
+.recharts-tooltip-cursor {
+  transition: all .3s ease;
+}

@@ -16,38 +16,43 @@ interface IStats {
     bgColor: string;
 }
 
-const stats: IStats[] = [
+const statsAdmin: IStats[] = [
     { label: "إجمالي المرضى", value: "1,250", icon: Users, color: "text-chart-2", bgColor: "bg-chart-2/15" },
     { label: "النقاط الطبية", value: "48", icon: Hospital, color: "text-chart-1", bgColor: "bg-chart-1/15" },
     { label: "الأطباء", value: "156", icon: UserRound, color: "text-chart-4", bgColor: "bg-chart-4/15" },
     { label: "الأدوية المتاحة", value: "24", icon: Hospital, color: "text-chart-3", bgColor: "bg-chart-3/15" },
 ];
 
-export default function StatsGrid() {
+const statsManager: IStats[] = [
+    { label: "إجمالي المرضى", value: "1,250", icon: Users, color: "text-chart-2", bgColor: "bg-chart-2/15" },
+    { label: "الأقسام", value: "48", icon: Hospital, color: "text-chart-1", bgColor: "bg-chart-1/15" },
+    { label: "الأطباء", value: "156", icon: UserRound, color: "text-chart-4", bgColor: "bg-chart-4/15" },
+    { label: "الأدوية المتاحة", value: "24", icon: Hospital, color: "text-chart-3", bgColor: "bg-chart-3/15" },
+];
+
+export default function StatsGrid({isAdmin}: {isAdmin: boolean}) {
+    const stats = isAdmin ? statsAdmin : statsManager;
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map(({ icon: Icon, ...stat }, i) => (
                 <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{
                         type: "spring",
                         stiffness: 100,
                         damping: 15,
-                        delay: i * 0.1
                     }}
                     whileHover={{
-                        y: -12,
-                        scale: 1.02,
+                        scale: 1.03,
                         transition: { type: "spring", stiffness: 400, damping: 25 }
                     }}
                     className="bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:border-primary/20 cursor-pointer group transition-shadow duration-300"
                 >
                     <div className="flex items-center justify-between">
                         <motion.div
-                            whileHover={{ rotate: 10, scale: 1.1 }}
                             className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center transition-all group-hover:shadow-lg group-hover:shadow-primary/10`}
                         >
                             <Icon className={`${stat.color}`} size={24} />

@@ -35,7 +35,8 @@ export default function AgeDistributionChart() {
     }, []);
 
     return (
-        <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm h-full flex flex-col">
+        <div
+         className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm h-full flex flex-col">
             <div className="mb-6">
                 <h3 className="text-lg font-bold text-foreground">
                     التوزيع العمري للمراجعين

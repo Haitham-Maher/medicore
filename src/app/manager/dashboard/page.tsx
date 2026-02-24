@@ -37,7 +37,7 @@ export default function DashboardPage() {
                 icon={LayoutDashboard}
             />
 
-            {isLoading ? <StatsGridSkeleton /> : <StatsGrid isAdmin={true} />}
+            {isLoading ? <StatsGridSkeleton /> : <StatsGrid isAdmin={false} />}
 
             {isLoading ? (
                 <ChartsSkeleton />
@@ -47,12 +47,12 @@ export default function DashboardPage() {
                         <AgeDistributionChart />
                     </div>
                     <div className="md:col-span-1 lg:col-span-1">
-                        <TopDepartments title="النقاط الطبية الأكثر زيارة" isAdmin={true} />
+                        <TopDepartments title="الأقسام الأكثر زيارة" isAdmin={false} />
                     </div>
                 </div>
             )}
 
-            {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid isAdmin={true} />}
+            {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid title="الأقسام الطبية" desc="قائمة بجميع الأقسام المسجلة في النظام" isAdmin={false} />}
 
             {isLoading ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

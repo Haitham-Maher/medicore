@@ -10,9 +10,11 @@ import { toast } from "sonner";
 interface AddMedicalPointModalProps {
     isOpen: boolean;
     onClose: () => void;
+    title?: string;
+    isAdmin?: boolean
 }
 
-export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPointModalProps) {
+export default function AddMedicalPointModal({ isOpen, onClose, title = "إضافة نقطة طبية", isAdmin = true }: AddMedicalPointModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [formData, setFormData] = useState({
@@ -22,6 +24,8 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
         image: "",
     });
 
+    const nameForm = isAdmin ? "النقطة الطبية" : "القسم الطبي";
+
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     function handleValidateModal() {
@@ -29,7 +33,7 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
 
         // Comprehensive validation
         if (!formData.name.trim()) {
-            newErrors.name = "اسم النقطة الطبية مطلوب";
+            newErrors.name = "الاسم مطلوب";
         } else if (formData.name.trim().length < 3) {
             newErrors.name = "الاسم يجب أن يكون 3 أحرف على الأقل";
         }
@@ -58,7 +62,7 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
         // Show Success Alert State
         setShowSuccess(true);
         toast.success("تمت العملية بنجاح", {
-            description: "تم تحديث قاعدة بيانات النظام للادمن",
+            description: "تم تحديث قاعدة بيانات النظام للمسؤول",
             className: "font-sans",
         });
 
@@ -151,8 +155,8 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
                                                 <Building2 size={24} strokeWidth={2.5} />
                                             </div>
                                             <div>
-                                                <h2 className="text-xl font-black text-foreground tracking-tight">إضافة نقطة طبية</h2>
-                                                <p className="text-xs text-muted-foreground font-bold opacity-70">أدخل البيانات بعناية لإنشاء النقطة</p>
+                                                <h2 className="text-xl font-black text-foreground tracking-tight">{title}</h2>
+                                                <p className="text-xs text-muted-foreground font-bold opacity-70">أدخل البيانات بعناية</p>
                                             </div>
                                         </div>
                                         <button
@@ -169,7 +173,7 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
                                         <div className="space-y-3">
                                             <label className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                                 <ImageIcon size={14} className="text-primary" />
-                                                <span>صورة النقطة الطبية</span>
+                                                <span>صورة {nameForm}</span>
                                             </label>
 
                                             <div className="flex flex-col gap-4">
@@ -262,7 +266,7 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
                                         <div className="space-y-2">
                                             <label className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                                 <Building2 size={14} className="text-primary" />
-                                                <span>اسم النقطة الطبية</span>
+                                                <span>اسم {nameForm}</span>
                                             </label>
                                             <Input
                                                 value={formData.name}
@@ -389,7 +393,7 @@ export default function AddMedicalPointModal({ isOpen, onClose }: AddMedicalPoin
                                             transition={{ delay: 0.3 }}
                                             className="text-muted-foreground font-bold"
                                         >
-                                            قام النظام بتسجيل النقطة الطبية بنجاح للادمن.
+                                            قام النظام بتسجيل {nameForm} بنجاح للادمن.
                                         </motion.p>
                                     </div>
                                     <motion.div

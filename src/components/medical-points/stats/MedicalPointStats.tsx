@@ -140,7 +140,7 @@ export function ManagerSection({
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 duration-700" />
 
             <div className={cn(
-                "p-6 flex flex-col gap-8 items-center md:items-start relative",
+                "p-6 flex flex-col gap-8 items-center md:items-start relative ",
                 compact ? "h-full" : "md:flex-row"
             )}>
                 {/* Manager Image */}
@@ -162,7 +162,7 @@ export function ManagerSection({
 
                 {/* Manager Info */}
                 <div className="flex-1 space-y-4 text-center md:text-right w-full">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row md:items-center justify-between gap-4 sm:w-11/12 mx-auto">
                         <div>
                             <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
                                 <h3 className={cn("font-black text-foreground", compact ? "text-lg" : "text-xl")}>{manager.name}</h3>
@@ -170,7 +170,7 @@ export function ManagerSection({
                             </div>
                             <p className="text-primary font-bold text-sm tracking-wide">{manager.title}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center md:justify-end gap-2">
                             <div className="flex items-center justify-center md:justify-end gap-2 bg-muted/50 px-4 py-2 rounded-xl border border-border/50">
                                 <CreditCard size={16} className="text-muted-foreground" />
                                 <span className="text-xs font-mono font-bold text-foreground opacity-80">
@@ -189,10 +189,10 @@ export function ManagerSection({
                     </div>
 
                     <div className={cn(
-                        "grid grid-cols-1 gap-4 pt-4 border-t border-border/30",
+                        "grid grid-cols-1 items-center gap-4 pt-4 border-t border-border/30",
                         compact ? "sm:grid-cols-1" : "sm:grid-cols-3"
                     )}>
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <div className="flex items-center gap-3 justify-start sm:justify-start w-9/12 mx-auto">
                             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
                                 <Phone size={14} />
                             </div>
@@ -202,7 +202,7 @@ export function ManagerSection({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <div className="flex items-center gap-3 justify-start sm:justify-start w-9/12 mx-auto">
                             <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
                                 <Mail size={14} />
                             </div>
@@ -212,7 +212,7 @@ export function ManagerSection({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <div className="flex items-center gap-3 justify-start sm:justify-start w-9/12 mx-auto">
                             <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500">
                                 <Calendar size={14} />
                             </div>

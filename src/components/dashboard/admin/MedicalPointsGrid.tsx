@@ -21,6 +21,7 @@ interface IMedicalPoint {
   image: string;
 }
 
+// بيانات النقاط الطبية ( Clinics ) - تظهر للأدمن
 const medicalPoints: IMedicalPoint[] = [
   {
     name: "نقطة الشفاء الطبية",
@@ -64,6 +65,46 @@ const medicalPoints: IMedicalPoint[] = [
   },
 ];
 
+// بيانات الأقسام ( Departments ) - تظهر للمدير
+const medicalDepartments: IMedicalPoint[] = [
+  {
+    name: "قسم الباطنية",
+    location: "الطابق الأرضي - جناح A",
+    manager: "د. يوسف الحمادي",
+    rating: 4.9,
+    doctorsCount: 8,
+    departmentsCount: 12,
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    name: "قسم العظام",
+    location: "الطابق الأول - جناح B",
+    manager: "د. مريم القحطاني",
+    rating: 4.7,
+    doctorsCount: 5,
+    departmentsCount: 8,
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    name: "قسم الأطفال",
+    location: "الطابق الثاني - جناح C",
+    manager: "د. ليلى السالم",
+    rating: 4.8,
+    doctorsCount: 10,
+    departmentsCount: 15,
+    image: "https://images.unsplash.com/photo-1504813184591-01592fd03cfd?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    name: "قسم الطوارئ",
+    location: "المدخل الجانبي - 24 ساعة",
+    manager: "د. فهد العتيبي",
+    rating: 4.6,
+    doctorsCount: 14,
+    departmentsCount: 20,
+    image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=400",
+  },
+];
+
 function RatingStars({ rating }: { rating: number }) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
@@ -75,10 +116,10 @@ function RatingStars({ rating }: { rating: number }) {
           key={i}
           size={12}
           className={`${i < fullStars
-              ? "text-warning fill-warning"
-              : i === fullStars && hasHalfStar
-                ? "text-warning fill-warning/50"
-                : "text-muted-foreground/30"
+            ? "text-warning fill-warning"
+            : i === fullStars && hasHalfStar
+              ? "text-warning fill-warning/50"
+              : "text-muted-foreground/30"
             }`}
         />
       ))}
@@ -89,28 +130,37 @@ function RatingStars({ rating }: { rating: number }) {
   );
 }
 
-export default function MedicalPointsGrid() {
+export default function MedicalPointsGrid({
+    isAdmin,
+    title = "النقاط الطبية",
+    desc = "قائمة بجميع النقاط الطبية المسجلة في النظام"
+  }: {
+    isAdmin: boolean,
+    title?: string,
+    desc?: string
+}) {
+  const data = isAdmin ? medicalPoints : medicalDepartments;
+
   return (
     <div className="space-y-6 mt-20">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-foreground">
-            النقاط الطبية
+            {title}
           </h2>
           <p className="text-muted-foreground text-xs md:text-sm mt-1">
-            قائمة بجميع النقاط الطبية المسجلة في النظام
+            {desc}
           </p>
         </div>
-        <Link href="/admin/medical-points">
+        <Link href={isAdmin ? "/admin/medical-points" : "/manager/clinics"}>
           <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
             عرض الكل <ArrowLeft size={14} />
           </button>
         </Link>
       </div>
 
-      {/* تعديل الشبكة لتناسب البطاقات العمودية (3 أعمدة في الشاشات الكبيرة) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {medicalPoints.map((point, i) => (
+        {data.map((item, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 30 }}
@@ -120,31 +170,28 @@ export default function MedicalPointsGrid() {
               transition: { duration: 0.4, delay: i * 0.05 },
             }}
             viewport={{ once: true }}
-            // استخدام transition بسيطة جداً وسريعة للهوفر
             whileHover={{
               y: -3,
               borderColor: "#3b82f6",
             }}
             transition={{
-              type: "tween", // التبديل لـ tween أحياناً يكون أخف على المتصفح من spring
+              type: "tween",
               ease: "easeOut",
-              duration: 0.15, // سرعة خاطفة
+              duration: 0.15,
             }}
-            // هنا التغيير الأساسي: flex-col دائماً
             className="bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-md cursor-pointer overflow-hidden flex flex-col h-full group"
           >
-            {/* Image Section - جعلناها عريضة وبارتفاع ثابت */}
+            {/* Image Section */}
             <div className="relative w-full h-48 shrink-0 overflow-hidden">
               <img
-                src={point.image}
-                alt={point.name}
+                src={item.image}
+                alt={item.name}
                 className="w-full h-full object-cover duration-300 group-hover:scale-105"
               />
 
-              {/* التقييم يظهر فوق الصورة بشكل جميل */}
               <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/50 shadow-sm">
                 <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold">{point.rating}</span>
+                  <span className="text-[10px] font-bold">{item.rating}</span>
                   <Star size={10} className="fill-orange-400 text-orange-400" />
                 </div>
               </div>
@@ -155,28 +202,27 @@ export default function MedicalPointsGrid() {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
-                    {point.name}
+                    {item.name}
                   </h3>
                 </div>
 
                 <div className="flex items-center gap-1.5 text-muted-foreground text-xs md:text-sm mb-4">
                   <MapPin size={14} className="text-primary/60 shrink-0" />
-                  <span className="truncate">{point.location}</span>
+                  <span className="truncate">{item.location}</span>
                 </div>
               </div>
 
-              {/* Stats Grid - تم تحسين المسافات للوضع العمودي */}
+              {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2 py-4 border-t border-border/40 mt-auto">
                 <div className="space-y-1 text-center px-1">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <UserRound size={12} className="text-chart-1" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    المسؤول
+                    {isAdmin ? "المسؤول" : "رئيس القسم"}
                   </p>
                   <p className="text-xs font-bold text-foreground truncate w-full">
-                    {point.manager.split(" ").slice(0, 1).join(" ")}{" "}
-                    {/* الاسم الأول فقط لتوفير المساحة */}
+                    {item.manager.split(" ").slice(0, 1).join(" ")}
                   </p>
                 </div>
 
@@ -188,7 +234,7 @@ export default function MedicalPointsGrid() {
                     الأطباء
                   </p>
                   <p className="text-xs font-bold text-foreground">
-                    {point.doctorsCount}
+                    {item.doctorsCount}
                   </p>
                 </div>
 
@@ -197,10 +243,10 @@ export default function MedicalPointsGrid() {
                     <Building2 size={12} className="text-chart-4" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    الأقسام
+                    {isAdmin ? "الأقسام" : "الغرف"}
                   </p>
                   <p className="text-xs font-bold text-foreground">
-                    {point.departmentsCount}
+                    {item.departmentsCount}
                   </p>
                 </div>
               </div>

@@ -1,10 +1,9 @@
 import { AdminDashboardLayout } from "@/components/dashboard/admin/AdminDashboardLayout";
 
-export default function AdminLayout({
+export default function ManagerLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    return <AdminDashboardLayout>{children}</AdminDashboardLayout>;
+    return <AdminDashboardLayout isAdmin={false}>{children}</AdminDashboardLayout>;
 }
- 
