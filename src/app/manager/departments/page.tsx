@@ -16,7 +16,7 @@ import { MedicalPointsTableView } from "@/components/medical-points/MedicalPoint
 import { MedicalPointsControls } from "@/components/medical-points/MedicalPointsControls";
 
 import { MedicalPointsStats } from "@/components/medical-points/MedicalPointsStats";
-import { medicalPoints } from "@/constants/medical-points";
+import { managerDepartments } from "@/constants/medical-points";
 
 export default function MedicalPointsPage() {
     const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -32,7 +32,7 @@ export default function MedicalPointsPage() {
         return () => clearTimeout(timer);
     }, []);
 
-    const filteredPoints = medicalPoints.filter((point) => {
+    const filteredPoints = managerDepartments.filter((point) => {
         const query = searchQuery.toLowerCase().trim();
         return (
             point.name.toLowerCase().includes(query) ||
@@ -71,7 +71,7 @@ export default function MedicalPointsPage() {
             </div>
 
             {/* Stats Bar */}
-            <MedicalPointsStats points={medicalPoints} isLoading={isLoading} isAdmin={false} />
+            <MedicalPointsStats points={managerDepartments} isLoading={isLoading} isAdmin={false} />
 
             {/* Controls Bar */}
             <MedicalPointsControls
@@ -98,19 +98,54 @@ export default function MedicalPointsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                         >
-                            {filteredPoints.map((point) => (
-                                <MedicalPointCard
-                                    key={point.id}
-                                    point={point}
-                                    onDelete={(p) => {
-                                        setSelectedPoint(p);
-                                        setIsDeleteModalOpen(true);
-                                    }}
-                                    isAdmin={false}
-                                />
-                            ))}
+                            {filteredPoints.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <AnimatePresence mode="popLayout">
+                                        {filteredPoints.map((point, i) => (
+                                            <motion.div
+                                                key={point.id}
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                                                transition={{
+                                                    duration: 0.25,
+                                                    delay: i * 0.05,
+                                                    layout: { type: "spring", stiffness: 400, damping: 40 },
+                                                }}
+                                            >
+                                                <MedicalPointCard
+                                                    point={point}
+                                                    onDelete={(p) => {
+                                                        setSelectedPoint(p);
+                                                        setIsDeleteModalOpen(true);
+                                                    }}
+                                                    isAdmin={false}
+                                                />
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                </div>
+                            ) : (
+                                <motion.div
+                                    key="empty"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    className="flex flex-col items-center justify-center py-20 gap-4 text-center"
+                                >
+                                    <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground/40">
+                                        <Building2 size={32} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-foreground mb-1">لا توجد نتائج</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            لم يتم العثور على أقسام تطابق &quot;<span className="text-primary font-medium">{searchQuery}</span>&quot;
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
                         </motion.div>
                     ) : (
                         <MedicalPointsTableView
@@ -121,6 +156,7 @@ export default function MedicalPointsPage() {
                                 setIsDeleteModalOpen(true);
                             }}
                             isAdmin={false}
+                            searchQuery={searchQuery}
                         />
                     )
                 )}

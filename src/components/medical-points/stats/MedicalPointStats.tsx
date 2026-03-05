@@ -96,10 +96,12 @@ import { Trash2 } from "lucide-react";
 
 export function ManagerSection({
     compact = false,
-    isLoading = false
+    isLoading = false,
+    isAdmin = true
 }: {
     compact?: boolean;
     isLoading?: boolean;
+    isAdmin?: boolean;
 }) {
     if (isLoading) return <ManagerSectionSkeleton />;
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -117,7 +119,7 @@ export function ManagerSection({
 
     const manager = {
         name: "د. عبد الرحمن العتيبي",
-        title: "رئيس النقطة الطبية",
+        title: isAdmin ? "رئيس النقطة الطبية" : "رئيس القسم",
         idNumber: "1092837465",
         phone: "+966 50 123 4567",
         email: "a.otaibi@medicore.com",
@@ -181,7 +183,7 @@ export function ManagerSection({
                             <button
                                 onClick={() => setIsDeleteModalOpen(true)}
                                 className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors cursor-pointer"
-                                title="حذف رئيس النقطة"
+                                title={isAdmin ? "حذف رئيس النقطة" : "حذف رئيس القسم"}
                             >
                                 <Trash2 size={18} />
                             </button>
@@ -229,10 +231,13 @@ export function ManagerSection({
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleDelete}
-                title="حذف رئيس النقطة"
-                description={`هل أنت متأكد من رغبتك في حذف "${manager.name}" من رئاسة هذه النقطة؟`}
+                title={isAdmin ? "حذف رئيس النقطة" : "حذف رئيس القسم"}
+                description={isAdmin
+                    ? `هل أنت متأكد من رغبتك في حذف "${manager.name}" من رئاسة هذه النقطة؟`
+                    : `هل أنت متأكد من رغبتك في حذف "${manager.name}" من رئاسة هذا القسم؟`
+                }
                 isLoading={isDeleting}
-                confirmText="حذف المدير"
+                confirmText={isAdmin ? "حذف المدير" : "حذف رئيس القسم"}
             />
         </motion.div>
     );

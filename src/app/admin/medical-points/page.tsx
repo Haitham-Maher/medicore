@@ -4,15 +4,11 @@ import { useState, useEffect } from "react";
 import {
   Plus,
   Building2,
-  Star,
-  Filter,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/MedicalPointsGridSkeleton";
 import MedicalPointsTableSkeleton from "@/components/medical-points/skeletons/MedicalPointsTableSkeleton";
-import StatsBarSkeleton from "@/components/medical-points/skeletons/StatsBarSkeleton";
 import { PageHeader } from "@/components/ui";
-import { StatsCard } from "@/components/ui/StatsCard";
 import AddMedicalPointModal from "@/components/medical-points/modals/AddMedicalPointModal";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { MedicalPointCard } from "@/components/medical-points/MedicalPointCard";
@@ -79,6 +75,7 @@ export default function MedicalPointsPage() {
 
       {/* Controls Bar */}
       <MedicalPointsControls
+        isAdmin={true}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         viewMode={viewMode}
@@ -101,18 +98,54 @@ export default function MedicalPointsPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {filteredPoints.map((point) => (
-                <MedicalPointCard
-                  key={point.id}
-                  point={point}
-                  onDelete={(p) => {
-                    setSelectedPoint(p);
-                    setIsDeleteModalOpen(true);
-                  }}
-                />
-              ))}
+              {filteredPoints.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <AnimatePresence mode="popLayout">
+                    {filteredPoints.map((point, i) => (
+                      <motion.div
+                        key={point.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                        transition={{
+                          duration: 0.25,
+                          delay: i * 0.05,
+                          layout: { type: "spring", stiffness: 400, damping: 40 },
+                        }}
+                      >
+                        <MedicalPointCard
+                          point={point}
+                          onDelete={(p) => {
+                            setSelectedPoint(p);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          isAdmin={true}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center py-20 gap-4 text-center"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground/40">
+                    <Building2 size={32} />
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground mb-1">لا توجد نتائج</p>
+                    <p className="text-sm text-muted-foreground">
+                      لم يتم العثور على نقاط طبية تطابق &quot;<span className="text-primary font-medium">{searchQuery}</span>&quot;
+                    </p>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           ) : (
             <MedicalPointsTableView
@@ -122,6 +155,7 @@ export default function MedicalPointsPage() {
                 setSelectedPoint(p);
                 setIsDeleteModalOpen(true);
               }}
+              searchQuery={searchQuery}
             />
           )
         )}

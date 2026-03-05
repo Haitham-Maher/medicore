@@ -24,7 +24,7 @@ interface MedicalPointCardProps {
 export function MedicalPointCard({ point, onDelete, isAdmin = true }: MedicalPointCardProps) {
     return (
         <Link
-            href={isAdmin ? `/admin/medical-points/clinics/${point.id}` : `/manager/departments/clinics/${point.id}`}
+            href={isAdmin ? `/admin/medical-points/clinics/${point.id}` : `/manager/departments/${point.id}`}
             className="block h-full"
         >
             <motion.div

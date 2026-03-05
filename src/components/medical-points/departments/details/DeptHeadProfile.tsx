@@ -10,7 +10,6 @@ import {
     Trash2,
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import ManagerSectionSkeleton from "../../skeletons/ManagerSectionSkeleton";

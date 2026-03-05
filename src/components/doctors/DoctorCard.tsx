@@ -16,6 +16,7 @@ interface DoctorCardProps {
     type: "point-head" | "dept-head" | "doctor";
     index: number;
     onDelete: (person: any) => void;
+    isAdmin?: boolean;
 }
 
 function RatingBadge({ rating }: { rating: number }) {
@@ -27,8 +28,8 @@ function RatingBadge({ rating }: { rating: number }) {
     );
 }
 
-export default function DoctorCard({ person, type, index, onDelete }: DoctorCardProps) {
-    const showDelete = type !== "doctor";
+export default function DoctorCard({ person, type, index, onDelete, isAdmin = true }: DoctorCardProps) {
+    const showDelete = isAdmin ? type !== "doctor" : true;
     const roleBadgeColor =
         type === "point-head"
             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"

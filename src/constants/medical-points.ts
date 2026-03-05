@@ -10,6 +10,95 @@ export interface IMedicalPoint {
   image: string;
 }
 
+// ─── بيانات الأقسام للمدير ───────────────────────────────────────
+export interface IDepartment {
+  id: string;
+  name: string;
+  location: string;   // النقطة الطبية التابع لها
+  manager: string;    // رئيس القسم
+  rating: number;
+  doctorsCount: number;
+  departmentsCount: number; // عدد الغرف
+  status: "active" | "inactive" | "maintenance";
+  image: string;
+}
+
+export const managerDepartments: IDepartment[] = [
+  {
+    id: "1",
+    name: "قسم القلبية",
+    location: "نقطة الشفاء - الرياض",
+    manager: "د. خالد منصور",
+    rating: 4.8,
+    doctorsCount: 8,
+    departmentsCount: 5,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    id: "2",
+    name: "قسم الأطفال",
+    location: "مركز الأمل - جدة",
+    manager: "د. مريم العلي",
+    rating: 4.9,
+    doctorsCount: 12,
+    departmentsCount: 7,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    id: "3",
+    name: "قسم العظام",
+    location: "عيادات النور - الدمام",
+    manager: "د. فهد السعد",
+    rating: 4.7,
+    doctorsCount: 6,
+    departmentsCount: 4,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    id: "4",
+    name: "المختبر",
+    location: "مجمع الرعاية - مكة",
+    manager: "أ. منى التميمي",
+    rating: 4.6,
+    doctorsCount: 10,
+    departmentsCount: 3,
+    status: "maintenance",
+    image:
+      "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    id: "5",
+    name: "الصيدلية",
+    location: "مركز الغربية - جدة",
+    manager: "ص. يحيى القحطاني",
+    rating: 4.5,
+    doctorsCount: 5,
+    departmentsCount: 2,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&q=80&w=400",
+  },
+  {
+    id: "6",
+    name: "الطوارئ",
+    location: "مستوصف السلام - الرياض",
+    manager: "د. سامي الحربي",
+    rating: 4.8,
+    doctorsCount: 15,
+    departmentsCount: 8,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=400",
+  },
+];
+
+// ─── بيانات النقاط الطبية للأدمن ─────────────────────────────────
 export const medicalPoints: IMedicalPoint[] = [
   {
     id: "1",

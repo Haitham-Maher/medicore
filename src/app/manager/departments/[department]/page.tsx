@@ -15,8 +15,9 @@ import { departmentData } from "@/constants/departments-data";
 
 export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: boolean }) {
     const params = useParams();
-    const departmentId = params.departmentId as string;
-    const clinicId = params.id as string;
+    // Support both admin and manager param naming conventions
+    const departmentId = (params.departmentId ?? params.department) as string;
+    const clinicId = (params.id ?? params.clinicId) as string;
 
     const [activeTab, setActiveTab] = useState("overview");
     const [isLoading, setIsLoading] = useState(true);

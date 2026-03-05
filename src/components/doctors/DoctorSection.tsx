@@ -12,6 +12,7 @@ interface DoctorSectionProps {
     data: any[];
     type: "point-head" | "dept-head" | "doctor";
     onDelete: (person: any) => void;
+    isAdmin?: boolean;
 }
 
 export default function DoctorSection({
@@ -21,7 +22,8 @@ export default function DoctorSection({
     iconBg,
     data,
     type,
-    onDelete
+    onDelete,
+    isAdmin = true
 }: DoctorSectionProps) {
     if (data.length === 0) return null;
 
@@ -44,6 +46,7 @@ export default function DoctorSection({
                         type={type}
                         index={i}
                         onDelete={onDelete}
+                        isAdmin={isAdmin}
                     />
                 ))}
             </div>

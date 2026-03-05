@@ -20,7 +20,7 @@ export default function InventoryReportsPage() {
         <div className="space-y-8 pb-12" dir="rtl">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
-                <PageHeader
+                <PageHeader 
                     title="طلبات الإمداد"
                     description="إدارة واعتماد طلبات المستلزمات الطبية الواردة من جميع العيادات"
                     icon={ClipboardList}

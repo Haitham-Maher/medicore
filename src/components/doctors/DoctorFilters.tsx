@@ -8,6 +8,7 @@ interface DoctorFiltersProps {
     onTabChange: (tabId: string) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
+    isAdmin?: boolean;
     counts: {
         all: number;
         pointHeads: number;
@@ -21,14 +22,18 @@ export default function DoctorFilters({
     onTabChange,
     searchQuery,
     onSearchChange,
-    counts
+    counts,
+    isAdmin=true
 }: DoctorFiltersProps) {
     const tabs = [
         { id: "all", label: "الكل", shortLabel: "الكل", icon: Users, count: counts.all },
-        { id: "point-heads", label: "رؤساء النقاط", shortLabel: "النقاط", icon: ShieldCheck, count: counts.pointHeads },
         { id: "dept-heads", label: "رؤساء الأقسام", shortLabel: "الأقسام", icon: Shield, count: counts.deptHeads },
         { id: "doctors", label: "الأطباء", shortLabel: "أطباء", icon: Stethoscope, count: counts.doctors },
     ];
+
+    if (isAdmin) {
+        tabs.unshift({ id: "point-heads", label: "رؤساء النقاط", shortLabel: "النقاط", icon: ShieldCheck, count: counts.pointHeads });
+    }
 
     return (
         <div className="bg-card border border-border/50 rounded-2xl p-4 flex flex-col gap-3 shadow-sm sticky z-20 backdrop-blur-xl bg-opacity-80">
