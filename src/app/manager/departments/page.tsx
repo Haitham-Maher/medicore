@@ -21,16 +21,11 @@ import { managerDepartments } from "@/constants/medical-points";
 export default function MedicalPointsPage() {
     const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
     const [searchQuery, setSearchQuery] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedPoint, setSelectedPoint] = useState<any>(null);
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-    }, []);
 
     const filteredPoints = managerDepartments.filter((point) => {
         const query = searchQuery.toLowerCase().trim();

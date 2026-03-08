@@ -19,12 +19,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
     const clinicId = params.id as string;
 
     const [activeTab, setActiveTab] = useState("overview");
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 2000);
-        return () => clearTimeout(timer);
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     const department = departmentData[departmentId];
 
@@ -38,13 +33,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
 
     const handleTabChange = (tabId: string) => {
         if (tabId === activeTab) return;
-
-        setIsLoading(true);
         setActiveTab(tabId);
-
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
     };
 
     return (

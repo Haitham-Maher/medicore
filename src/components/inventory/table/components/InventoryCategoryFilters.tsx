@@ -1,5 +1,10 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { InventoryItem } from "../types";
+import { motion } from "framer-motion";
+import { getCategoryIcon } from "../utils";
+import { LayoutGrid } from "lucide-react";
 
 interface InventoryCategoryFiltersProps {
     categories: string[];
@@ -15,9 +20,10 @@ export default function InventoryCategoryFilters({
     inventoryData
 }: InventoryCategoryFiltersProps) {
     return (
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-3">
+        <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50 w-fit overflow-x-auto no-scrollbar" dir="rtl">
             {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
+                const Icon = cat === "الكل" ? LayoutGrid : getCategoryIcon(cat);
                 const count = cat === "الكل"
                     ? inventoryData.length
                     : inventoryData.filter(i => i.category === cat).length;
@@ -27,19 +33,39 @@ export default function InventoryCategoryFilters({
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all whitespace-nowrap border cursor-pointer active:scale-95",
-                            isActive
-                                ? "bg-primary text-white border-primary"
-                                : "bg-card text-muted-foreground border-border/50 hover:bg-muted/50 hover:text-foreground"
+                            "relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-colors whitespace-nowrap cursor-pointer group outline-hidden",
+                            isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
-                        {cat}
-                        <span className={cn(
-                            "px-1.5 py-0.5 rounded-md text-[9px] font-bold",
-                            isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
-                        )}>
-                            {count}
-                        </span>
+                        {/* Active Background Indicator */}
+                        {isActive && (
+                            <motion.div
+                                layoutId="activeTab"
+                                className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20"
+                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                        )}
+
+                        {/* Button Content */}
+                        <div className="relative z-10 flex items-center gap-2">
+                            <Icon
+                                size={16}
+                                className={cn(
+                                    "transition-transform group-hover:scale-110",
+                                    isActive ? "text-white" : "text-muted-foreground/60 group-hover:text-primary"
+                                )}
+                            />
+                            <span>{cat}</span>
+
+                            <span className={cn(
+                                "px-2 py-0.5 rounded-lg text-[10px] font-black transition-colors shadow-xs",
+                                isActive
+                                    ? "bg-white/20 text-white backdrop-blur-md"
+                                    : "bg-muted text-muted-foreground border border-border/50 group-hover:border-primary/30"
+                            )}>
+                                {count}
+                            </span>
+                        </div>
                     </button>
                 );
             })}

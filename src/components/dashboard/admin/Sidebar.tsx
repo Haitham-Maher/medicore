@@ -21,7 +21,7 @@ const sidebarItems = [
     { name: "لوحة التحكم", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "إدارة النقاط الطبية", href: "/admin/medical-points", icon: Hospital },
     { name: "المخزون المركزي", href: "/admin/inventory", icon: Package },
-    { name: "طلبات الإمداد", href: "/admin/inventory/reports", icon: ClipboardList },
+    { name: "طلبات الإمداد", href: "/admin/reports", icon: ClipboardList },
     { name: "الأطباء", href: "/admin/doctors", icon: Users },
 ];
 
@@ -29,7 +29,7 @@ const managerSidebarItems = [
     { name: "لوحة التحكم", href: "/manager/dashboard", icon: LayoutDashboard },
     { name: "إدارة الأقسام الطبية", href: "/manager/departments", icon: Hospital },
     { name: "المخزون المركزي", href: "/manager/inventory", icon: Package },
-    { name: "طلبات الإمداد", href: "/manager/inventory/reports", icon: ClipboardList },
+    { name: "طلبات الإمداد", href: "/manager/reports", icon: ClipboardList },
     { name: "الأطباء", href: "/manager/doctors", icon: Users },
 ];
 
@@ -116,7 +116,8 @@ export function Sidebar({ isAdmin = true }: { isAdmin?: boolean }) {
                 <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto custom-scrollbar">
 
                     {itemsToRender.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive =
+                            pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
                             <Link key={item.href} href={item.href}>
                                 <div className={cn(

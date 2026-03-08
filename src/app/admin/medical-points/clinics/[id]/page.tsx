@@ -17,13 +17,7 @@ import { motion } from "framer-motion";
 
 export default function MedicalPointDetailsPage() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Mock Data Fetching based on ID (In real app, fetch from API)
   const clinicData = {
@@ -45,14 +39,7 @@ export default function MedicalPointDetailsPage() {
 
   const handleTabChange = (tabId: string) => {
     if (tabId === activeTab) return;
-
-    setIsLoading(true);
     setActiveTab(tabId);
-
-    // Simulate data fetching for the new tab
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
   };
 
   return (

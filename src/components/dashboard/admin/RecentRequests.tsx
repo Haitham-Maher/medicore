@@ -81,10 +81,12 @@ const getStatusText = (status: RequestItem["status"]) => {
 
 export default function RecentRequests({
     onViewAll,
-    isLoading = false
+    isLoading = false,
+    isAdmin = true
 }: {
     onViewAll?: () => void;
     isLoading?: boolean;
+    isAdmin?: boolean;
 }) {
     if (isLoading) return <RecentRequestsSkeleton />;
     const [requests, setRequests] = useState(mockRequests);
@@ -122,7 +124,7 @@ export default function RecentRequests({
                         </button>
                     ) : (
                         <Link
-                            href="/admin/inventory/reports"
+                            href={isAdmin ? "/admin/reports" : "/manager/reports"}
                             className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0"
                         >
                             عرض الكل <ArrowLeft size={14} />

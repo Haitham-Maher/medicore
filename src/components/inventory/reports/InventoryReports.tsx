@@ -64,37 +64,72 @@ export default function InventoryReports() {
                     />
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+                <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar pb-0 md:pb-0" dir="rtl">
                     {[
-                        { id: "all", label: "الكل" },
-                        { id: "pending", label: "معلقة" },
-                        { id: "approved", label: "مقبولة" },
-                        { id: "rejected", label: "مرفوضة" }
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={cn(
-                                "px-5 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
-                                activeTab === tab.id ? "bg-primary text-white" : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                            )}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                        { id: "all", label: "الكل", icon: ClipboardList },
+                        { id: "pending", label: "معلقة", icon: Clock },
+                        { id: "approved", label: "مقبولة", icon: CheckCircle },
+                        { id: "rejected", label: "مرفوضة", icon: XCircle }
+                    ].map((tab) => {
+                        const isActive = activeTab === tab.id;
+                        const count = tab.id === "all"
+                            ? requests.length
+                            : requests.filter(r => r.status === tab.id).length;
+
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={cn(
+                                    "relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-colors whitespace-nowrap cursor-pointer group outline-hidden",
+                                    isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                {/* Active Background Indicator */}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="activeTab"
+                                        className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+
+                                {/* Button Content */}
+                                <div className="relative z-10 flex items-center gap-2">
+                                    <tab.icon
+                                        size={16}
+                                        className={cn(
+                                            "transition-transform group-hover:scale-110",
+                                            isActive ? "text-primary-foreground" : "text-muted-foreground/60 group-hover:text-primary"
+                                        )}
+                                    />
+                                    <span>{tab.label}</span>
+
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-lg text-[10px] font-black transition-colors shadow-xs",
+                                        isActive
+                                            ? "bg-white/20 text-primary-foreground backdrop-blur-md"
+                                            : "bg-muted text-muted-foreground border border-border/50 group-hover:border-primary/30"
+                                    )}>
+                                        {count}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
             {/* Requests List Container */}
             <div className="bg-card border border-border/50 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                <div className="p-6 border-b border-border/50 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm shadow-primary/5">
+                <div className="p-6 md:p-5 border-b border-border/50 flex items-center justify-between bg-linear-to-b from-muted/20 to-transparent">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-xs">
                             <ClipboardList size={24} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-foreground">طلبات الإمداد</h3>
-                            <p className="text-xs text-muted-foreground font-medium">إدارة طلبات المستلزمات الواردة من جميع النقاط الطبية</p>
+                            <h3 className="text-lg font-black text-foreground">طلبات الإمداد</h3>
+                            <p className="text-[11px] text-muted-foreground font-bold opacity-80 mt-0.5">إدارة ومتابعة طلبات المستلزمات الطبية</p>
                         </div>
                     </div>
                 </div>
@@ -103,81 +138,88 @@ export default function InventoryReports() {
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab + searchTerm}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.3 }}
-                            className="divide-y divide-border/50"
+                            className="divide-y divide-border/40"
                         >
                             {filteredRequests.length === 0 ? (
-                                <div className="p-20 text-center flex flex-col items-center justify-center gap-4">
-                                    <div className="w-20 h-20 rounded-full bg-muted/30 flex items-center justify-center text-muted-foreground/30">
-                                        <ClipboardList size={40} />
+                                <div className="p-20 text-center flex flex-col items-center justify-center gap-5">
+                                    <div className="w-16 h-16 rounded-3xl bg-muted/30 flex items-center justify-center text-muted-foreground/20">
+                                        <ClipboardList size={32} />
                                     </div>
-                                    <p className="text-muted-foreground font-bold italic">لا توجد طلبات تطابق معايير البحث</p>
+                                    <p className="text-muted-foreground font-black italic text-sm">لا توجد طلبات تطابق معايير البحث</p>
                                 </div>
                             ) : (
                                 filteredRequests.map((req, index) => (
                                     <div
                                         key={req.id}
-                                        className="p-5 sm:p-7 group relative overflow-hidden hover:bg-muted/20 transition-all border-b border-border/50 last:border-0"
+                                        className="p-5 md:px-8 md:py-6 group relative overflow-hidden hover:bg-muted/30 transition-all duration-300"
                                     >
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                                            <div className="flex items-start gap-5">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            {/* Item Info Side */}
+                                            <div className="flex items-start gap-4">
                                                 <div className={cn(
-                                                    "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-sm",
-                                                    req.status === "pending" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
-                                                        req.status === "approved" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                                                            "bg-red-500/10 text-red-500 border-red-500/20"
+                                                    "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all duration-500 shadow-xs",
+                                                    req.status === "pending" ? "bg-orange-500/5 text-orange-600 border-orange-500/10" :
+                                                        req.status === "approved" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" :
+                                                            "bg-red-500/5 text-red-600 border-red-500/10"
                                                 )}>
-                                                    <ClipboardList size={24} />
+                                                    <ClipboardList size={20} />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                                                        <h4 className="font-black text-base sm:text-lg text-foreground tracking-tight">{req.itemName}</h4>
-                                                        <span className="text-[10px] sm:text-xs font-black text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 shadow-xs min-w-fit">
+
+                                                <div className="space-y-2.5">
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        <h4 className="font-black text-base text-foreground tracking-tight group-hover:text-primary transition-colors">{req.itemName}</h4>
+                                                        <span className="text-[9px] font-black tracking-widest uppercase bg-muted/60 text-muted-foreground px-2 py-0.5 rounded-lg border border-border/50">
+                                                            {req.id}
+                                                        </span>
+                                                        <span className="text-[10px] font-black text-primary bg-primary/5 px-2.5 py-0.5 rounded-full border border-primary/10">
                                                             الكمية: {req.quantity}
                                                         </span>
                                                     </div>
-                                                    <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground font-bold">
-                                                        <div className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-lg">
-                                                            <Hospital size={14} className="text-primary" />
+
+                                                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground font-bold">
+                                                        <div className="flex items-center gap-1.5 bg-background/50 border border-border/50 px-2 py-1 rounded-lg">
+                                                            <Hospital size={12} className="text-primary/70" />
                                                             <span>{req.clinic}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5 bg-muted/50 px-2 py-1 rounded-lg">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                                                        <div className="flex items-center gap-1.5 bg-background/50 border border-border/50 px-2 py-1 rounded-lg">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
                                                             <span>{req.requester}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5 opacity-70">
-                                                            <Clock size={14} />
+                                                        <div className="flex items-center gap-1.5 opacity-60 mr-1">
+                                                            <Clock size={12} />
                                                             <span>{req.date}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-3 self-end sm:self-center">
+                                            {/* Actions / Status Side */}
+                                            <div className="flex items-center gap-3 md:self-center">
                                                 {req.status === "pending" ? (
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-2 w-full md:w-auto">
                                                         <button
                                                             onClick={() => handleAction(req.id, "approved")}
-                                                            className="h-11 px-5 rounded-2xl flex items-center gap-2 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white border border-emerald-500/10 hover:border-emerald-500 transition-all duration-300 font-black text-xs shadow-sm hover:shadow-emerald-500/20 cursor-pointer group/btn"
+                                                            className="flex-1 md:flex-none h-9 px-5 rounded-xl flex items-center justify-center gap-2 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 hover:border-emerald-500 transition-all duration-300 font-black text-[11px] cursor-pointer group/btn active:scale-95"
                                                         >
-                                                            <CheckCircle size={18} className="transition-transform group-hover/btn:scale-110" />
+                                                            <CheckCircle size={16} />
                                                             <span>موافقة</span>
                                                         </button>
                                                         <button
                                                             onClick={() => handleAction(req.id, "rejected")}
-                                                            className="h-11 px-5 rounded-2xl flex items-center gap-2 text-red-600 bg-red-500/5 hover:bg-red-500 hover:text-white border border-red-500/10 hover:border-red-500 transition-all duration-300 font-black text-xs shadow-sm hover:shadow-red-500/20 cursor-pointer group/btn"
+                                                            className="flex-1 lg:flex-none h-9 px-5 rounded-xl flex items-center justify-center gap-2 text-red-600 bg-red-500/5 hover:bg-red-500 hover:text-white border border-red-500/20 hover:border-red-500 transition-all duration-300 font-black text-[11px] cursor-pointer group/btn active:scale-95"
                                                         >
-                                                            <XCircle size={18} className="transition-transform group-hover/btn:scale-110" />
+                                                            <XCircle size={16} />
                                                             <span>رفض</span>
                                                         </button>
                                                     </div>
                                                 ) : (
                                                     <div className={cn(
-                                                        "px-6 py-2 rounded-2xl text-[11px] font-black border-2 flex items-center gap-2",
-                                                        req.status === "approved" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/20" : "bg-red-500/5 text-red-600 border-red-500/20"
+                                                        "px-5 py-2 rounded-xl text-[10px] font-black border flex items-center gap-2 shadow-xs whitespace-nowrap",
+                                                        req.status === "approved" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" : "bg-red-500/5 text-red-600 border-red-500/10"
                                                     )}>
                                                         {req.status === "approved" ? (
                                                             <>
@@ -201,10 +243,12 @@ export default function InventoryReports() {
                     </AnimatePresence>
                 </div>
 
-                {/* Footer simple pagination lookalike */}
-                <div className="p-6 bg-muted/5 border-t border-border/50 flex items-center justify-between">
-                    <p className="text-xs font-bold text-muted-foreground/60">يتم عرض أحدث الطلبات المستلمة</p>
-                    <button className="text-xs font-black text-primary hover:underline transition-all cursor-pointer">تحميل المزيد...</button>
+                {/* Footer status bar */}
+                <div className="px-8 py-4 bg-muted/5 border-t border-border/50 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground/60 tracking-tight">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                        يتم التحديث بشكل تلقائي بكل جديد
+                    </div>
                 </div>
             </div>
         </div>

@@ -109,7 +109,6 @@ export default function DeptDoctorsList({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="divide-y divide-border/50"
                     >
                         {displayDoctors.length === 0 ? (
                             <div className="p-12 text-center flex flex-col items-center justify-center gap-4">
@@ -118,53 +117,84 @@ export default function DeptDoctorsList({
                                 </div>
                                 <p className="text-muted-foreground font-bold italic text-sm">لا توجد نتائج تطابق معايير البحث</p>
                             </div>
+                        ) : variant === "top" ? (
+                            /* ── Top Doctors: Simple Cards ── */
+                            <div className="p-4 space-y-3">
+                                {displayDoctors.map((doctor, index) => {
+                                    const rankColors = [
+                                        "bg-amber-500/15 text-amber-600 border-amber-500/20",
+                                        "bg-slate-400/15 text-slate-500 border-slate-400/20",
+                                        "bg-orange-500/15 text-orange-500 border-orange-400/20",
+                                    ];
+                                    return (
+                                        <motion.div
+                                            key={doctor.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.08 }}
+                                            className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/40 transition-colors group"
+                                        >
+                                            {/* Rank */}
+                                            <div className={cn(
+                                                "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black border shrink-0",
+                                                rankColors[index] ?? rankColors[2]
+                                            )}>
+                                                {index + 1}
+                                            </div>
+
+                                            {/* Avatar */}
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                                <span className="text-primary font-black text-sm">{getInitials(doctor.name)}</span>
+                                            </div>
+
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-sm text-foreground truncate">{doctor.name}</h4>
+                                                <p className="text-[10px] text-muted-foreground truncate">{doctor.specialize}</p>
+                                            </div>
+
+                                            {/* Rating */}
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <span className="text-xs font-black text-foreground">{doctor.rating}</span>
+                                                <Star size={12} className="text-amber-400 fill-amber-400" />
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
                         ) : (
-                            displayDoctors.map((doctor) => (
-                                <div
-                                    key={doctor.id}
-                                    className="p-5 flex items-center gap-4 hover:bg-muted/30 transition-all group bg-card"
-                                >
-                                    {/* Avatar Column */}
-                                    <div className="relative">
-                                        <div className="h-12 w-12 rounded-xl border-2 border-background shadow-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-                                            <span className="text-primary font-black text-lg">
-                                                {getInitials(doctor.name)}
-                                            </span>
-                                        </div>
-                                        {variant === "top" && (
-                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-orange-500 text-white flex items-center justify-center shadow-sm border-2 border-background">
-                                                <Star size={10} className="fill-current" />
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Info Column */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                            <h4 className="font-black text-sm text-foreground truncate group-hover:text-primary transition-colors">{doctor.name}</h4>
-                                            {variant === "full" && doctor.status && (
-                                                <span className={cn(
-                                                    "text-[9px] px-1.5 py-0.5 rounded-full border font-bold",
-                                                    doctor.status === "available" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
-                                                        doctor.status === "busy" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
-                                                            "bg-muted text-muted-foreground border-border"
-                                                )}>
-                                                    {doctor.status === "available" ? "متاح" : doctor.status === "busy" ? "مشغول" : "خارج الدوام"}
+                            /* ── Full: List Rows ── */
+                            <div className="divide-y divide-border/50">
+                                {displayDoctors.map((doctor) => (
+                                    <div
+                                        key={doctor.id}
+                                        className="p-5 flex items-center gap-4 hover:bg-muted/30 transition-all group bg-card"
+                                    >
+                                        {/* Avatar Column */}
+                                        <div className="relative">
+                                            <div className="h-12 w-12 rounded-xl border-2 border-background shadow-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+                                                <span className="text-primary font-black text-lg">
+                                                    {getInitials(doctor.name)}
                                                 </span>
-                                            )}
+                                            </div>
                                         </div>
 
-                                        {variant === "top" ? (
-                                            <div className="space-y-2">
-                                                <p className="text-[11px] text-muted-foreground font-bold">{doctor.specialize}</p>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="flex items-center gap-1 bg-orange-500/10 px-2 py-0.5 rounded-full">
-                                                        <Star size={10} className="text-orange-500 fill-orange-500" />
-                                                        <span className="text-[10px] font-black text-orange-600">{doctor.rating}</span>
-                                                    </div>
-                                                </div>
+                                        {/* Info Column */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <h4 className="font-black text-sm text-foreground truncate group-hover:text-primary transition-colors">{doctor.name}</h4>
+                                                {doctor.status && (
+                                                    <span className={cn(
+                                                        "text-[9px] px-1.5 py-0.5 rounded-full border font-bold",
+                                                        doctor.status === "available" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
+                                                            doctor.status === "busy" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                                                                "bg-muted text-muted-foreground border-border"
+                                                    )}>
+                                                        {doctor.status === "available" ? "متاح" : doctor.status === "busy" ? "مشغول" : "خارج الدوام"}
+                                                    </span>
+                                                )}
                                             </div>
-                                        ) : (
+
                                             <div className="flex flex-col gap-0.5">
                                                 <p className="text-[11px] text-muted-foreground font-bold">{doctor.specialize}</p>
                                                 <div className="flex items-center gap-2">
@@ -175,20 +205,20 @@ export default function DeptDoctorsList({
                                                     <span className="text-[10px] text-primary/70 font-black">{doctor.patients} مريض</span>
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
 
-                                    {/* Actions Column */}
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer border-none outline-none">
-                                            <Phone size={14} />
-                                        </button>
-                                        <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer border-none outline-none">
-                                            <Mail size={14} />
-                                        </button>
+                                        {/* Actions Column */}
+                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer border-none outline-none">
+                                                <Phone size={14} />
+                                            </button>
+                                            <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer border-none outline-none">
+                                                <Mail size={14} />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
                     </motion.div>
                 </AnimatePresence>
@@ -196,8 +226,12 @@ export default function DeptDoctorsList({
 
             {/* Footer */}
             {variant === "top" ? (
-                <div className="p-4 bg-muted/5 border-t border-border/50 text-center">
-                    <p className="text-[10px] text-muted-foreground font-bold italic">يتم تحديث التقييمات بناءً على أداء الخدمة شهرياً</p>
+                <div className="px-5 py-3 border-t border-border/50 flex items-center justify-between">
+                    <p className="text-[10px] text-muted-foreground italic">تقييمات شهرية</p>
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Star size={10} className="text-amber-400 fill-amber-400" />
+                        <span>متوسط التقييم: <span className="font-black text-foreground">{(displayDoctors.reduce((a, s) => a + (s.rating || 0), 0) / displayDoctors.length).toFixed(1)}</span></span>
+                    </div>
                 </div>
             ) : (
                 <div className="p-4 bg-muted/20 border-t border-border/50 flex items-center justify-around">
@@ -218,6 +252,7 @@ export default function DeptDoctorsList({
                     </div>
                 </div>
             )}
+
         </motion.div>
     );
 }

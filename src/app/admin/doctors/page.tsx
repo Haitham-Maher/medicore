@@ -20,12 +20,7 @@ export default function DoctorsPage() {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedPerson, setSelectedPerson] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     const counts = {
         all: pointHeads.length + departmentHeads.length + regularDoctors.length,
@@ -41,9 +36,7 @@ export default function DoctorsPage() {
 
     const handleTabChange = (tabId: string) => {
         if (tabId === activeTab) return;
-        setIsLoading(true);
         setActiveTab(tabId);
-        setTimeout(() => setIsLoading(false), 800);
     };
 
     /////////////////////////////////////////////////////////////

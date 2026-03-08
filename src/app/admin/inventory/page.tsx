@@ -7,14 +7,7 @@ import { Package } from "lucide-react";
 import { PageHeader } from "@/components/ui";
 
 export default function InventoryPage() {
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="space-y-8 p-6 pb-20" dir="rtl">

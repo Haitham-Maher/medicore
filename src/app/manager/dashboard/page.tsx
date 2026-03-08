@@ -18,16 +18,7 @@ import LowStockAlertsSkeleton from "@/components/dashboard/skeletons/LowStockAle
 import RecentRequestsSkeleton from "@/components/dashboard/skeletons/RecentRequestsSkeleton";
 
 export default function DashboardPage() {
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        // Simulate loading data
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-
-        return () => clearTimeout(timer);
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -61,8 +52,8 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <RecentRequests />
-                    <LowStockAlerts />
+                    <RecentRequests isAdmin={false} />
+                    <LowStockAlerts isAdmin={false} />
                 </div>
             )}
         </div>

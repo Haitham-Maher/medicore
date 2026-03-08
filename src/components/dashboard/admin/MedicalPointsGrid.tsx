@@ -152,7 +152,7 @@ export default function MedicalPointsGrid({
             {desc}
           </p>
         </div>
-        <Link href={isAdmin ? "/admin/medical-points" : "/manager/clinics"}>
+        <Link href={isAdmin ? "/admin/medical-points" : "/manager/departments"}>
           <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
             عرض الكل <ArrowLeft size={14} />
           </button>

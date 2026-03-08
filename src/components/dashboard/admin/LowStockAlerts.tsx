@@ -19,7 +19,7 @@ const lowStockItems: LowStockItem[] = [
     { name: "Aspirin 100mg", stock: 8, minLevel: 25, point: "نقطة الشفاء" },
 ];
 
-export default function LowStockAlerts() {
+export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }) {
     return (
         <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden flex flex-col h-full">
             {/* Header */}
@@ -36,7 +36,7 @@ export default function LowStockAlerts() {
                             </p>
                         </div>
                     </div>
-                    <Link href="/admin/inventory">
+                    <Link href={isAdmin ? "/admin/inventory" : "/manager/inventory"}>
                         <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
                             عرض الكل <ArrowLeft size={14} />
                         </button>

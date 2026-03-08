@@ -56,6 +56,14 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  /* تعريف وحدة المسافات الأساسية (الافتراضية هي 0.25rem) */
+  --spacing: 0.25rem;
+
+  /* إذا أردت تعريف قيمة محددة لا تعمل، يمكنك إضافتها يدوياً هنا */
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-12: 3rem;
 }
 
 :root {

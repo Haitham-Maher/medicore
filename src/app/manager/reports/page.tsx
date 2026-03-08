@@ -8,19 +8,13 @@ import SupplyRequestsSkeleton from "@/components/inventory/reports/SupplyRequest
 import { PageHeader } from "@/components/ui";
 
 export default function InventoryReportsPage() {
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 1200);
-        return () => clearTimeout(timer);
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <div className="space-y-8 pb-12" dir="rtl">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
-                <PageHeader 
+                <PageHeader
                     title="طلبات الإمداد"
                     description="إدارة واعتماد طلبات المستلزمات الطبية الواردة من جميع العيادات"
                     icon={ClipboardList}

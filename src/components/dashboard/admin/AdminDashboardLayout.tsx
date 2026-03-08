@@ -21,7 +21,11 @@ export function AdminDashboardLayout({ children, isAdmin = true }: AdminDashboar
         }
     }, [pathname]);
 
-    const headerTitle = isAdmin ? "لوحة التحكم" : "إدارة النقطة الطبية";
+    const isDepartmentPage = pathname.includes("/departments/") || pathname.includes("/clinics/") && pathname.split("/").length > 4;
+
+    const headerTitle = isAdmin
+        ? "لوحة التحكم"
+        : (isDepartmentPage ? "إدارة القسم الطبي" : "إدارة النقطة الطبية");
 
     return (
         <div className="flex h-screen bg-background text-foreground overflow-hidden" dir="rtl">
