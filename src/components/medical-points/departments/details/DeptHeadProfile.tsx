@@ -13,6 +13,7 @@ import { motion, Variants } from "framer-motion";
 import { useState } from "react";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import ManagerSectionSkeleton from "../../skeletons/ManagerSectionSkeleton";
+import { cn } from "@/lib/utils";
 
 const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -66,41 +67,42 @@ export default function DeptHeadProfile({
             {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 duration-700" />
 
-            <div className="p-6 flex flex-col gap-8 items-center md:items-start relative md:flex-row">
-                {/* Image */}
+            <div className="p-5 md:p-8 flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-start relative">
+                {/* Image Section */}
                 <div className="relative shrink-0">
-                    <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-background shadow-lg group-hover:rotate-2 transition-transform duration-500">
+                    <div className="size-24 md:size-32 rounded-2xl overflow-hidden border-4 border-background shadow-xl group-hover:rotate-3 transition-transform duration-700">
                         <img
                             src={head.image}
                             alt={head.name}
                             className="w-full h-full object-cover"
                         />
                     </div>
-                    <div className="absolute -bottom-2 -right-2 bg-success text-success-foreground p-1.5 rounded-lg shadow-lg border-2 border-background">
-                        <ShieldCheck size={16} />
+                    <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 md:p-2 rounded-xl shadow-lg border-2 border-background animate-pulse">
+                        <ShieldCheck className="size-4 md:size-5" />
                     </div>
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 space-y-4 text-center md:text-right w-full">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                                <h3 className="text-xl font-black text-foreground">{head.name}</h3>
-                                <UserCheck size={18} className="text-primary hidden md:block" />
+                {/* Info Section */}
+                <div className="flex-1 space-y-6 text-center md:text-right w-full">
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center justify-center md:justify-start gap-2">
+                                <h3 className="text-xl md:text-3xl font-black text-foreground tracking-tight">{head.name}</h3>
+                                <UserCheck className="size-5 md:size-6 text-primary hidden md:block" />
                             </div>
-                            <p className="text-primary font-bold text-sm tracking-wide">{head.specialization}</p>
+                            <p className="text-primary font-black text-xs md:text-base tracking-wide opacity-90">{head.specialization}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center justify-center md:justify-end gap-2 bg-muted/50 px-4 py-2 rounded-xl border border-border/50">
-                                <CreditCard size={16} className="text-muted-foreground" />
-                                <span className="text-xs font-mono font-bold text-foreground opacity-80">
+
+                        <div className="flex items-center justify-center gap-3">
+                            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-xl border border-primary/10 shadow-sm">
+                                <CreditCard size={14} className="text-primary" />
+                                <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-wider">
                                     رئيس القسم
                                 </span>
                             </div>
                             <button
                                 onClick={() => setIsDeleteModalOpen(true)}
-                                className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors cursor-pointer"
+                                className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-all cursor-pointer border border-red-500/5 hover:scale-105 active:scale-95"
                                 title="حذف رئيس القسم"
                             >
                                 <Trash2 size={18} />
@@ -108,34 +110,37 @@ export default function DeptHeadProfile({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border/30">
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
-                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                <Phone size={14} />
+                    {/* Contact & Metrics Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 border-t border-border/20">
+                        <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-2xl border border-border/5 justify-start">
+                            <div className="size-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-sm">
+                                <Phone size={16} />
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">رقم الجوال</p>
-                                <p className="text-xs font-bold text-foreground">{head.phone}</p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase font-black tracking-wider opacity-60 mb-0.5">رقم الجوال</p>
+                                <p className="text-xs md:text-sm font-bold text-foreground font-mono">{head.phone}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
-                            <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
-                                <Mail size={14} />
+                        <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-2xl border border-border/5 justify-start">
+                            <div className="size-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 shadow-sm">
+                                <Mail size={16} />
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">البريد الإلكتروني</p>
-                                <p className="text-xs font-bold text-foreground">{head.email}</p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase font-black tracking-wider opacity-60 mb-0.5">البريد الإلكتروني</p>
+                                <p className="text-xs md:text-sm font-bold text-foreground truncate max-w-[150px]">{head.email}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 justify-center md:justify-start">
-                            <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500">
-                                <Star size={14} />
+                        <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-2xl border border-border/5 justify-start sm:col-span-2 lg:col-span-1">
+                            <div className="size-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 shadow-sm">
+                                <Star size={16} className="fill-amber-500" />
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">التقييم</p>
-                                <p className="text-xs font-bold text-foreground">{head.rating} / 5.0</p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase font-black tracking-wider opacity-60 mb-0.5">التقييم العام</p>
+                                <div className="flex items-center gap-1.5">
+                                    <p className="text-xs md:text-sm font-black text-foreground">{head.rating}</p>
+                                </div>
                             </div>
                         </div>
                     </div>

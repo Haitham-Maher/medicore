@@ -1,5 +1,4 @@
 "use client";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Search, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -61,8 +60,8 @@ export function MedicalPointsTableView({
                                             exit={{ opacity: 0, x: -80, scale: 0.95 }}
                                             transition={{
                                                 duration: 0.25,
-                                                delay: i * 0.04,
-                                                layout: { type: "spring", stiffness: 500, damping: 50 },
+                                                // delay: i * 0.04,
+                                                // layout: { type: "spring", stiffness: 500, damping: 50 },
                                             }}
                                             className="group hover:bg-muted/20 transition-colors"
                                         >

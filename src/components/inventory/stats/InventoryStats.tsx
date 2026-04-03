@@ -45,7 +45,7 @@ const stats = [
 export default function InventoryStats({ isLoading = false }: { isLoading?: boolean }) {
     if (isLoading) return <InventoryStatsSkeleton />;
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full px-0">
             {stats.map((stat, index) => (
                 <motion.div
                     key={index}
@@ -65,9 +65,9 @@ export default function InventoryStats({ isLoading = false }: { isLoading?: bool
                         )}
                     </div>
 
-                    <h3 className="text-2xl font-bold text-foreground mb-1">{stat.value}</h3>
-                    <p className="text-sm text-muted-foreground font-medium mb-1">{stat.label}</p>
-                    <p className="text-xs text-muted-foreground opacity-70">{stat.description}</p>
+                    <h3 className="text-xl lg:text-xl font-black text-foreground mb-0.5 tracking-tight">{stat.value}</h3>
+                    <p className="text-xs lg:text-[13px] text-muted-foreground font-black mb-1 opacity-80">{stat.label}</p>
+                    <p className="text-[10px] lg:text-[11px] text-muted-foreground opacity-60 font-medium">{stat.description}</p>
                 </motion.div>
             ))}
         </div>

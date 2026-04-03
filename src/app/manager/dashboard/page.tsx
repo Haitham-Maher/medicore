@@ -43,8 +43,8 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid title="الأقسام الطبية" desc="قائمة بجميع الأقسام المسجلة في النظام" isAdmin={false} />}
-
+            {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid title="الأقسام الطبية" desc="قائمة بجميع الأقسام المسجلة في النقطة" isAdmin={false} />}
+            
             {isLoading ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <RecentRequestsSkeleton />

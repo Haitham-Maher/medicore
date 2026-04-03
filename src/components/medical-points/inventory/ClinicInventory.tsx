@@ -66,10 +66,10 @@ export default function ClinicInventory({
                 animate={{ translateY: 0 }}
                 transition={{ duration: .3 }}
                 className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col">
-                <div className="p-6 border-b border-border/50 flex items-center justify-between">
+                <div className="p-4 md:p-6 border-b border-border/50 flex items-center justify-between">
                     <div>
-                        <h3 className="font-bold text-lg">الأصناف المتوفرة</h3>
-                        <span className="text-sm text-muted-foreground">
+                        <h3 className="font-bold text-sm md:text-lg text-foreground">الأصناف المتوفرة</h3>
+                        <span className="text-[10px] md:text-sm text-muted-foreground font-medium">
                             {mockInventory.length} أصناف
                         </span>
                     </div>
@@ -109,10 +109,10 @@ export default function ClinicInventory({
                             {/* Body: Progress Bar & Status (Full width on mobile) */}
                             <div className="flex-1 min-w-0 space-y-1.5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <h4 className="hidden sm:block font-semibold text-sm truncate">{item.name}</h4>
+                                    <h4 className="hidden sm:block font-bold text-[12px] md:text-sm text-foreground truncate">{item.name}</h4>
                                     <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
-                                        {item.status === "critical" && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                        {item.status === "critical" && <AlertTriangle size={12} className="text-red-500 animate-pulse" />}
+                                        <span className="text-[9px] md:text-[10px] font-black text-muted-foreground/70 uppercase tracking-tighter sm:tracking-wider">
                                             {item.stock} / {item.max}
                                         </span>
                                     </div>
@@ -163,12 +163,12 @@ export default function ClinicInventory({
             className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden h-full flex flex-col w-full">
 
             {/* Header with Toggle */}
-            <div className="p-4 border-b border-border/50 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
+            <div className="p-3 md:p-4 border-b border-border/50 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-1 md:gap-2">
                     <button
                         onClick={() => setView("stock")}
                         className={cn(
-                            "px-3 py-1.5 rounded-lg text-sm font-bold transition-all cursor-pointer",
+                            "px-3 py-1.5 rounded-lg text-xs md:text-sm font-black transition-all cursor-pointer",
                             view === "stock" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
                         )}
                     >
@@ -177,13 +177,13 @@ export default function ClinicInventory({
                     <button
                         onClick={() => setView("requests")}
                         className={cn(
-                            "px-3 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 cursor-pointer",
+                            "px-3 py-1.5 rounded-lg text-xs md:text-sm font-black transition-all flex items-center gap-2 cursor-pointer",
                             view === "requests" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
                         )}
                     >
                         الطلبات
                         {pendingCount > 0 && (
-                            <span className="bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                            <span className="bg-red-500 text-white text-[9px] md:text-[10px] w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full font-black animate-pulse">
                                 {pendingCount}
                             </span>
                         )}
@@ -234,10 +234,10 @@ export default function ClinicInventory({
                                     {/* Body: Full Width Progress Bar & Stats */}
                                     <div className="flex-1 min-w-0 space-y-1.5">
                                         <div className="flex items-center justify-between gap-2">
-                                            <h4 className="hidden sm:block font-semibold text-sm truncate">{item.name}</h4>
+                                            <h4 className="hidden sm:block font-bold text-[12px] md:text-sm text-foreground truncate">{item.name}</h4>
                                             <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
-                                                {item.status === "critical" && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
-                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                {item.status === "critical" && <AlertTriangle size={12} className="text-red-500 animate-pulse" />}
+                                                <span className="text-[9px] md:text-[10px] font-black text-muted-foreground/70 uppercase tracking-tighter sm:tracking-wider">
                                                     {item.stock} / {item.max}
                                                 </span>
                                             </div>
@@ -285,11 +285,11 @@ export default function ClinicInventory({
                                     <div key={req.id} className="p-4 group relative overflow-hidden">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
-                                                <h4 className="font-bold text-sm text-foreground">{req.itemName}</h4>
-                                                <p className="text-xs text-muted-foreground mt-1">الكمية المطلوبة: <span className="font-bold text-primary">{req.quantity}</span></p>
-                                                <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
+                                                <h4 className="font-bold text-[13px] md:text-sm text-foreground">{req.itemName}</h4>
+                                                <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">الكمية المطلوبة: <span className="font-black text-primary">{req.quantity}</span></p>
+                                                <div className="flex items-center gap-2 mt-1.5 text-[9px] md:text-[10px] text-muted-foreground/60 font-bold">
                                                     <span>{req.requester}</span>
-                                                    <span>•</span>
+                                                    <span className="opacity-30">•</span>
                                                     <span>{req.date}</span>
                                                 </div>
                                             </div>

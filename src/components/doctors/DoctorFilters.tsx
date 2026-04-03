@@ -82,7 +82,7 @@ export default function DoctorFilters({
                                     size={15}
                                     className={cn(
                                         "shrink-0 transition-transform group-hover:scale-110",
-                                        isActive ? "text-white" : "text-muted-foreground/60"
+                                        isActive ? "text-primary-foreground" : "text-muted-foreground/60"
                                     )}
                                 />
 
@@ -94,7 +94,7 @@ export default function DoctorFilters({
                                 <span className={cn(
                                     "hidden sm:flex text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full items-center justify-center transition-colors",
                                     isActive
-                                        ? "bg-white/20 text-white backdrop-blur-md"
+                                        ? "bg-white/20 text-primary-foreground backdrop-blur-md"
                                         : "bg-muted text-muted-foreground"
                                 )}>
                                     {tab.count}

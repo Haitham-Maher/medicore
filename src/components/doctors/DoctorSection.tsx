@@ -13,6 +13,7 @@ interface DoctorSectionProps {
     type: "point-head" | "dept-head" | "doctor";
     onDelete: (person: any) => void;
     isAdmin?: boolean;
+    view?: "grid" | "list";
 }
 
 export default function DoctorSection({
@@ -23,7 +24,8 @@ export default function DoctorSection({
     data,
     type,
     onDelete,
-    isAdmin = true
+    isAdmin = true,
+    view = "grid"
 }: DoctorSectionProps) {
     if (data.length === 0) return null;
 
@@ -38,18 +40,36 @@ export default function DoctorSection({
                     {data.length}
                 </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {data.map((person, i) => (
-                    <DoctorCard
-                        key={person.id}
-                        person={person}
-                        type={type}
-                        index={i}
-                        onDelete={onDelete}
-                        isAdmin={isAdmin}
-                    />
-                ))}
-            </div>
+
+            {view === "grid" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {data.map((person, i) => (
+                        <DoctorCard
+                            key={person.id}
+                            person={person}
+                            type={type}
+                            index={i}
+                            onDelete={onDelete}
+                            isAdmin={isAdmin}
+                            view={view}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="bg-card rounded-3xl border border-border/50 divide-y divide-border/10 overflow-hidden shadow-sm">
+                    {data.map((person, i) => (
+                        <DoctorCard
+                            key={person.id}
+                            person={person}
+                            type={type}
+                            index={i}
+                            onDelete={onDelete}
+                            isAdmin={isAdmin}
+                            view={view}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

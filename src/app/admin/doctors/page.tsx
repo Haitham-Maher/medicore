@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Users, ShieldCheck, Shield, Stethoscope } from "lucide-react";
+import { Users, ShieldCheck, Shield, Stethoscope, LayoutGrid, TableIcon } from "lucide-react";
 import { PageHeader } from "@/components/ui";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 // Components
 import DoctorFilters from "@/components/doctors/DoctorFilters";
@@ -21,6 +22,7 @@ export default function DoctorsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedPerson, setSelectedPerson] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [view, setView] = useState<"grid" | "list">("list");
 
     const counts = {
         all: pointHeads.length + departmentHeads.length + regularDoctors.length,
@@ -56,11 +58,41 @@ export default function DoctorsPage() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <PageHeader
-                title="إدارة الكادر الطبي"
-                description="عرض وإدارة جميع الأطباء ورؤساء الأقسام والنقاط الطبية"
-                icon={Users}
-            />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <PageHeader
+                    title="إدارة الكادر الطبي"
+                    description="عرض وإدارة جميع الأطباء ورؤساء الأقسام والنقاط الطبية"
+                    icon={Users}
+                />
+
+                {/* View Toggler */}
+                <div className="flex bg-muted/50 p-1 rounded-xl border border-border/50 w-full sm:w-auto">
+                    <button
+                        onClick={() => setView("grid")}
+                        className={cn(
+                            "flex-1 sm:flex-none p-2 rounded-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-black cursor-pointer",
+                            view === "grid"
+                                ? "bg-background text-primary shadow-sm"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        )}
+                    >
+                        <LayoutGrid size={16} className={cn(view === "grid" ? "text-primary" : "text-muted-foreground")} />
+                        <span>بطاقات</span>
+                    </button>
+                    <button
+                        onClick={() => setView("list")}
+                        className={cn(
+                            "flex-1 sm:flex-none p-2 rounded-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-black cursor-pointer",
+                            view === "list"
+                                ? "bg-background text-primary shadow-sm"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        )}
+                    >
+                        <TableIcon size={16} className={cn(view === "list" ? "text-primary" : "text-muted-foreground")} />
+                        <span>جدول</span>
+                    </button>
+                </div>
+            </div>
 
             {/* Filters Bar */}
             <DoctorFilters
@@ -82,7 +114,7 @@ export default function DoctorsPage() {
                 ) : (
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={`${activeTab}-${searchQuery}`}
+                            key={`${activeTab}-${searchQuery}-${view}`}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
@@ -99,6 +131,7 @@ export default function DoctorsPage() {
                                     data={filteredPointHeads}
                                     type="point-head"
                                     onDelete={handleDeleteClick}
+                                    view={view}
                                 />
                             )}
 
@@ -112,6 +145,7 @@ export default function DoctorsPage() {
                                     data={filteredDeptHeads}
                                     type="dept-head"
                                     onDelete={handleDeleteClick}
+                                    view={view}
                                 />
                             )}
 
@@ -125,6 +159,7 @@ export default function DoctorsPage() {
                                     data={filteredDoctors}
                                     type="doctor"
                                     onDelete={handleDeleteClick}
+                                    view={view}
                                 />
                             )}
 

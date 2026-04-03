@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Users, ShieldCheck, Shield, Stethoscope } from "lucide-react";
+import { Users, ShieldCheck, Shield, Stethoscope, LayoutGrid, List, TableIcon } from "lucide-react";
 import { PageHeader } from "@/components/ui";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 // Components
 import DoctorFilters from "@/components/doctors/DoctorFilters";
@@ -21,6 +22,7 @@ export default function DoctorsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedPerson, setSelectedPerson] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [view, setView] = useState<"grid" | "list">("list");
 
     const counts = {
         all: departmentHeads.length + regularDoctors.length,
@@ -55,11 +57,41 @@ export default function DoctorsPage() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <PageHeader
-                title="إدارة الكادر الطبي"
-                description="عرض وإدارة جميع الأطباء ورؤساء الأقسام "
-                icon={Users}
-            />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <PageHeader
+                    title="إدارة الكادر الطبي"
+                    description="عرض وإدارة جميع الأطباء ورؤساء الأقسام "
+                    icon={Users}
+                />
+
+                {/* View Toggler */}
+                <div className="flex bg-muted/50 p-1 rounded-xl border border-border/50">
+                    <button
+                        onClick={() => setView("grid")}
+                        className={cn(
+                            "p-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium cursor-pointer",
+                            view === "grid"
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <LayoutGrid size={18} />
+                        <span className="hidden sm:inline">بطاقات</span>
+                    </button>
+                    <button
+                        onClick={() => setView("list")}
+                        className={cn(
+                            "p-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium cursor-pointer",
+                            view === "list"
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <TableIcon size={18} />
+                        <span className="hidden sm:inline">جدول</span>
+                    </button>
+                </div>
+            </div>
 
             {/* Filters Bar */}
             <DoctorFilters
@@ -82,7 +114,7 @@ export default function DoctorsPage() {
                 ) : (
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={`${activeTab}-${searchQuery}`}
+                            key={`${activeTab}-${searchQuery}-${view}`}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
@@ -100,6 +132,7 @@ export default function DoctorsPage() {
                                     type="dept-head"
                                     onDelete={handleDeleteClick}
                                     isAdmin={false}
+                                    view={view}
                                 />
                             )}
 
@@ -114,6 +147,7 @@ export default function DoctorsPage() {
                                     type="doctor"
                                     onDelete={handleDeleteClick}
                                     isAdmin={false}
+                                    view={view}
                                 />
                             )}
 

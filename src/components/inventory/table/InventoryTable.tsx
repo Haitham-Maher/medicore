@@ -61,17 +61,22 @@ const inventoryData: InventoryItem[] = [
         expiry: "-",
         status: "available"
     },
-];
+]; 
 
 export default function InventoryTable({ isLoading = false }: { isLoading?: boolean }) {
+    const [data, setData] = useState<InventoryItem[]>(inventoryData);
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("الكل");
+
+    const handleDelete = (id: string) => {
+        setData(prev => prev.filter((item) => item.id !== id));
+    };
 
     const categories = ["الكل", "أدوية", "مستلزمات", "مضادات حيوية"];
 
     if (isLoading) return <InventoryTableSkeleton />;
 
-    const filteredData = inventoryData.filter((item) => {
+    const filteredData = data.filter((item) => {
         const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = selectedCategory === "الكل" || item.category === selectedCategory;
         return matchesSearch && matchesCategory;
@@ -89,17 +94,23 @@ export default function InventoryTable({ isLoading = false }: { isLoading?: bool
             />
 
             <div className="rounded-2xl border border-border/50 overflow-hidden bg-card shadow-sm">
-                <InventoryDesktopTable
-                    data={filteredData}
-                    selectedCategory={selectedCategory}
-                    search={search}
-                />
+                <div className="hidden sm:block">
+                    <InventoryDesktopTable
+                        data={filteredData}
+                        selectedCategory={selectedCategory}
+                        search={search}
+                        onDelete={handleDelete}
+                    />
+                </div>
 
-                <InventoryMobileList
-                    data={filteredData}
-                    selectedCategory={selectedCategory}
-                    search={search}
-                />
+                <div className="sm:hidden">
+                    <InventoryMobileList
+                        data={filteredData}
+                        selectedCategory={selectedCategory}
+                        search={search}
+                        onDelete={handleDelete}
+                    />
+                </div>
 
                 <InventoryPagination
                     totalItems={inventoryData.length}

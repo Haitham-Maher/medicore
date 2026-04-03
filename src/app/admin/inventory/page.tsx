@@ -10,7 +10,7 @@ export default function InventoryPage() {
     const [isLoading, setIsLoading] = useState(false);
 
     return (
-        <div className="space-y-8 p-6 pb-20" dir="rtl">
+        <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 pb-20" dir="rtl">
             <PageHeader
                 title="المخزون المركزي"
                 description="إدارة ومراقبة المخزون الطبي لجميع النقاط والمراكز"
@@ -23,8 +23,8 @@ export default function InventoryPage() {
             </section>
 
             {/* Main Inventory Content */}
-            <section className="bg-card rounded-3xl border border-border/50 shadow-sm p-1">
-                <div className="p-4 md:p-6">
+            <section className="bg-card sm:rounded-3xl sm:border border-border/50 shadow-sm -mx-4 sm:mx-0 overflow-hidden">
+                <div className="p-3 sm:p-6">
                     <InventoryTable isLoading={isLoading} />
                 </div>
             </section>

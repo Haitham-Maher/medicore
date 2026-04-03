@@ -8,6 +8,7 @@ export interface IDoctor {
   patients: number;
   status: "available" | "busy" | "off-duty";
   bio: string;
+  phone: string;
 }
 
 export interface IReport {
@@ -75,6 +76,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 45,
         status: "available",
         bio: "طبيب قلب تداخلي بخبرة 10 سنوات في القسطرة القلبية",
+        phone: "+966 50 111 2222",
       },
       {
         id: "2",
@@ -84,6 +86,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 38,
         status: "busy",
         bio: "متخصصة في أمراض القلب الخلقية عند الأطفال",
+        phone: "+966 50 333 4444",
       },
       {
         id: "3",
@@ -93,6 +96,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 52,
         status: "available",
         bio: "متخصص في الفحوصات الفسيولوجية للقلب",
+        phone: "+966 50 555 6666",
       },
       {
         id: "4",
@@ -102,6 +106,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 41,
         status: "off-duty",
         bio: "جراحة قلب مفتوح وعمليات الصمامات",
+        phone: "+966 50 777 8888",
       },
       {
         id: "5",
@@ -111,6 +116,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 47,
         status: "available",
         bio: "طب القلب العام والفحوصات الدورية",
+        phone: "+966 50 999 0000",
       },
     ],
     reports: [
@@ -166,6 +172,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 62,
         status: "available",
         bio: "متخصصة في رعاية حديثي الولادة والخداج",
+        phone: "+966 50 222 3333",
       },
       {
         id: "2",
@@ -175,6 +182,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 55,
         status: "busy",
         bio: "طب أطفال عام وتطعيمات",
+        phone: "+966 50 444 5555",
       },
       {
         id: "3",
@@ -184,6 +192,7 @@ export const departmentData: Record<string, IDepartmentDetail> = {
         patients: 48,
         status: "available",
         bio: "طوارئ أطفال والحالات الحرجة",
+        phone: "+966 50 666 7777",
       },
     ],
     reports: [

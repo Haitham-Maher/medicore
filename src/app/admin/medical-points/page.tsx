@@ -89,9 +89,9 @@ export default function MedicalPointsPage() {
           viewMode === "grid" ? (
             <motion.div
               key="grid"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
               {filteredPoints.length > 0 ? (
@@ -101,13 +101,13 @@ export default function MedicalPointsPage() {
                       <motion.div
                         key={point.id}
                         layout
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -80, scale: 0.95 }}
                         transition={{
                           duration: 0.25,
-                          delay: i * 0.05,
-                          layout: { type: "spring", stiffness: 400, damping: 40 },
+                          delay: i * 0.04,
+                          layout: { type: "spring", stiffness: 500, damping: 50 },
                         }}
                       >
                         <MedicalPointCard

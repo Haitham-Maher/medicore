@@ -131,13 +131,13 @@ function RatingStars({ rating }: { rating: number }) {
 }
 
 export default function MedicalPointsGrid({
-    isAdmin,
-    title = "النقاط الطبية",
-    desc = "قائمة بجميع النقاط الطبية المسجلة في النظام"
-  }: {
-    isAdmin: boolean,
-    title?: string,
-    desc?: string
+  isAdmin,
+  title = "النقاط الطبية",
+  desc = "قائمة بجميع النقاط الطبية المسجلة في النظام"
+}: {
+  isAdmin: boolean,
+  title?: string,
+  desc?: string
 }) {
   const data = isAdmin ? medicalPoints : medicalDepartments;
 
@@ -153,8 +153,10 @@ export default function MedicalPointsGrid({
           </p>
         </div>
         <Link href={isAdmin ? "/admin/medical-points" : "/manager/departments"}>
-          <button className="text-[11px] md:text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 shrink-0">
-            عرض الكل <ArrowLeft size={14} />
+          <button
+            className="text-[10px] md:text-sm text-primary hover:text-primary/80 font-black flex items-center gap-1 transition-colors cursor-pointer px-2 md:px-3 py-1 md:py-1.5 rounded-lg hover:bg-primary/5 whitespace-nowrap  md:bg-transparent"
+          >
+            عرض الكل <ArrowLeft className="size-3 md:size-[14px]" />
           </button>
         </Link>
       </div>
