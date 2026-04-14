@@ -158,19 +158,19 @@ export function RegisterForm({ onSuccess, onSwitch }: RegisterFormProps) {
                     {step === 2 && (
                         <div className="space-y-4">
                             {/* Profile Image Upload */}
-                            <div className="flex flex-col items-center gap-3 mb-2">
+                            <div className="flex flex-col items-center gap-2 mb-6">
                                 <div className="relative group">
-                                    <div className="size-24 rounded-2xl bg-muted/30 border-2 border-dashed border-border/50 flex items-center justify-center overflow-hidden transition-all group-hover:border-emerald-500/50">
+                                    <div className="size-20 rounded-full bg-secondary/50 border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group-hover:border-emerald-500/50 shadow-inner">
                                         {formData.image ? (
                                             <img src={formData.image} alt="Preview" className="size-full object-cover" />
                                         ) : (
-                                            <Camera className="size-8 text-muted-foreground/30" />
+                                            <Camera className="size-6 text-muted-foreground/40" />
                                         )}
                                     </div>
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
                                             if (file) {
@@ -184,13 +184,13 @@ export function RegisterForm({ onSuccess, onSwitch }: RegisterFormProps) {
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, image: null })}
-                                            className="absolute -top-2 -left-2 size-6 bg-destructive text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all cursor-pointer"
+                                            className="absolute -top-1 -right-1 size-6 bg-destructive text-white rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all cursor-pointer z-20"
                                         >
                                             <X className="size-3" />
                                         </button>
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground font-medium">صورة شخصية (اختياري)</p>
+                                <p className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider">صورة الملف الشخصي</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">

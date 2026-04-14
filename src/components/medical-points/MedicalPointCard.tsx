@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { MapPin, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { StatusBadge } from "./StatusBadge";
+import { useState } from "react";
 
 interface MedicalPointCardProps {
     point: {
@@ -22,6 +24,8 @@ interface MedicalPointCardProps {
 }
 
 export function MedicalPointCard({ point, onDelete, isAdmin = true }: MedicalPointCardProps) {
+    const [imageError, setImageError] = useState(false);
+
     return (
         <Link
             href={isAdmin ? `/admin/medical-points/clinics/${point.id}` : `/manager/departments/${point.id}`}
@@ -32,13 +36,24 @@ export function MedicalPointCard({ point, onDelete, isAdmin = true }: MedicalPoi
                 transition={{ duration: 0.2 }}
                 className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/50 transition-colors h-full flex flex-col group cursor-pointer"
             >
-                <div className="relative h-48 overflow-hidden">
-                    <img
-                        src={point.image}
-                        alt={point.name}
-                        className="w-full h-full object-cover transition-transform duration-150 group-hover:scale-105"
-                    />
-                    <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-md px-2 py-1 rounded-lg border border-border/50 flex items-center gap-1 shadow-sm">
+                <div className="relative h-48 overflow-hidden bg-muted flex items-center justify-center">
+                    {imageError ? (
+                        <div className="w-full h-full bg-linear-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                            <span className="text-4xl font-black text-emerald-500/40 select-none">
+                                {point.name.charAt(0)}
+                            </span>
+                        </div>
+                    ) : (
+                        <Image
+                            src={point.image}
+                            alt={point.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-150 group-hover:scale-105"
+                            onError={() => setImageError(true)}
+                        />
+                    )}
+                    <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-md px-2 py-1 rounded-lg border border-border/50 flex items-center gap-1 shadow-sm z-10">
                         <span className="text-xs font-bold">{point.rating}</span>
                         <Star size={12} className="text-orange-400 fill-orange-400" />
                     </div>

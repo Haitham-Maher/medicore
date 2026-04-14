@@ -92,7 +92,7 @@ const medicalDepartments: IMedicalPoint[] = [
     rating: 4.8,
     doctorsCount: 10,
     departmentsCount: 15,
-    image: "https://images.unsplash.com/photo-1504813184591-01592fd03cfd?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1619601331215-68041300966a?auto=format&fit=crop&q=80&w=400",
   },
   {
     name: "قسم الطوارئ",
@@ -104,31 +104,6 @@ const medicalDepartments: IMedicalPoint[] = [
     image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=400",
   },
 ];
-
-function RatingStars({ rating }: { rating: number }) {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-
-  return (
-    <div className="flex items-center gap-1">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          size={12}
-          className={`${i < fullStars
-            ? "text-warning fill-warning"
-            : i === fullStars && hasHalfStar
-              ? "text-warning fill-warning/50"
-              : "text-muted-foreground/30"
-            }`}
-        />
-      ))}
-      <span className="text-xs font-semibold text-foreground mr-1">
-        {rating}
-      </span>
-    </div>
-  );
-}
 
 export default function MedicalPointsGrid({
   isAdmin,
@@ -224,7 +199,7 @@ export default function MedicalPointsGrid({
                     {isAdmin ? "المسؤول" : "رئيس القسم"}
                   </p>
                   <p className="text-xs font-bold text-foreground truncate w-full">
-                    {item.manager.split(" ").slice(0, 1).join(" ")}
+                    {item.manager}
                   </p>
                 </div>
 

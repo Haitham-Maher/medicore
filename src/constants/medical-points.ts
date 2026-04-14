@@ -33,8 +33,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 8,
     departmentsCount: 5,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "2",
@@ -45,8 +44,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 12,
     departmentsCount: 7,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1519494144143-269638d9724b?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "3",
@@ -57,8 +55,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 6,
     departmentsCount: 4,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "4",
@@ -69,8 +66,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 10,
     departmentsCount: 3,
     status: "maintenance",
-    image:
-      "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1586773860418-d319a39855df?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "5",
@@ -81,8 +77,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 5,
     departmentsCount: 2,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "6",
@@ -93,8 +88,7 @@ export const managerDepartments: IDepartment[] = [
     doctorsCount: 15,
     departmentsCount: 8,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800",
   },
 ];
 
@@ -109,8 +103,7 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 12,
     departmentsCount: 6,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "2",
@@ -121,8 +114,7 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 8,
     departmentsCount: 4,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "3",
@@ -133,8 +125,7 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 15,
     departmentsCount: 8,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1504813184591-01592fd03cfd?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "4",
@@ -145,8 +136,7 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 6,
     departmentsCount: 3,
     status: "maintenance",
-    image:
-      "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "5",
@@ -157,8 +147,7 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 10,
     departmentsCount: 5,
     status: "active",
-    image:
-      "https://images.unsplash.com/photo-1587351021759-3e566b9af922?auto=format&fit=crop&q=80&w=400",
+    image: "https://plus.unsplash.com/premium_photo-1664475450083-0c0eeefc528c?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "6",
@@ -169,7 +158,6 @@ export const medicalPoints: IMedicalPoint[] = [
     doctorsCount: 5,
     departmentsCount: 2,
     status: "inactive",
-    image:
-      "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=800",
   },
 ];

@@ -118,7 +118,6 @@ function StatCard({ label, value, icon: Icon, color, bgColor, trend }: {
 // ─── Page Component ─────────────────────────────────────────
 export default function DepartmentHeadDashboard() {
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("overview");
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1500);

@@ -1,9 +1,9 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AuthSkeleton } from "./loading";
 
 // ─── Components ──
 import { BrandPanel } from "@/components/auth/BrandPanel";
@@ -20,6 +20,17 @@ export default function AuthPage() {
     const [view, setView] = useState<AuthView>("login");
     const [done, setDone] = useState(false);
     const [finalRole, setFinalRole] = useState("doctor");
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    useEffect(() => {
+        // تأخير اصطناعي لرؤية الـ Skeleton (يمكنك حذفه لاحقاً)
+        const timer = setTimeout(() => {
+            setIsInitialLoading(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (isInitialLoading) return <AuthSkeleton />;
 
     const roleData = roles.find((r) => r.id === finalRole)!;
 
