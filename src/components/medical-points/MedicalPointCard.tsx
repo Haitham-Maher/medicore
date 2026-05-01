@@ -24,7 +24,7 @@ interface MedicalPointCardProps {
     isAdmin?: boolean;
 }
 
-export function MedicalPointCard({ point, onDelete, isAdmin = true }: MedicalPointCardProps) {
+export function MedicalPointCard({ point, isAdmin = true }: MedicalPointCardProps) {
     const [imageError, setImageError] = useState(false);
 
     const detailsUrl = isAdmin
@@ -49,7 +49,7 @@ export function MedicalPointCard({ point, onDelete, isAdmin = true }: MedicalPoi
                         </div>
                     ) : (
                         <Image
-                            src={point.image || "/images/hospital.jpg"}
+                            src={point.image || "/images/defaultMediacaPoint.jpg"}
                             alt={point.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

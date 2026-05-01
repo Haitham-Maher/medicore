@@ -1,13 +1,14 @@
 import { Search, FileDown, Plus } from "lucide-react";
 import { Button, Input } from "@/components/ui";
-import { useState } from "react";
 
 interface InventoryToolbarProps {
     search: string;
     setSearch: (value: string) => void;
+    isAdmin?: boolean;
+    onAdd?: () => void;
 }
 
-export default function InventoryToolbar({ search, setSearch }: InventoryToolbarProps) {
+export default function InventoryToolbar({ search, setSearch, isAdmin = true, onAdd }: InventoryToolbarProps) {
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border/50 p-3 rounded-2xl shadow-sm">
@@ -20,6 +21,16 @@ export default function InventoryToolbar({ search, setSearch }: InventoryToolbar
                     className="pr-10 bg-background/50 border-border/50 focus:bg-background transition-colors h-10 rounded-xl w-full"
                 />
             </div>
+
+            {isAdmin && (
+                <Button 
+                    onClick={onAdd}
+                    className="h-10 px-6 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                    <Plus size={18} />
+                    <span>إضافة دواء جديد</span>
+                </Button>
+            )}
         </div>
     );
 }

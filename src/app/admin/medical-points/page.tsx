@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/MedicalPointsGridSkeleton";
 import MedicalPointsTableSkeleton from "@/components/medical-points/skeletons/MedicalPointsTableSkeleton";
 import { PageHeader } from "@/components/ui";;
-import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { MedicalPointCard } from "@/components/medical-points/MedicalPointCard";
 import { MedicalPointsTableView } from "@/components/medical-points/MedicalPointsTableView";
 import { MedicalPointsControls } from "@/components/medical-points/MedicalPointsControls";
@@ -33,18 +32,19 @@ export default function MedicalPointsPage() {
 
 
 
-  const { data: response, isLoading } = useQuery({
+  const { data: pointsData, isPending } = useQuery({
     queryKey: ['medical-points'],
     queryFn: async () => {
-      const response = await api.get("/dashboard/medical-points");
-      return response.data.data.map((point: any) => ({
+      const res = await api.get("/dashboard/medical-points");
+      const data = res.data.data || [];
+      return data.map((point: any) => ({
         ...point,
         status: point.status || "active"
       }));
     }
   })
 
-  const medicalPoints = response || [];
+  const medicalPoints = Array.isArray(pointsData) ? pointsData : [];
 
   const filteredPoints = medicalPoints.filter((point: any) => {
     const query = searchQuery.toLowerCase().trim();
@@ -66,7 +66,7 @@ export default function MedicalPointsPage() {
       </div>
 
       {/* Stats Bar */}
-      <MedicalPointsStats points={medicalPoints} isLoading={isLoading} />
+      <MedicalPointsStats points={medicalPoints} isLoading={isPending} />
 
       {/* Controls Bar */}
       <MedicalPointsControls
@@ -80,7 +80,7 @@ export default function MedicalPointsPage() {
 
       {/* Content Area */}
       <AnimatePresence mode="wait">
-        {isLoading ? (
+        {isPending ? (
           viewMode === "grid" ? (
             <MedicalPointsGridSkeleton key="grid-skeleton" />
           ) : (

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
-import { Trash2, XCircle } from "lucide-react";
 
 import api from "@/api/axios";
 import InventoryTableSkeleton from "./InventoryTableSkeleton";
@@ -14,6 +12,7 @@ import InventoryDesktopTable from "./components/InventoryDesktopTable";
 import InventoryMobileList from "./components/InventoryMobileList";
 import { InventoryItem } from "./types";
 import EditInventoryModal from "./components/EditInventoryModal";
+import AddInventoryModal from "./components/AddInventoryModal";
 
 // ----------------------------------------------------------------------
 // المكون الأساسي (Main Component)
@@ -25,59 +24,103 @@ interface InventoryTableProps {
 
 export default function InventoryTable({ isAdmin = true }: InventoryTableProps) {
     const [search, setSearch] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<string>("الكل")
+    const [selectedCategory, setSelectedCategory] = useState<string>("الكل");
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+    const queryClient = useQueryClient();
 
     // جلب البيانات بناءً على الدور
     const { data: response, isLoading } = useQuery({
         queryKey: ["Inventory-Table", isAdmin],
         queryFn: async () => {
-            const endpoint = isAdmin ? "/inventory/items" : "/point-manager/inventory";
+            const endpoint = isAdmin ? "/storage/items" : "/point-manager/inventory";
             const table = await api.get(endpoint);
             return table.data;
         }
     });
 
     // تحويل البيانات لتتوافق مع واجهة المستخدم
-    const inventoryData: InventoryItem[] = isAdmin
-        ? (response?.data || []).flatMap((medicine: any) => {
-            // إذا لم تكن هناك صيدليات مرتبطة، نعرض الدواء بكمية صفر
-            if (!medicine.pharmacies || medicine.pharmacies.length === 0) {
-                return [{
-                    ...medicine,
-                    quantity: 0,
-                    storage_id: null,
-                    storage_name: "غير متوفر في أي مخزن"
-                }];
+    const inventoryData: InventoryItem[] = (response?.data || []).map((item: any) => ({
+        ...item,
+        storage_name: item.storage_name || (isAdmin ? "المخزن المركزي" : "المخزن الحالي")
+    }));
+
+    // استخراج storage_id من أول عنصر في البيانات المحملة
+    // الباك إند يُرجعه في كل عنصر من GET /storage/items
+    const storageId: number | undefined = (response?.data?.[0]?.storage_id) ?? undefined;
+
+    // إضافة صنف جديد
+    // الـ Payload يُرسل مباشرة من AddInventoryModal مطابقاً للباك إند
+    const addMutation = useMutation({
+        mutationFn: async (newItem: any) => {
+            // newItem يحتوي: name, type, quantity, storage_id (إجباري), max?, price?
+            const res = await api.post("/storage/items", newItem);
+            return res.data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["Inventory-Table"] });
+            toast.success(data.message || "تم إضافة الصنف إلى المخزون المركزي بنجاح");
+            setIsAddModalOpen(false);
+        },
+        onError: (error: any) => {
+            const serverMessage = error.response?.data?.message || "";
+            // إذا كان الخطأ يحتوي على SQLSTATE، فهذا يعني خطأ تقني في الباك إند
+            if (serverMessage.includes("SQLSTATE")) {
+                toast.error("خطأ في النظام", {
+                    description: "تأكد من تعبئة كافة الحقول المطلوبة بشكل صحيح (مثل الحد الأقصى).",
+                });
+            } else {
+                toast.error(serverMessage || "حدث خطأ أثناء إضافة الصنف");
             }
+        }
+    });
 
-            // إنشاء سطر لكل صيدلية يوجد فيها الدواء
-            return medicine.pharmacies.map((pharmacy: any) => ({
-                ...medicine,
-                id: medicine.id,
-                quantity: pharmacy.quantity,
-                storage_id: pharmacy.pharmacy_id,
-                storage_name: `صيدلية #${pharmacy.pharmacy_id}`
-            }));
-        })
-        : (response?.data || []).map((item: any) => ({
-            ...item,
-            storage_name: "المخزن الحالي" // للمدير نستخدم اسم افتراضي
-        }));
+    // تعديل صنف موجود
+    // PUT /api/storage/items/{id} يطلب: quantity, max, storage_id
+    const editMutation = useMutation({
+        mutationFn: async (updatedItem: any) => {
+            const res = await api.put(`/storage/items/${updatedItem.id}`, {
+                quantity:   updatedItem.quantity,
+                max:        updatedItem.max,
+                storage_id: updatedItem.storage_id ?? storageId,
+            });
+            return res.data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["Inventory-Table"] });
+            toast.success(data.message || "تم تحديث الصنف بنجاح");
+            setEditingItem(null);
+        },
+        onError: (error: any) => {
+            const serverMessage = error.response?.data?.message || "";
+            if (serverMessage.includes("SQLSTATE")) {
+                toast.error("خطأ في تحديث البيانات", {
+                    description: "يرجى التأكد من صحة القيم المدخلة للكمية والحد الأقصى.",
+                });
+            } else {
+                toast.error(serverMessage || "حدث خطأ أثناء تعديل الصنف");
+            }
+        }
+    });
 
-    const categories = ["الكل", "tablet", "syrup", "Ointment", "Capsule", "injection"];
+    const categories = ["الكل", "tablet", "syrup", "injection"];
 
     if (isLoading) return <InventoryTableSkeleton />;
 
     const filteredData = inventoryData.filter((item) => {
-        const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch   = item.name.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = selectedCategory === "الكل" || item.type === selectedCategory;
-
         return matchesSearch && matchesCategory;
     });
 
     return (
         <div className="space-y-4">
-            <InventoryToolbar search={search} setSearch={setSearch} />
+            <InventoryToolbar
+                search={search}
+                setSearch={setSearch}
+                isAdmin={isAdmin}
+                onAdd={() => setIsAddModalOpen(true)}
+            />
 
             <InventoryCategoryFilters
                 categories={categories}
@@ -93,6 +136,7 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                         selectedCategory={selectedCategory}
                         search={search}
                         isAdmin={isAdmin}
+                        onEdit={(item) => setEditingItem(item)}
                     />
                 </div>
 
@@ -102,9 +146,28 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                         selectedCategory={selectedCategory}
                         search={search}
                         isAdmin={isAdmin}
+                        onEdit={(item) => setEditingItem(item)}
                     />
                 </div>
             </div>
+
+            {/* موديل الإضافة — يستقبل storageId المستخرج من بيانات GET */}
+            <AddInventoryModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={(newItem) => addMutation.mutate(newItem)}
+                isLoading={addMutation.isPending}
+                storageId={storageId}
+            />
+
+            {/* موديل التعديل */}
+            <EditInventoryModal
+                isOpen={!!editingItem}
+                onClose={() => setEditingItem(null)}
+                item={editingItem}
+                onSave={(updated) => editMutation.mutate(updated)}
+                isLoading={editMutation.isPending}
+            />
         </div>
     );
 }

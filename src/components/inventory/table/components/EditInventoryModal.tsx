@@ -26,6 +26,7 @@ export default function EditInventoryModal({
         name: "",
         type: "",
         quantity: 0,
+        max: 0,
         price: "",
     });
 
@@ -37,6 +38,7 @@ export default function EditInventoryModal({
                 name: item.name,
                 type: item.type,
                 quantity: item.quantity,
+                max: item.max,
                 price: item.price,
             });
             setErrors({});
@@ -46,19 +48,24 @@ export default function EditInventoryModal({
     const handleSave = () => {
         const newErrors: { [key: string]: string } = {};
 
-        if (!formData.name.trim()) newErrors.name = "الاسم مطلوب";
-        if (!formData.type) newErrors.type = "النوع مطلوب";
         if (formData.quantity < 0) newErrors.quantity = "الكمية لا يمكن أن تكون سالبة";
-        if (!formData.price) newErrors.price = "السعر مطلوب";
+        if (formData.quantity === undefined || formData.quantity === null) newErrors.quantity = "الكمية مطلوبة";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
+        // PUT /storage/items/{id} يطلب: quantity, max, storage_id
         onSave({
-            ...item,
-            ...formData,
+            id:         item?.id,
+            storage_id: item?.storage_id,  // يُمرَّر من InventoryTable
+            quantity:   formData.quantity,
+            max:        formData.max,
+            // الحقول الأخرى للعرض فقط
+            name:       item?.name,
+            type:       item?.type,
+            price:      item?.price,
         });
     };
 
@@ -114,28 +121,39 @@ export default function EditInventoryModal({
                                 </div>
                             </div>
 
-                            {/* Quantity Input */}
-                            <div className="space-y-3">
-                                <label className="text-sm font-black text-foreground flex items-center gap-2">
-                                    <Hash size={16} className="text-primary" />
-                                    <span>تعديل الكمية المتوفرة</span>
-                                </label>
-                                <div className="relative">
+                            {/* Quantity and Max Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Quantity Input */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-black text-foreground flex items-center gap-2">
+                                        <Hash size={16} className="text-primary" />
+                                        <span>الكمية</span>
+                                    </label>
                                     <Input
                                         type="number"
                                         value={formData.quantity}
                                         onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
                                         className={cn(
-                                            "h-14 rounded-2xl bg-muted/20 border-border/30 focus:bg-background transition-all font-black text-lg text-center",
+                                            "h-12 rounded-xl bg-muted/20 border-border/30 focus:bg-background transition-all font-black text-center",
                                             errors.quantity && "border-destructive/50 ring-destructive/20"
                                         )}
-                                        autoFocus
+                                    />
+                                    {errors.quantity && <p className="text-[10px] font-bold text-destructive text-center">{errors.quantity}</p>}
+                                </div>
+
+                                {/* Max Input */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-black text-foreground flex items-center gap-2">
+                                        <AlertCircle size={16} className="text-primary" />
+                                        <span>الحد الأقصى</span>
+                                    </label>
+                                    <Input
+                                        type="number"
+                                        value={formData.max}
+                                        onChange={(e) => setFormData({ ...formData, max: parseInt(e.target.value) || 0 })}
+                                        className="h-12 rounded-xl bg-muted/20 border-border/30 focus:bg-background transition-all font-black text-center"
                                     />
                                 </div>
-                                <p className="text-[10px] text-muted-foreground font-bold text-center opacity-60">
-                                    أدخل الكمية الجديدة التي سيتم اعتمادها في المخزن.
-                                </p>
-                                {errors.quantity && <p className="text-xs font-bold text-destructive text-center">{errors.quantity}</p>}
                             </div>
                         </div>
 

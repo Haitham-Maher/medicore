@@ -9,9 +9,10 @@ interface InventoryMobileListProps {
     selectedCategory: string;
     search: string;
     isAdmin?: boolean;
+    onEdit?: (item: InventoryItem) => void;
 }
 
-export default function InventoryMobileList({ data, selectedCategory, search, isAdmin = true }: InventoryMobileListProps) {
+export default function InventoryMobileList({ data, selectedCategory, search, isAdmin = true, onEdit }: InventoryMobileListProps) {
     return (
         <div className="md:hidden">
             <AnimatePresence mode="wait">

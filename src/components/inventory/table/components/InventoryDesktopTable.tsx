@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Search, Trash2 } from "lucide-react";
+import { Pencil, Search } from "lucide-react";
 import {
     Table,
     TableCell,
@@ -16,9 +16,10 @@ interface InventoryDesktopTableProps {
     selectedCategory: string;
     search: string;
     isAdmin?: boolean;
+    onEdit?: (item: InventoryItem) => void;
 }
 
-export default function InventoryDesktopTable({ data, selectedCategory, search, isAdmin = true }: InventoryDesktopTableProps) {
+export default function InventoryDesktopTable({ data, selectedCategory, search, isAdmin = true, onEdit }: InventoryDesktopTableProps) {
     const MotionRow = motion.create("tr");
 
     return (
@@ -99,6 +100,14 @@ export default function InventoryDesktopTable({ data, selectedCategory, search, 
                                             <TableCell className="font-mono text-[11px] lg:text-[13px] font-bold lg:font-black text-foreground/80 hidden lg:table-cell tracking-tighter">{item.price} <span className="opacity-80">$</span></TableCell>
                                             <TableCell className="text-center pl-4 lg:pl-6">
                                                 <div className="flex justify-between items-center gap-2 lg:gap-3">
+                                                    {isAdmin && onEdit && (
+                                                        <button
+                                                            onClick={() => onEdit(item)}
+                                                            className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+                                                        >
+                                                            <Pencil size={14} />
+                                                        </button>
+                                                    )}
                                                     <div className={cn(
                                                         "inline-flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-1 lg:py-1.5 rounded-xl border text-[9px] lg:text-[10px] font-bold lg:font-black",
                                                         status === "available" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" :
