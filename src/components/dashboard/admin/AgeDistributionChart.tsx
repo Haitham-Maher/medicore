@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import ChartsSkeleton from "../skeletons/ChartsSkeleton";
 
-export default function AgeDistributionChart() {
+export default function AgeDistributionChart({ isAdmin = true }: { isAdmin?: boolean }) {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -28,10 +28,10 @@ export default function AgeDistributionChart() {
     }, []);
 
     const { data: response, isLoading } = useQuery({
-        queryKey: ["chart age"],
+        queryKey: ["chart age", isAdmin],
         queryFn: async () => {
-            // تحديث الرابط ليتوافق مع الـ API الجديد
-            const res = await api.get("/point-manager/age-distribution");
+            const endpoint = isAdmin ? "/dashboard/charts/age-distribution" : "/point-manager/age-distribution";
+            const res = await api.get(endpoint);
             return res.data;
         }
     });

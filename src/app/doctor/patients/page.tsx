@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Users, Search, Phone, Calendar, ClipboardList,
     Pill, Eye, ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import api from "@/api/axios";
+import { useQuery } from "@tanstack/react-query";
+import ErrorData from "@/components/inventory/table/components/errorData";
 
 // ─── Skeleton Component ───────────────────────────────────────
 function PatientsSkeleton() {
@@ -52,139 +55,32 @@ function PatientsSkeleton() {
 
 // ─── Types ────────────────────────────────────────────────────
 interface Medicine {
-    id: string;
-    name: string;
-    type: string;
-    quantity: number;
+    medicine_name: string;
+    dose: string;
+    instructions: string;
 }
+
 interface Prescription {
-    id: string;
-    medicines: Medicine[];
+    prescription_id: number;
+    date: string;
+    medicines_count: number;
+    medicines_details: Medicine[];
 }
+
 interface Patient {
-    id: string;
-    name: string;
-    nationalId: string;
+    patient_id: number;
+    patient_name: string;
+    patient_national_id: string;
+    phone_number: string;
     birthdate: string;
-    phone: string;
-    prescriptions: Prescription[];
-}
-
-// ─── Mock Data ────────────────────────────────────────────────
-const mockPatients: Patient[] = [
-    {
-        id: "1",
-        name: "محمد سعد العتيبي",
-        nationalId: "1098765432",
-        birthdate: "1985-04-15",
-        phone: "0551234567",
-        prescriptions: [
-            {
-                id: "RX-100",
-                medicines: [
-                    { id: "m1", name: "أموكسيسيلين", type: "Antibiotic", quantity: 20 },
-                    { id: "m2", name: "إيبوبروفين", type: "Painkiller", quantity: 15 },
-                ],
-            },
-        ],
-    },
-    {
-        id: "2",
-        name: "فاطمة علي الزهراني",
-        nationalId: "2098776543",
-        birthdate: "1992-08-22",
-        phone: "0559876543",
-        prescriptions: [
-            {
-                id: "RX-101",
-                medicines: [
-                    { id: "m3", name: "ميتفورمين", type: "Antidiabetic", quantity: 60 },
-                    { id: "m4", name: "أوميبرازول", type: "Antacid", quantity: 30 },
-                ],
-            },
-        ],
-    },
-    {
-        id: "3",
-        name: "عبدالله ناصر القحطاني",
-        nationalId: "1076543210",
-        birthdate: "1970-03-10",
-        phone: "0544321098",
-        prescriptions: [
-            {
-                id: "RX-102",
-                medicines: [
-                    { id: "m5", name: "لوسارتان", type: "Antihypertensive", quantity: 30 },
-                ],
-            },
-            {
-                id: "RX-103",
-                medicines: [
-                    { id: "m6", name: "أتورفاستاتين", type: "Statin", quantity: 30 },
-                ],
-            },
-        ],
-    },
-    {
-        id: "4",
-        name: "نورة خالد الشمري",
-        nationalId: "1087654321",
-        birthdate: "2000-11-05",
-        phone: "0566123456",
-        prescriptions: [
-            {
-                id: "RX-104",
-                medicines: [
-                    { id: "m7", name: "سيتريزين", type: "Antihistamine", quantity: 10 },
-                ],
-            },
-        ],
-    },
-    {
-        id: "5",
-        name: "يوسف طارق العمري",
-        nationalId: "1065432109",
-        birthdate: "1978-07-19",
-        phone: "0533987654",
-        prescriptions: [
-            {
-                id: "RX-105",
-                medicines: [
-                    { id: "m8", name: "أملوديبين", type: "Antihypertensive", quantity: 30 },
-                    { id: "m9", name: "أسبرين", type: "Antiplatelet", quantity: 30 },
-                ],
-            },
-        ],
-    },
-];
-
-// ─── Medicine Badge ───────────────────────────────────────────
-const badgeColors: Record<string, string> = {
-    Antibiotic:       "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    Painkiller:       "bg-orange-500/10 text-orange-600 border-orange-500/20",
-    Antidiabetic:     "bg-violet-500/10 text-violet-600 border-violet-500/20",
-    Antacid:          "bg-cyan-500/10 text-cyan-600 border-cyan-500/20",
-    Antihypertensive: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-    Statin:           "bg-amber-500/10 text-amber-600 border-amber-500/20",
-    Antihistamine:    "bg-green-500/10 text-green-600 border-green-500/20",
-    Antiplatelet:     "bg-pink-500/10 text-pink-600 border-pink-500/20",
-};
-
-function MedicineBadge({ type }: { type: string }) {
-    return (
-        <span className={cn(
-            "text-[7px] sm:text-[8px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shrink-0",
-            badgeColors[type] ?? "bg-muted text-muted-foreground border-border/40"
-        )}>
-            {type}
-        </span>
-    );
+    total_prescriptions_by_me: number;
+    prescriptions_history: Prescription[];
 }
 
 // ─── Patient Card ─────────────────────────────────────────────
 function PatientCard({ patient, index }: { patient: Patient; index: number }) {
     const [expanded, setExpanded] = useState(false);
-    const totalMeds = patient.prescriptions.reduce((s, rx) => s + rx.medicines.length, 0);
+    const totalMeds = patient.prescriptions_history.reduce((s: number, rx: Prescription) => s + rx.medicines_count, 0);
 
     return (
         <motion.div
@@ -205,18 +101,18 @@ function PatientCard({ patient, index }: { patient: Patient; index: number }) {
                         ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
                         : "bg-primary/8 text-primary border border-primary/15"
                 )}>
-                    {patient.name.charAt(0)}
+                    {patient.patient_name.charAt(0)}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-xs sm:text-sm text-foreground truncate mb-0.5">{patient.name}</h3>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono tracking-wide">{patient.nationalId}</p>
+                    <h3 className="font-bold text-xs sm:text-sm text-foreground truncate mb-0.5">{patient.patient_name}</h3>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono tracking-wide">{patient.patient_national_id}</p>
                 </div>
 
                 <div className="flex items-center gap-2.5 shrink-0">
                     <div className="hidden sm:flex flex-col items-end">
                         <span className="font-bold text-[10px] sm:text-[11px] text-foreground">{totalMeds} دواء</span>
-                        <span className="text-[8px] sm:text-[9px] text-muted-foreground">{patient.prescriptions.length} وصفة</span>
+                        <span className="text-[8px] sm:text-[9px] text-muted-foreground">{patient.prescriptions_history.length} وصفة</span>
                     </div>
                     <div className={cn(
                         "size-8 rounded-xl border flex items-center justify-center transition-all",
@@ -247,7 +143,7 @@ function PatientCard({ patient, index }: { patient: Patient; index: number }) {
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[7px] sm:text-[8px] text-muted-foreground font-medium mb-0.5">رقم الهاتف</p>
-                                        <p className="font-bold text-[10px] sm:text-[11px] text-foreground truncate" dir="ltr">{patient.phone}</p>
+                                        <p className="font-bold text-[10px] sm:text-[11px] text-foreground truncate" dir="ltr">{patient.phone_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 sm:gap-2.5 bg-card border border-border/40 rounded-xl p-2.5 sm:p-3">
@@ -266,46 +162,48 @@ function PatientCard({ patient, index }: { patient: Patient; index: number }) {
                                 <div className="flex items-center gap-2">
                                     <ClipboardList className="size-3 sm:size-3.5 text-emerald-600" />
                                     <h4 className="text-[9px] sm:text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                                        الوصفات الطبية ({patient.prescriptions.length})
+                                        الوصفات الطبية ({patient.prescriptions_history.length})
                                     </h4>
                                 </div>
 
-                                {patient.prescriptions.map((rx, rxIdx) => (
-                                    <div key={rx.id} className="bg-card border border-border/50 rounded-xl overflow-hidden">
+                                {patient.prescriptions_history.map((rx: Prescription, rxIdx: number) => (
+                                    <div key={rx.prescription_id} className="bg-card border border-border/50 rounded-xl overflow-hidden">
                                         <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 bg-muted/20 border-b border-border/30">
-                                            <span className="font-bold text-[9px] sm:text-[10px] text-muted-foreground font-mono">
-                                                وصفة #{rx.id}
-                                            </span>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-[9px] sm:text-[10px] text-muted-foreground font-mono">
+                                                    وصفة #{rx.prescription_id}
+                                                </span>
+                                                <span className="text-[7px] text-muted-foreground">{rx.date}</span>
+                                            </div>
                                             <span className="text-[7px] sm:text-[8px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-1.5 sm:px-2 py-0.5 rounded-full">
-                                                {rx.medicines.length} دواء
+                                                {rx.medicines_count} دواء
                                             </span>
                                         </div>
                                         <div className="divide-y divide-border/30">
                                             <div className="grid grid-cols-12 gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-muted/10">
-                                                <span className="col-span-5 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">اسم الدواء</span>
-                                                <span className="col-span-4 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">النوع</span>
-                                                <span className="col-span-3 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-center">الكمية</span>
+                                                <span className="col-span-6 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">اسم الدواء / التعليمات</span>
+                                                <span className="col-span-3 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-center">الجرعة</span>
                                             </div>
-                                            {rx.medicines.map((med, medIdx) => (
+                                            {rx.medicines_details.map((med: Medicine, medIdx: number) => (
                                                 <motion.div
-                                                    key={med.id}
+                                                    key={medIdx}
                                                     initial={{ opacity: 0, x: -8 }}
                                                     animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: (rxIdx * rx.medicines.length + medIdx) * 0.04 }}
+                                                    transition={{ delay: (rxIdx * rx.medicines_details.length + medIdx) * 0.04 }}
                                                     className="grid grid-cols-12 gap-2 items-center px-3 sm:px-4 py-2 sm:py-3 hover:bg-muted/10 transition-colors"
                                                 >
-                                                    <div className="col-span-5 flex items-center gap-1.5 sm:gap-2 min-w-0">
+                                                    <div className="col-span-6 flex items-center gap-1.5 sm:gap-2 min-w-0">
                                                         <div className="size-5 sm:size-6 rounded-lg bg-primary/8 border border-primary/15 flex items-center justify-center shrink-0">
                                                             <Pill className="size-2.5 sm:size-3 text-primary/70" />
                                                         </div>
-                                                        <span className="font-bold text-[10px] sm:text-[11px] md:text-[12px] text-foreground truncate">{med.name}</span>
-                                                    </div>
-                                                    <div className="col-span-4">
-                                                        <MedicineBadge type={med.type} />
+                                                        <div className="min-w-0">
+                                                            <p className="font-bold text-[10px] sm:text-[11px] text-foreground truncate">{med.medicine_name}</p>
+                                                            <p className="text-[8px] text-muted-foreground truncate">{med.instructions}</p>
+                                                        </div>
                                                     </div>
                                                     <div className="col-span-3 flex justify-center">
-                                                        <span className="font-black text-[11px] sm:text-[12px] text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 sm:px-2.5 py-0.5 rounded-lg min-w-[30px] sm:min-w-[36px] text-center">
-                                                            {med.quantity}
+                                                        <span className="font-black text-[10px] sm:text-[12px] text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 sm:px-2.5 py-0.5 rounded-lg min-w-[30px] sm:min-w-[36px] text-center">
+                                                            {med.dose}
                                                         </span>
                                                     </div>
                                                 </motion.div>
@@ -324,20 +222,22 @@ function PatientCard({ patient, index }: { patient: Patient; index: number }) {
 
 // ─── Main Page ────────────────────────────────────────────────
 export default function PatientsPage() {
-    const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
 
-    useEffect(() => {
-        // محاكاة جلب البيانات
-        const timer = setTimeout(() => setIsLoading(false), 1100);
-        return () => clearTimeout(timer);
-    }, []);
+    const { data: patients, isLoading, refetch } = useQuery({
+        queryKey: ["all-patients"],
+        queryFn: async () => {
+            const res = await api.get("/doctor/recent-patients");
+            return res.data.data as Patient[];
+        }
+    });
 
     if (isLoading) return <PatientsSkeleton />;
+    if (!patients) return <ErrorData refetch={refetch} />;
 
-    const filtered = mockPatients.filter((p) => {
+    const filtered = (patients || []).filter((p) => {
         const q = search.trim().toLowerCase();
-        return p.nationalId.includes(q) || p.name.toLowerCase().includes(q);
+        return p.patient_national_id.includes(q) || p.patient_name.toLowerCase().includes(q);
     });
 
     return (
@@ -355,7 +255,7 @@ export default function PatientsPage() {
                 </div>
                 <div>
                     <h1 className="font-black text-base sm:text-xl text-foreground">سجل المرضى الكامل</h1>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground">{mockPatients.length} مريض مسجل</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">{patients.length} مريض مسجل</p>
                 </div>
                 <div className="mr-auto flex items-center gap-2">
                     <span className="text-[9px] sm:text-[10px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
@@ -406,7 +306,7 @@ export default function PatientsPage() {
                             </div>
                         </div>
                     ) : (
-                        filtered.map((p, i) => <PatientCard key={p.id} patient={p} index={i} />)
+                        filtered.map((p, i) => <PatientCard key={p.patient_id} patient={p} index={i} />)
                     )}
                 </motion.div>
             </AnimatePresence>

@@ -8,12 +8,10 @@ interface InventoryMobileListProps {
     data: InventoryItem[];
     selectedCategory: string;
     search: string;
-    onDelete: (id: number) => void;
-    onEdit: (item: InventoryItem) => void;
     isAdmin?: boolean;
 }
 
-export default function InventoryMobileList({ data, selectedCategory, search, onDelete, onEdit, isAdmin = true }: InventoryMobileListProps) {
+export default function InventoryMobileList({ data, selectedCategory, search, isAdmin = true }: InventoryMobileListProps) {
     return (
         <div className="md:hidden">
             <AnimatePresence mode="wait">
@@ -31,11 +29,13 @@ export default function InventoryMobileList({ data, selectedCategory, search, on
                             const Icon = getCategoryIcon(item.type);
 
                             // استنتاج الحالة بناءً على الكمية
-                            const status = item.quantity === 0 ? "out_of_stock" : item.quantity < 50 ? "low_stock" : "available";
+                            const status = item.quantity === 0 ? "out_of_stock" : 
+                                           item.quantity <= 150 ? "critical" :
+                                           item.quantity < 400 ? "low_stock" : "available";
 
                             return (
                                 <div
-                                    key={item.id}
+                                    key={`${item.id}-${item.storage_id}`}
                                     className="p-3 sm:p-4 space-y-3 sm:space-y-4"
                                 >
                                     <div className="flex items-center gap-3 sm:gap-4">
@@ -57,25 +57,6 @@ export default function InventoryMobileList({ data, selectedCategory, search, on
                                             </div>
                                         </div>
 
-                                        {/* Action - Left */}
-                                        {isAdmin && (
-                                            <div className="flex gap-2 shrink-0">
-                                                <button
-                                                    onClick={() => onEdit(item)}
-                                                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-primary/5 text-primary border border-primary/10 active:bg-primary active:text-white transition-all cursor-pointer shadow-xs"
-                                                    title="تعديل"
-                                                >
-                                                    <Pencil className="size-4 sm:size-[18px]" />
-                                                </button>
-                                                <button
-                                                    onClick={() => onDelete(item.id)}
-                                                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-red-500/5 text-red-500 border border-red-500/10 active:bg-red-500 active:text-white transition-all cursor-pointer shadow-xs"
-                                                    title="حذف"
-                                                >
-                                                    <Trash2 className="size-4 sm:size-[18px]" />
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 sm:gap-3 p-1 px-2 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40">
                                         <div className="space-y-0.5 sm:space-y-1">
@@ -83,8 +64,10 @@ export default function InventoryMobileList({ data, selectedCategory, search, on
                                             <div className="flex items-center gap-1 sm:gap-1.5">
                                                 <span className={cn(
                                                     "font-bold text-[11px] sm:text-xs",
-                                                    item.quantity === 0 ? "text-destructive" :
-                                                        item.quantity < 50 ? "text-orange-500" : "text-foreground"
+                                                    item.quantity === 0 ? "text-red-500" :
+                                                    item.quantity <= 150 ? "text-orange-500" :
+                                                    item.quantity < 400 ? "text-amber-500" : 
+                                                    "text-emerald-500"
                                                 )}>{item.quantity.toLocaleString('en-US')}</span>
                                                 <span className="text-[7px] sm:text-[8px] text-muted-foreground font-medium opacity-50">وحدة</span>
                                             </div>
@@ -104,10 +87,13 @@ export default function InventoryMobileList({ data, selectedCategory, search, on
                                         <div className={cn(
                                             "px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[8px] sm:text-[9px] font-bold shadow-sm",
                                             status === "available" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" :
-                                                status === "low_stock" ? "bg-orange-500/5 text-orange-600 border-orange-500/10" :
-                                                    "bg-red-500/5 text-red-600 border-red-500/10"
+                                            status === "low_stock" ? "bg-amber-500/5 text-amber-600 border-amber-500/10" :
+                                            status === "critical" ? "bg-orange-500/5 text-orange-600 border-orange-500/10" :
+                                            "bg-red-500/5 text-red-600 border-red-500/10"
                                         )}>
-                                            {status === "available" ? "متوفر" : status === "low_stock" ? "منخفض" : "نفد"}
+                                            {status === "available" ? "جيد" : 
+                                             status === "low_stock" ? "منخفض" : 
+                                             status === "critical" ? "على وشك النفاذ" : "نفد"}
                                         </div>
                                     </div>
                                 </div>

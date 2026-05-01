@@ -7,6 +7,9 @@ import {
     ChevronDown, Activity, CreditCard, Stethoscope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import api from "@/api/axios";
+import { useQuery } from "@tanstack/react-query";
+import ErrorData from "@/components/inventory/table/components/errorData";
 
 // ─── Skeleton Component ───────────────────────────────────────
 function PatientSkeleton() {
@@ -95,49 +98,38 @@ function PatientSkeleton() {
 
 // ─── Types (مطابقة لجداول قاعدة البيانات) ─────────────────────
 interface Medicine {
-    id: string;
-    name: string;   // medicines.name
-    type: string;   // medicines.type
-    quantity: number; // prescriptions_has_medicines.quantity
+    medicine_name: string;
+    dose: string;
+    instructions: string;
 }
 
 interface Prescription {
-    id: string;          // prescriptions.id
-    medicines: Medicine[]; // prescriptions_has_medicines JOIN medicines
+    prescription_id: number;
+    date: string;
+    medicines_count: number;
+    medicines_details: Medicine[];
 }
 
-interface PatientProfile {
-    name: string;        // persons.name
-    nationalId: string;  // persons.national_id
-    birthdate: string;   // persons.birthdate
-    phone: string;       // persons.phone_number
-    prescriptions: Prescription[];
+interface PatientPersonalInfo {
+    id: number;
+    name: string;
+    national_id: string;
+    birthdate: string;
+    age: number;
+    phone_number: string;
+    blood_type: string;
+    email: string;
 }
 
-// ─── Mock Data (تُستبدل لاحقاً ببيانات API) ───────────────────
-const patientData: PatientProfile = {
-    name: "محمد سعد العتيبي",
-    nationalId: "1098765432",
-    birthdate: "1985-04-15",
-    phone: "0551234567",
-    prescriptions: [
-        {
-            id: "RX-100",
-            medicines: [
-                { id: "m1", name: "أموكسيسيلين",  type: "Antibiotic",   quantity: 20 },
-                { id: "m2", name: "إيبوبروفين",    type: "Painkiller",   quantity: 15 },
-            ],
-        },
-        {
-            id: "RX-101",
-            medicines: [
-                { id: "m3", name: "أوميبرازول",    type: "Antacid",      quantity: 30 },
-                { id: "m4", name: "فيتامين D",     type: "Supplement",   quantity: 60 },
-                { id: "m5", name: "سيتريزين",      type: "Antihistamine",quantity: 10 },
-            ],
-        },
-    ],
-};
+interface PatientStats {
+    total_prescriptions: number;
+    total_medicines: number;
+}
+
+interface PatientProfileResponse {
+    personal_info: PatientPersonalInfo;
+    statistics: PatientStats;
+}
 
 // ─── Badge Colors ─────────────────────────────────────────────
 const badgeColors: Record<string, string> = {
@@ -192,8 +184,8 @@ function PrescriptionCard({ rx, index }: { rx: Prescription; index: number }) {
                         <ClipboardList className="size-4" />
                     </div>
                     <div>
-                        <p className="font-black text-sm text-foreground">وصفة #{rx.id}</p>
-                        <p className="text-[9px] text-muted-foreground">{rx.medicines.length} دواء موصوف</p>
+                        <p className="font-black text-sm text-foreground">وصفة #{rx.prescription_id}</p>
+                        <p className="text-[9px] text-muted-foreground">{rx.medicines_count} دواء موصوف</p>
                     </div>
                 </div>
                 <div className={cn(
@@ -219,33 +211,32 @@ function PrescriptionCard({ rx, index }: { rx: Prescription; index: number }) {
                         <div className="border-t border-primary/10 bg-primary/2">
                             {/* Table Header */}
                             <div className="grid grid-cols-12 gap-2 px-4 sm:px-5 py-2 bg-muted/10">
-                                <span className="col-span-5 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">اسم الدواء</span>
-                                <span className="col-span-4 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">النوع</span>
-                                <span className="col-span-3 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-center">الكمية</span>
+                                <span className="col-span-6 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">اسم الدواء / التعليمات</span>
+                                <span className="col-span-3 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-center">الجرعة</span>
                             </div>
 
                             {/* Table Rows */}
                             <div className="divide-y divide-border/20">
-                                {rx.medicines.map((med, i) => (
+                                {rx.medicines_details.map((med: Medicine, i: number) => (
                                     <motion.div
-                                        key={med.id}
+                                        key={i}
                                         initial={{ opacity: 0, x: -6 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.04 }}
                                         className="grid grid-cols-12 gap-2 items-center px-4 sm:px-5 py-2.5 sm:py-3 hover:bg-muted/5 transition-colors"
                                     >
-                                        <div className="col-span-5 flex items-center gap-2 min-w-0">
+                                        <div className="col-span-6 flex items-center gap-2 min-w-0">
                                             <div className="size-6 rounded-lg bg-primary/8 border border-primary/15 flex items-center justify-center shrink-0">
                                                 <Pill className="size-3 text-primary/60" />
                                             </div>
-                                            <span className="font-bold text-[10px] sm:text-[11px] text-foreground truncate">{med.name}</span>
-                                        </div>
-                                        <div className="col-span-4">
-                                            <MedicineBadge type={med.type} />
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-[10px] sm:text-[11px] text-foreground truncate">{med.medicine_name}</p>
+                                                <p className="text-[8px] text-muted-foreground truncate">{med.instructions}</p>
+                                            </div>
                                         </div>
                                         <div className="col-span-3 flex justify-center">
                                             <span className="font-black text-[11px] sm:text-[12px] text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-lg min-w-[36px] text-center">
-                                                {med.quantity}
+                                                {med.dose}
                                             </span>
                                         </div>
                                     </motion.div>
@@ -277,21 +268,32 @@ function StatCard({ icon: Icon, value, label, color, bg }: {
 
 // ─── Main Page ────────────────────────────────────────────────
 export default function PatientDashboard() {
-    const [isLoading, setIsLoading] = useState(true);
+    // 1. جلب الملف الشخصي
+    const { data: profileResponse, isLoading: profileLoading, refetch: refetchProfile } = useQuery({
+        queryKey: ["patient-profile"],
+        queryFn: async () => {
+            const res = await api.get("/patient/profile");
+            return res.data.data as PatientProfileResponse;
+        }
+    });
 
-    useEffect(() => {
-        // محاكاة جلب البيانات
-        const timer = setTimeout(() => setIsLoading(false), 1200);
-        return () => clearTimeout(timer);
-    }, []);
+    // 2. جلب الوصفات الطبية
+    const { data: prescriptionsResponse, isLoading: rxLoading } = useQuery({
+        queryKey: ["patient-prescriptions"],
+        queryFn: async () => {
+            const res = await api.get("/patient/prescriptions");
+            return res.data.data as { total_prescriptions: number; prescriptions: Prescription[] };
+        }
+    });
+
+    const isLoading = profileLoading || rxLoading;
 
     if (isLoading) return <PatientSkeleton />;
+    if (!profileResponse) return <ErrorData refetch={refetchProfile} />;
 
-    const totalMeds = patientData.prescriptions.reduce((s, rx) => s + rx.medicines.length, 0);
-    const totalRx   = patientData.prescriptions.length;
-
-    // حساب العمر من تاريخ الميلاد
-    const age = new Date().getFullYear() - new Date(patientData.birthdate).getFullYear();
+    const { personal_info, statistics } = profileResponse;
+    const { total_prescriptions, total_medicines } = statistics;
+    const prescriptions = prescriptionsResponse?.prescriptions || [];
 
     return (
         <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500" dir="rtl">
@@ -323,7 +325,7 @@ export default function PatientDashboard() {
                         <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-start justify-between gap-2 mb-1.5">
                                 <h1 className="font-black text-lg sm:text-xl md:text-2xl text-foreground leading-tight">
-                                    {patientData.name}
+                                    {personal_info.name}
                                 </h1>
                                 <span className="text-[8px] sm:text-[9px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/25 flex items-center gap-1">
                                     <Activity className="size-2.5" />
@@ -335,7 +337,7 @@ export default function PatientDashboard() {
                             <div className="flex items-center gap-1.5 mb-3">
                                 <CreditCard className="size-3.5 text-muted-foreground/60 shrink-0" />
                                 <span className="font-mono text-xs sm:text-sm text-muted-foreground tracking-widest">
-                                    {patientData.nationalId}
+                                    {personal_info.national_id}
                                 </span>
                             </div>
 
@@ -344,13 +346,13 @@ export default function PatientDashboard() {
                                 <div className="flex items-center gap-1.5">
                                     <Phone className="size-3 text-muted-foreground/50" />
                                     <span className="text-[10px] sm:text-xs text-muted-foreground font-medium" dir="ltr">
-                                        {patientData.phone}
+                                        {personal_info.phone_number}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <Calendar className="size-3 text-muted-foreground/50" />
                                     <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">
-                                        {patientData.birthdate} · {age} سنة
+                                        {personal_info.birthdate} · {personal_info.age} سنة
                                     </span>
                                 </div>
                             </div>
@@ -363,19 +365,19 @@ export default function PatientDashboard() {
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
                     <StatCard
-                        icon={ClipboardList} value={totalRx}
+                        icon={ClipboardList} value={total_prescriptions}
                         label="وصفة طبية" color="text-primary" bg="bg-primary/8 border-primary/15"
                     />
                 </motion.div>
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
                     <StatCard
-                        icon={Pill} value={totalMeds}
+                        icon={Pill} value={total_medicines}
                         label="دواء موصوف" color="text-emerald-600" bg="bg-emerald-500/8 border-emerald-500/15"
                     />
                 </motion.div>
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
                     <StatCard
-                        icon={Calendar} value={age}
+                        icon={Calendar} value={personal_info.age}
                         label="العمر" color="text-amber-600" bg="bg-amber-500/8 border-amber-500/15"
                     />
                 </motion.div>
@@ -395,10 +397,12 @@ export default function PatientDashboard() {
 
                 <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {[
-                        { icon: User,       label: "الاسم الكامل",    value: patientData.name,        dir: "rtl" as const },
-                        { icon: CreditCard, label: "رقم الهوية الوطنية", value: patientData.nationalId, dir: "ltr" as const },
-                        { icon: Phone,      label: "رقم الهاتف",      value: patientData.phone,        dir: "ltr" as const },
-                        { icon: Calendar,   label: "تاريخ الميلاد",   value: patientData.birthdate,    dir: "ltr" as const },
+                        { icon: User,       label: "الاسم الكامل",    value: personal_info.name,        dir: "rtl" as const },
+                        { icon: CreditCard, label: "رقم الهوية الوطنية", value: personal_info.national_id, dir: "ltr" as const },
+                        { icon: Phone,      label: "رقم الهاتف",      value: personal_info.phone_number,  dir: "ltr" as const },
+                        { icon: Calendar,   label: "تاريخ الميلاد",   value: personal_info.birthdate,    dir: "ltr" as const },
+                        { icon: Activity,   label: "فصيلة الدم",      value: personal_info.blood_type,    dir: "ltr" as const },
+                        { icon: User,       label: "البريد الإلكتروني", value: personal_info.email,         dir: "ltr" as const },
                     ].map((item) => (
                         <div
                             key={item.label}
@@ -429,14 +433,26 @@ export default function PatientDashboard() {
                     </div>
                     <div>
                         <h2 className="font-black text-sm sm:text-base text-foreground">السجل الطبي</h2>
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground">{totalRx} وصفة · {totalMeds} دواء</p>
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground">{total_prescriptions} وصفة · {total_medicines} دواء</p>
                     </div>
                 </motion.div>
 
                 <div className="space-y-3">
-                    {patientData.prescriptions.map((rx, i) => (
-                        <PrescriptionCard key={rx.id} rx={rx} index={i} />
-                    ))}
+                    {prescriptions.length > 0 ? (
+                        prescriptions.map((rx: Prescription, i: number) => (
+                            <PrescriptionCard key={rx.prescription_id} rx={rx} index={i} />
+                        ))
+                    ) : (
+                        <div className="text-center py-16 bg-card border border-dashed border-border/50 rounded-3xl flex flex-col items-center gap-3">
+                            <div className="size-12 rounded-2xl bg-muted/30 flex items-center justify-center text-muted-foreground/30">
+                                <ClipboardList className="size-6" />
+                            </div>
+                            <div className="text-center">
+                                <p className="font-bold text-sm text-foreground mb-1">لا توجد وصفات طبية</p>
+                                <p className="text-[10px] text-muted-foreground">لم يتم تسجيل أي وصفات طبية لك في النظام بعد.</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

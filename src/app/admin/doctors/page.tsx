@@ -3,14 +3,12 @@
 import { useState } from "react";
 import { Users, ShieldCheck, LayoutGrid, TableIcon, Search } from "lucide-react";
 import { PageHeader } from "@/components/ui";
-import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // Components
 import DoctorSection from "@/components/doctors/DoctorSection";
 import { DoctorSectionSkeleton } from "@/components/doctors/DoctorSkeleton";
-import DoctorDetailsModal from "@/components/doctors/DoctorDetailsModal";
 
 // Mock Data
 import { pointHeads } from "@/components/doctors/mockData";
@@ -19,7 +17,6 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function DoctorsPage() {
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [selectedPerson, setSelectedPerson] = useState<any>(null);
     const [selectedType, setSelectedType] = useState<any>("doctor");
@@ -38,10 +35,6 @@ export default function DoctorsPage() {
     const doctorsData = doctors || [];
 
 
-    const handleDeleteClick = (person: any) => {
-        setSelectedPerson(person);
-        setIsDeleteModalOpen(true);
-    };
 
     const handleViewClick = (person: any, type: "point-head" | "dept-head" | "doctor") => {
         setSelectedPerson(person);
@@ -133,7 +126,6 @@ export default function DoctorsPage() {
                                 iconBg="bg-emerald-500/10"
                                 data={filteredPointHeads}
                                 type="point-head"
-                                onDelete={handleDeleteClick}
                                 onView={handleViewClick}
                                 view={view}
                             />

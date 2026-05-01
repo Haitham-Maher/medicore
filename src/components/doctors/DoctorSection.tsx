@@ -11,7 +11,6 @@ interface DoctorSectionProps {
     iconBg: string;
     data: any[];
     type: "point-head" | "dept-head" | "doctor";
-    onDelete: (person: any) => void;
     onView?: (person: any, type: "point-head" | "dept-head" | "doctor") => void;
     isAdmin?: boolean;
     view?: "grid" | "list";
@@ -24,7 +23,6 @@ export default function DoctorSection({
     iconBg,
     data,
     type,
-    onDelete,
     onView,
     isAdmin = true,
     view = "grid"
@@ -51,7 +49,6 @@ export default function DoctorSection({
                             person={person}
                             type={type}
                             index={i}
-                            onDelete={onDelete}
                             onView={onView}
                             isAdmin={isAdmin}
                             view={view}
@@ -66,7 +63,6 @@ export default function DoctorSection({
                             person={person}
                             type={type}
                             index={i}
-                            onDelete={onDelete}
                             onView={onView}
                             isAdmin={isAdmin}
                             view={view}

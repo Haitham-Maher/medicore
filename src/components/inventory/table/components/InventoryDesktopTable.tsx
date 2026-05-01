@@ -15,12 +15,10 @@ interface InventoryDesktopTableProps {
     data: InventoryItem[];
     selectedCategory: string;
     search: string;
-    onDelete: (id: number) => void;
-    onEdit: (item: InventoryItem) => void;
     isAdmin?: boolean;
 }
 
-export default function InventoryDesktopTable({ data, selectedCategory, search, onDelete, onEdit, isAdmin = true }: InventoryDesktopTableProps) {
+export default function InventoryDesktopTable({ data, selectedCategory, search, isAdmin = true }: InventoryDesktopTableProps) {
     const MotionRow = motion.create("tr");
 
     return (
@@ -49,7 +47,9 @@ export default function InventoryDesktopTable({ data, selectedCategory, search, 
                             {data.length > 0 ? (
                                 data.map((item) => {
                                     const Icon = getCategoryIcon(item.type);
-                                    const status = item.quantity === 0 ? "out_of_stock" : item.quantity < 50 ? "low_stock" : "available";
+                                    const status = item.quantity === 0 ? "out_of_stock" : 
+                                                   item.quantity <= 150 ? "critical" :
+                                                   item.quantity < 400 ? "low_stock" : "available";
 
                                     return (
                                         <MotionRow
@@ -61,7 +61,7 @@ export default function InventoryDesktopTable({ data, selectedCategory, search, 
                                                 layout: { type: "spring", stiffness: 500, damping: 50, mass: 1 },
                                                 duration: 0.3
                                             }}
-                                            key={item.id}
+                                            key={`${item.id}-${item.storage_id}`}
                                             className="group hover:bg-muted/20 transition-all border-b border-border/40 "
                                         >
                                             <TableCell className="font-mono text-[9px] text-muted-foreground/40 pr-4 lg:pr-6 hidden lg:table-cell">#{item.id}</TableCell>
@@ -85,9 +85,10 @@ export default function InventoryDesktopTable({ data, selectedCategory, search, 
                                                 <div className="flex items-center gap-1.5 lg:gap-2">
                                                     <span className={cn(
                                                         "font-bold lg:font-black text-[11px] lg:text-[13px] tracking-tight",
-                                                        // تم التعديل لاستخدام item.quantity بدلاً من item.stock
-                                                        item.quantity === 0 ? "text-destructive" :
-                                                            item.quantity < 50 ? "text-orange-500" : "text-foreground"
+                                                        item.quantity === 0 ? "text-red-500" :
+                                                        item.quantity <= 150 ? "text-orange-500" :
+                                                        item.quantity < 400 ? "text-amber-500" : 
+                                                        "text-emerald-500"
                                                     )}>
                                                         {item.quantity.toLocaleString('en-US')}
                                                     </span>
@@ -101,32 +102,20 @@ export default function InventoryDesktopTable({ data, selectedCategory, search, 
                                                     <div className={cn(
                                                         "inline-flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-1 lg:py-1.5 rounded-xl border text-[9px] lg:text-[10px] font-bold lg:font-black",
                                                         status === "available" ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" :
-                                                            status === "low_stock" ? "bg-orange-500/5 text-orange-600 border-orange-500/10" :
-                                                                "bg-red-500/5 text-red-600 border-red-500/10"
+                                                        status === "low_stock" ? "bg-amber-500/5 text-amber-600 border-amber-500/10" :
+                                                        status === "critical" ? "bg-orange-500/5 text-orange-600 border-orange-500/10" :
+                                                        "bg-red-500/5 text-red-600 border-red-500/10"
                                                     )}>
                                                         <span className={cn(
                                                             "w-1.5 h-1.5 rounded-full",
                                                             status === "available" ? "bg-emerald-500" :
-                                                                status === "low_stock" ? "bg-orange-500" : "bg-red-500"
+                                                            status === "low_stock" ? "bg-amber-500" :
+                                                            status === "critical" ? "bg-orange-500" : "bg-red-500"
                                                         )} />
-                                                        {status === "available" ? "متوفر" : status === "low_stock" ? "منخفض" : "نفد"}
+                                                        {status === "available" ? "جيد" : 
+                                                         status === "low_stock" ? "منخفض" : 
+                                                         status === "critical" ? "على وشك النفاذ" : "نفد"}
                                                     </div>
-
-                                                    {isAdmin && (
-                                                        <div className="flex items-center gap-2 lg:gap-3">
-                                                            <button
-                                                                onClick={() => onEdit(item)}
-                                                                className="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-white transition-all cursor-pointer shadow-sm active:scale-95" title="تعديل">
-                                                                <Pencil className="size-3 lg:size-3.5" />
-                                                            </button>
-
-                                                            <button
-                                                                onClick={() => onDelete(item.id)}
-                                                                className="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-600 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all cursor-pointer shadow-sm active:scale-95" title="حذف">
-                                                                <Trash2 className="size-3 lg:size-3.5" />
-                                                            </button>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </TableCell>
                                         </MotionRow>

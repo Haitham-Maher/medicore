@@ -8,22 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axios";
 import LowStockAlertsSkeleton from "../skeletons/LowStockAlertsSkeleton";
 
-// واجهة البيانات بناءً على الـ API الجديد
-interface InventoryItem {
-    id: number;
-    name: string;
-    type: string;
-    quantity: number;
-    price: string;
-    total_value: number;
-}
-
 export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }) {
 
     const { data: response, isLoading } = useQuery({
         queryKey: ["inventory-alerts", isAdmin],
         queryFn: async () => {
-            const endpoint = isAdmin ? "/inventory/alerts?limit=8" : "/point-manager/pharmacy/stock-alerts";
+            const endpoint = isAdmin ? "/inventory/alerts?limit=5" : "/point-manager/pharmacy/stock-alerts";
             const { data } = await api.get(endpoint);
             return data;
         }
@@ -32,7 +22,7 @@ export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }
     if (isLoading) return <LowStockAlertsSkeleton />;
 
     // توحيد شكل البيانات بين الأدمن والمنجر
-    const lowStock = (response?.data || []).map((item: any) => {
+    const lowStock = (response?.data || []).map((item: any, i: number) => {
         if (!isAdmin) {
             // تحويل بيانات المنجر لتناسب الواجهة
             return {
@@ -47,13 +37,13 @@ export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }
         }
         // بيانات الأدمن
         return {
-            id: item.id,
-            name: item.name,
-            type: item.type,
-            quantity: item.quantity,
-            max: 1000, // قيمة افتراضية للأدمن إذا لم تتوفر
+            id: item.id || i,
+            name: item.medicine_name,
+            type: item.location_name,
+            quantity: item.current_quantity,
+            max: item.max_quantity || 1000,
             status_text: "تنبيه مخزون",
-            percentage: (item.quantity / 1000) * 100
+            percentage: parseFloat(item.percentage) || 0
         };
     }).slice(0, 8);
 
@@ -69,7 +59,7 @@ export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }
                         <div>
                             <h3 className="text-base md:text-lg font-bold text-foreground leading-tight">مخزون النقطة</h3>
                             <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">
-                                عرض أول {lowStock.length} أدوية متوفرة
+                                {lowStock.length} أدوية على وشك النفاذ
                             </p>
                         </div>
                     </div>
@@ -90,7 +80,7 @@ export default function LowStockAlerts({ isAdmin = true }: { isAdmin?: boolean }
 
                     return (
                         <motion.div
-                            key={item.id}
+                            key={i}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.1 }}

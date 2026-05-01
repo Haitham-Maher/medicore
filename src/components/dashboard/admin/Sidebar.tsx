@@ -56,6 +56,10 @@ const patientSidebarItems = [
     { name: "وصفاتي",       href: "/patient/prescriptions", icon: ClipboardList    },
 ];
 
+import { useRouter } from "next/navigation";
+import api from "@/api/axios";
+import { toast } from "sonner";
+
 export interface SidebarProps {
     isAdmin?: boolean;
     role?: DashboardRole;
@@ -73,10 +77,36 @@ export function Sidebar({
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    const handleLogout = async () => {
+        const toastId = toast.loading("جاري تسجيل الخروج...", {
+            description: "يتم تأمين بياناتك والعودة للرئيسية"
+        });
+
+        try {
+            await api.post("/logout");
+            toast.success("تم تسجيل الخروج بنجاح", {
+                id: toastId,
+                description: "نشكرك لاستخدام ميدي كور. نراك قريباً!",
+                icon: <div className="size-8 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 me-3 shrink-0"><LogOut size={16} /></div>
+            });
+        } catch (error) {
+            console.error("Logout failed:", error);
+            toast.error("حدث خطأ أثناء تسجيل الخروج", {
+                id: toastId,
+                description: "يرجى المحاولة مرة أخرى لاحقاً"
+            });
+        } finally {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            setTimeout(() => router.push("/"), 1500);
+        }
+    };
 
     const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
@@ -207,12 +237,15 @@ export function Sidebar({
                             </div>
                         )}
                         {!isCollapsed && (
-                            <button className="p-1.5 hover:bg-destructive/10 text-sidebar-foreground/50 hover:text-destructive rounded-md transition-colors cursor-pointer">
+                            <button 
+                                onClick={handleLogout}
+                                className="p-1.5 hover:bg-destructive/10 text-sidebar-foreground/50 hover:text-destructive rounded-md transition-colors cursor-pointer"
+                            >
                                 <LogOut size={18} />
                             </button>
                         )}
                     </div>
-                </div>
+                </div> 
             </motion.aside>
         </>
     );

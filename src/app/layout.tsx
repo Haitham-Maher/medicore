@@ -36,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fontArabic.variable} font-sans antialiased`}
       >
-        <QueryProvider> {/* انقله إلى هنا */}
+        <QueryProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -48,21 +48,21 @@ export default function RootLayout({
               position="top-left"
               richColors
               dir="rtl"
-              expand={true}
               closeButton
-              visibleToasts={4}
+              theme="system"
               toastOptions={{
-                duration: 4000,
+                duration: 5000,
                 style: {
+                  background: 'rgba(var(--background-rgb), 0.8)',
+                  backdropFilter: 'blur(12px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '20px',
+                  boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
                   fontFamily: 'var(--font-arabic)',
-                  borderRadius: '16px',
-                  padding: '16px',
-                  gap: '12px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  padding: '12px 16px',
                 },
+                className: "border-border/50 bg-background/80 backdrop-blur-xl gap-4",
               }}
             />
           </ThemeProvider>

@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardList, Pill, ChevronDown, Search } from "lucide-react";
-import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import api from "@/api/axios";
+import { useQuery } from "@tanstack/react-query";
+import ErrorData from "@/components/inventory/table/components/errorData";
 
 // ─── Skeleton Component ───────────────────────────────────────
 function PrescriptionsSkeleton() {
@@ -59,50 +62,17 @@ function PrescriptionsSkeleton() {
 
 // ─── Types ────────────────────────────────────────────────────
 interface Medicine {
-    id: string;
-    name: string;     // medicines.name
-    type: string;     // medicines.type
-    quantity: number; // prescriptions_has_medicines.quantity
+    medicine_name: string;
+    dose: string;
+    instructions: string;
 }
 
 interface Prescription {
-    id: string;          // prescriptions.id
-    medicines: Medicine[]; // JOIN prescriptions_has_medicines + medicines
+    prescription_id: number;
+    date: string;
+    medicines_count: number;
+    medicines_details: Medicine[];
 }
-
-// ─── Mock Data (تُستبدل ببيانات API لاحقاً) ───────────────────
-const allPrescriptions: Prescription[] = [
-    {
-        id: "RX-100",
-        medicines: [
-            { id: "m1", name: "أموكسيسيلين",  type: "Antibiotic",   quantity: 20 },
-            { id: "m2", name: "إيبوبروفين",    type: "Painkiller",   quantity: 15 },
-        ],
-    },
-    {
-        id: "RX-101",
-        medicines: [
-            { id: "m3", name: "أوميبرازول",    type: "Antacid",      quantity: 30 },
-            { id: "m4", name: "فيتامين D",     type: "Supplement",   quantity: 60 },
-            { id: "m5", name: "سيتريزين",      type: "Antihistamine",quantity: 10 },
-        ],
-    },
-    {
-        id: "RX-102",
-        medicines: [
-            { id: "m6", name: "ميتفورمين",     type: "Antidiabetic", quantity: 60 },
-            { id: "m7", name: "أتورفاستاتين",  type: "Statin",       quantity: 30 },
-        ],
-    },
-    {
-        id: "RX-103",
-        medicines: [
-            { id: "m8", name: "لوسارتان",      type: "Antihypertensive", quantity: 30 },
-            { id: "m9", name: "أسبرين",        type: "Antiplatelet",     quantity: 30 },
-            { id: "m10", name: "أملوديبين",    type: "Antihypertensive", quantity: 30 },
-        ],
-    },
-];
 
 // ─── Badge Colors ─────────────────────────────────────────────
 const badgeColors: Record<string, string> = {
@@ -135,16 +105,14 @@ function PrescriptionCard({
     const [open, setOpen] = useState(false);
 
     // فلترة الأدوية حسب البحث
-    const filteredMeds = rx.medicines.filter(
-        (m) =>
+    const filteredMeds = rx.medicines_details.filter(
+        (m: Medicine) =>
             searchQuery === "" ||
-            m.name.toLowerCase().includes(searchQuery) ||
-            m.type.toLowerCase().includes(searchQuery)
+            m.medicine_name.toLowerCase().includes(searchQuery) ||
+            m.instructions.toLowerCase().includes(searchQuery)
     );
 
-    if (filteredMeds.length === 0) return null;
-
-    const totalQty = rx.medicines.reduce((s, m) => s + m.quantity, 0);
+    if (filteredMeds.length === 0 && searchQuery !== "") return null;
 
     return (
         <motion.div
@@ -174,15 +142,15 @@ function PrescriptionCard({
                     {/* Labels */}
                     <div>
                         <p className="font-black text-sm sm:text-base text-foreground">
-                         {rx.id}# وصفة 
+                         {rx.prescription_id}# وصفة 
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[9px] text-muted-foreground">
-                                {rx.medicines.length} دواء
+                                {rx.medicines_count} دواء
                             </span>
                             <span className="text-muted-foreground/30 text-[9px]">·</span>
                             <span className="text-[9px] text-muted-foreground">
-                                إجمالي الكمية: {totalQty}
+                                {rx.date}
                             </span>
                         </div>
                     </div>
@@ -212,46 +180,41 @@ function PrescriptionCard({
                         <div className="border-t border-primary/10 bg-primary/2">
                             {/* Table Column Headers */}
                             <div className="grid grid-cols-12 gap-2 px-4 sm:px-5 py-2 bg-muted/10">
-                                <span className="col-span-5 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">
-                                    اسم الدواء
-                                </span>
-                                <span className="col-span-4 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">
-                                    النوع
+                                <span className="col-span-6 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider">
+                                    اسم الدواء / التعليمات
                                 </span>
                                 <span className="col-span-3 text-[7px] sm:text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-center">
-                                    الكمية
+                                    الجرعة
                                 </span>
                             </div>
 
                             {/* Rows */}
                             <div className="divide-y divide-border/20">
-                                {filteredMeds.map((med, i) => (
+                                {filteredMeds.map((med: Medicine, i: number) => (
                                     <motion.div
-                                        key={med.id}
+                                        key={i}
                                         initial={{ opacity: 0, x: -6 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.04 }}
                                         className="grid grid-cols-12 gap-2 items-center px-4 sm:px-5 py-2.5 sm:py-3 hover:bg-muted/5 transition-colors"
                                     >
                                         {/* Name */}
-                                        <div className="col-span-5 flex items-center gap-2 min-w-0">
+                                        <div className="col-span-6 flex items-center gap-2 min-w-0">
                                             <div className="size-6 sm:size-7 rounded-lg bg-primary/8 border border-primary/15 flex items-center justify-center shrink-0">
                                                 <Pill className="size-3 sm:size-3.5 text-primary/60" />
                                             </div>
-                                            <span className="font-bold text-[10px] sm:text-[11px] text-foreground truncate">
-                                                {med.name}
-                                            </span>
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-[10px] sm:text-[11px] text-foreground truncate">
+                                                    {med.medicine_name}
+                                                </p>
+                                                <p className="text-[8px] text-muted-foreground truncate">{med.instructions}</p>
+                                            </div>
                                         </div>
 
-                                        {/* Type */}
-                                        <div className="col-span-4">
-                                            <MedicineBadge type={med.type} />
-                                        </div>
-
-                                        {/* Quantity */}
+                                        {/* Dosage */}
                                         <div className="col-span-3 flex justify-center">
                                             <span className="font-black text-[11px] sm:text-[12px] text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-lg min-w-[36px] text-center">
-                                                {med.quantity}
+                                                {med.dose}
                                             </span>
                                         </div>
                                     </motion.div>
@@ -267,29 +230,34 @@ function PrescriptionCard({
 
 // ─── Main Page ────────────────────────────────────────────────
 export default function PatientPrescriptionsPage() {
-    const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
 
-    useEffect(() => {
-        // محاكاة جلب البيانات
-        const timer = setTimeout(() => setIsLoading(false), 1250);
-        return () => clearTimeout(timer);
-    }, []);
+    const { data: rxResponse, isLoading, refetch } = useQuery({
+        queryKey: ["all-patient-prescriptions"],
+        queryFn: async () => {
+            const res = await api.get("/patient/prescriptions");
+            return res.data.data as { total_prescriptions: number; prescriptions: Prescription[] };
+        }
+    });
 
     if (isLoading) return <PrescriptionsSkeleton />;
+    if (!rxResponse) return <ErrorData refetch={refetch} />;
 
+    const allPrescriptions = rxResponse.prescriptions;
     const q = search.trim().toLowerCase();
 
-    const totalMeds = allPrescriptions.reduce((s, rx) => s + rx.medicines.length, 0);
+    // إجمالي الأدوية
+    const totalMeds = allPrescriptions.reduce((s, rx) => s + rx.medicines_count, 0);
 
     // وصفات تحتوي على نتيجة بحث
-    const visibleCount = allPrescriptions.filter(
+    const filteredPrescriptions = allPrescriptions.filter(
         (rx) =>
-            q === "" || rx.id.toLowerCase().includes(q) ||
-            rx.medicines.some(
-                (m) => m.name.toLowerCase().includes(q) || m.type.toLowerCase().includes(q)
+            q === "" || 
+            rx.prescription_id.toString().includes(q) ||
+            rx.medicines_details.some(
+                (m) => m.medicine_name.toLowerCase().includes(q) || m.instructions.toLowerCase().includes(q)
             )
-    ).length;
+    );
 
     return (
         <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500" dir="rtl">
@@ -316,7 +284,7 @@ export default function PatientPrescriptionsPage() {
                 {/* Counter Badge */}
                 <div className="flex items-center gap-2">
                     <span className="text-[9px] sm:text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
-                        {visibleCount} وصفة
+                        {filteredPrescriptions.length} نتيجة
                     </span>
                 </div>
             </motion.div>
@@ -328,7 +296,7 @@ export default function PatientPrescriptionsPage() {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="ابحث باسم الدواء أو النوع أو رقم الوصفة..."
+                    placeholder="ابحث باسم الدواء أو رقم الوصفة..."
                     className="w-full bg-card border border-border/50 rounded-xl py-2.5 sm:py-3 pr-11 pl-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
                     dir="rtl"
                 />
@@ -371,20 +339,26 @@ export default function PatientPrescriptionsPage() {
                     transition={{ duration: 0.25 }}
                     className="space-y-3"
                 >
-                    {visibleCount === 0 ? (
+                    {filteredPrescriptions.length === 0 ? (
                         <div className="py-16 flex flex-col items-center gap-4 bg-card border border-dashed border-border/50 rounded-2xl">
                             <div className="size-14 rounded-2xl bg-muted/30 flex items-center justify-center text-muted-foreground/30">
                                 <Search className="size-7" />
                             </div>
                             <div className="text-center">
-                                <p className="font-bold text-sm text-foreground mb-1">لا توجد نتائج</p>
-                                <p className="text-xs text-muted-foreground">لا يوجد دواء أو وصفة تطابق بحثك</p>
+                                <p className="font-bold text-sm text-foreground mb-1">
+                                    {allPrescriptions.length === 0 ? "لا توجد وصفات" : "لا توجد نتائج"}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    {allPrescriptions.length === 0 
+                                        ? "لم يتم تسجيل أي وصفات طبية لك في النظام بعد."
+                                        : "لا يوجد دواء أو وصفة تطابق بحثك"}
+                                </p>
                             </div>
                         </div>
                     ) : (
-                        allPrescriptions.map((rx, i) => (
+                        filteredPrescriptions.map((rx, i) => (
                             <PrescriptionCard
-                                key={rx.id}
+                                key={rx.prescription_id}
                                 rx={rx}
                                 index={i}
                                 searchQuery={q}

@@ -99,7 +99,7 @@ interface InventoryReportsProps {
 
 export default function InventoryReports({ isAdmin = true }: InventoryReportsProps) {
     const queryClient = useQueryClient();
-    const [activeTab, setActiveTab] = useState<"all" | "pending" | "in_progress" | "completed" | "cancelled">("all");
+    const [activeTab, setActiveTab] = useState<"all" | "pending" | "completed" | "cancelled">("all");
     const [searchTerm, setSearchTerm] = useState("");
 
     // 1. Fetch Data
@@ -266,13 +266,20 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
 
     const filteredAndSortedRequests = [...requests]
         .filter(req => {
-            const matchesTab = activeTab === "all" || req.status === activeTab;
+            let matchesTab = activeTab === "all";
+            if (activeTab === "pending") {
+                // أي طلب ليس مكتملاً أو ملغى يعتبر معلقاً
+                matchesTab = req.status === "pending" || req.status === "in_progress";
+            } else if (activeTab !== "all") {
+                matchesTab = req.status === activeTab;
+            }
+
             const matchesSearch =
                 (req.itemName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (req.clinic || "").includes(searchTerm);
             return matchesTab && matchesSearch;
         })
-        // الحل للمشكلة الثانية: ترتيب القائمة بناءً على الأولوية
+        // ترتيب القائمة بناءً على الأولوية
         .sort((a, b) => statusPriority[a.status] - statusPriority[b.status]);
 
     return (
@@ -293,14 +300,15 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                     {[
                         { id: "all", label: "الكل", icon: ClipboardList },
                         { id: "pending", label: "معلقة", icon: Clock },
-                        { id: "in_progress", label: "قيد التنفيذ", icon: PlayCircle },
                         { id: "completed", label: "مكتملة", icon: CheckCircle },
                         { id: "cancelled", label: "ملغاة", icon: XCircle }
                     ].map((tab) => {
                         const isActive = activeTab === tab.id;
                         const count = tab.id === "all"
                             ? requests.length
-                            : requests.filter(r => r.status === tab.id).length;
+                            : tab.id === "pending"
+                                ? requests.filter(r => r.status === "pending" || r.status === "in_progress").length
+                                : requests.filter(r => r.status === tab.id).length;
 
                         return (
                             <button

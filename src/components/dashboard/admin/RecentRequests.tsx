@@ -46,6 +46,17 @@ const getStatusText = (status: RequestItem["status"]) => {
     }
 };
 
+const formatRelativeTime = (str: string) => {
+    if (!str) return "";
+    // تحسين عرض الوقت: تقريب الأرقام العشرية (مثلاً 2.8 يوم -> 3 أيام)
+    return str.replace(/(\d+\.\d+)/g, (match) => {
+        return Math.round(parseFloat(match)).toString();
+    }).replace("يوم", (match) => {
+        // تحسين بسيط للغة العربية (اختياري)
+        return "أيام";
+    }).replace("1 أيام", "يوم").replace("2 أيام", "يومين");
+};
+
 interface RecentRequestsProps {
     onViewAll?: () => void;
     isAdmin?: boolean;
@@ -116,23 +127,27 @@ export default function RecentRequests({
 
     // 3. تحويل البيانات للعرض
     const requests: RequestItem[] = (listRecent || [])
-        .map((item: any) => {
+        .map((item: any, i: number) => {
             if (isAdmin) {
-                const medicines = item.requested_medicines || [];
+                const medicines = item.medicines || item.requested_medicines || [];
                 const medicinesText = medicines.length > 0
                     ? `${medicines[0].name}${medicines.length > 1 ? ` + ${medicines.length - 1} أصناف أخرى` : ""}`
                     : "طلب إمدادات";
+
+                const dateDisplay = item.created_at
+                    ? new Date(item.created_at).toLocaleDateString('ar-EG-u-nu-arab', {
+                        day: 'numeric', month: 'long'
+                    }) + ' | ' + new Date(item.created_at).toLocaleTimeString('ar-EG-u-nu-arab', {
+                        hour: '2-digit', minute: '2-digit'
+                    })
+                    : formatRelativeTime(item.created_at_human) || "تاريخ غير معروف";
 
                 return {
                     id: item.id.toString(),
                     type: "medicine",
                     title: id ? medicinesText : `عيادة ${item.point_name}`,
                     requester: id ? (item.manager_name || "مدير النقطة") : item.manager_name,
-                    date: new Date(item.created_at).toLocaleDateString('ar-EG-u-nu-arab', {
-                        day: 'numeric', month: 'long'
-                    }) + ' | ' + new Date(item.created_at).toLocaleTimeString('ar-EG-u-nu-arab', {
-                        hour: '2-digit', minute: '2-digit'
-                    }),
+                    date: dateDisplay,
                     status: ((): RequestItem["status"] => {
                         switch (item.status) {
                             case "completed":
@@ -153,15 +168,17 @@ export default function RecentRequests({
                     }
                 };
                 return {
-                    id: item.id.toString(),
+                    id: (item.id || i).toString(),
                     type: "medicine",
                     title: item.content || "طلب إمدادات",
                     requester: item.storage_name || "المخزن الرئيسي",
-                    date: new Date(item.created_at).toLocaleDateString('ar-EG-u-nu-arab', {
-                        day: 'numeric', month: 'long'
-                    }) + ' | ' + new Date(item.created_at).toLocaleTimeString('ar-EG-u-nu-arab', {
-                        hour: '2-digit', minute: '2-digit'
-                    }),
+                    date: item.created_at
+                        ? new Date(item.created_at).toLocaleDateString('ar-EG-u-nu-arab', {
+                            day: 'numeric', month: 'long'
+                        }) + ' | ' + new Date(item.created_at).toLocaleTimeString('ar-EG-u-nu-arab', {
+                            hour: '2-digit', minute: '2-digit'
+                        })
+                        : formatRelativeTime(item.created_at_human) || "تاريخ غير معروف",
                     status: statusMap(item.status)
                 };
             }

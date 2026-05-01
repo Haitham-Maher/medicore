@@ -1,4 +1,4 @@
-import { Star, Trash2, MapPin, Building2, Stethoscope, Phone } from "lucide-react";
+import { Star, MapPin, Building2, Stethoscope, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DoctorCardProps {
@@ -15,7 +15,6 @@ interface DoctorCardProps {
     };
     type: "point-head" | "dept-head" | "doctor";
     index: number;
-    onDelete: (person: any) => void;
     onView?: (person: any, type: "point-head" | "dept-head" | "doctor") => void;
     isAdmin?: boolean;
     view?: "grid" | "list";
@@ -32,8 +31,7 @@ function RatingBadge({ rating, reviews = 45 }: { rating: number, reviews?: numbe
     );
 }
 
-export default function DoctorCard({ person, type, index, onDelete, onView, isAdmin = true, view = "grid" }: DoctorCardProps) {
-    const showDelete = isAdmin ? type !== "doctor" : true;
+export default function DoctorCard({ person, type, index, onView, isAdmin = true, view = "grid" }: DoctorCardProps) {
     const roleBadgeColor =
         type === "point-head"
             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
@@ -121,19 +119,7 @@ export default function DoctorCard({ person, type, index, onDelete, onView, isAd
                         <span className="text-[9px] text-muted-foreground font-bold hidden md:inline">({32 + index} مريض)</span>
                     </div>
 
-                    {/* Actions */}
-                    {showDelete && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete(person);
-                            }}
-                            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/10 hover:border-red-500 transition-all shadow-xs cursor-pointer active:scale-90"
-                            title="حذف"
-                        >
-                            <Trash2 className="size-3.5 sm:size-4" />
-                        </button>
-                    )}
+                    {/* Actions - Removed Delete */}
                 </div>
             </div>
         );
@@ -162,17 +148,7 @@ export default function DoctorCard({ person, type, index, onDelete, onView, isAd
                         </div>
                     </div>
 
-                    {showDelete && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete(person);
-                            }}
-                            className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 hover:border-red-500 transition-all cursor-pointer shrink-0"
-                        >
-                            <Trash2 size={14} />
-                        </button>
-                    )}
+                    {/* Delete button removed */}
                 </div>
 
                 <div className="mb-5">

@@ -20,7 +20,7 @@ export default function InventoryCategoryFilters({
     inventoryData
 }: InventoryCategoryFiltersProps) {
     return (
-        <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50 w-full md:w-fit overflow-x-auto no-scrollbar" dir="rtl">
+        <div className="flex items-center justify-between gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50 w-full md:w-full overflow-x-hidden no-scrollbar" dir="rtl">
             {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
                 const Icon = cat === "الكل" ? LayoutGrid : getCategoryIcon(cat);

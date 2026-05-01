@@ -168,22 +168,6 @@ export default function MedicalPointsPage() {
                     )
                 )}
             </AnimatePresence>
-
-            <AddMedicalPointModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                title="إضافة قسم طبي"
-                isAdmin={false}
-            />
-
-            <DeleteConfirmation
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={handleDeletePoint}
-                title="حذف النقطة الطبية"
-                description={`هل أنت متأكد من رغبتك في حذف "${selectedPoint?.name}"؟ سيتم حذف جميع البيانات المتعلقة بهذه النقطة ولا يمكن التراجع عن هذا الإجراء.`}
-                isLoading={isDeleting}
-            />
         </div>
     );
 }

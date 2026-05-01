@@ -9,7 +9,7 @@ import {
     ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 // ─── Skeleton Component ───────────────────────────────────────
@@ -95,87 +95,76 @@ function DashboardSkeleton() {
         </div>
     );
 }
+import api from "@/api/axios";
+import { useQuery } from "@tanstack/react-query";
+import ErrorData from "@/components/inventory/table/components/errorData";
 
 // ─── Shared Types ─────────────────────────────────────────────
 type ShiftType = "morning" | "evening" | "night" | "off";
 
-interface Medicine { id: string; name: string; type: string; quantity: number; }
-interface Prescription { id: string; medicines: Medicine[]; }
-interface Patient { id: string; name: string; nationalId: string; birthdate: string; phone: string; prescriptions: Prescription[]; }
-
-// ─── Mock Data ────────────────────────────────────────────────
-const doctorProfile = {
-    name: "د. أحمد كمال",
-    specialize: "General Surgery — جراحة عامة",
-    status: "active" as const,
-    rating: 4.8,
-    bio: "متخصص في الجراحة العامة والمناظير بخبرة تجاوزت 12 عاماً في إجراء العمليات الجراحية الدقيقة.",
-};
-
-const schedule = [
-    { day: "الأحد", dayEn: "Sunday", shift: "morning" as ShiftType, from: "08:00", to: "14:00" },
-    { day: "الإثنين", dayEn: "Monday", shift: "morning" as ShiftType, from: "08:00", to: "14:00" },
-    { day: "الثلاثاء", dayEn: "Tuesday", shift: "evening" as ShiftType, from: "14:00", to: "20:00" },
-    { day: "الأربعاء", dayEn: "Wednesday", shift: "morning" as ShiftType, from: "08:00", to: "14:00" },
-    { day: "الخميس", dayEn: "Thursday", shift: "evening" as ShiftType, from: "14:00", to: "20:00" },
-    { day: "الجمعة", dayEn: "Friday", shift: "off" as ShiftType, from: "—", to: "—" },
-    { day: "السبت", dayEn: "Saturday", shift: "off" as ShiftType, from: "—", to: "—" },
-];
-
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const todayEn = DAYS[new Date().getDay()];
-const todayRow = schedule.find(d => d.dayEn === todayEn);
-
-const recentPatients: Patient[] = [
-    {
-        id: "1", name: "محمد سعد العتيبي", nationalId: "1098765432",
-        birthdate: "1985-04-15", phone: "0551234567",
-        prescriptions: [{
-            id: "RX-100", medicines: [
-                { id: "m1", name: "أموكسيسيلين", type: "Antibiotic", quantity: 20 },
-                { id: "m2", name: "إيبوبروفين", type: "Painkiller", quantity: 15 },
-            ]
-        }],
-    },
-    {
-        id: "2", name: "فاطمة علي الزهراني", nationalId: "2098776543",
-        birthdate: "1992-08-22", phone: "0559876543",
-        prescriptions: [{
-            id: "RX-101", medicines: [
-                { id: "m3", name: "ميتفورمين", type: "Antidiabetic", quantity: 60 },
-            ]
-        }],
-    },
-    {
-        id: "3", name: "عبدالله ناصر القحطاني", nationalId: "1076543210",
-        birthdate: "1970-03-10", phone: "0544321098",
-        prescriptions: [
-            { id: "RX-102", medicines: [{ id: "m5", name: "لوسارتان", type: "Antihypertensive", quantity: 30 }] },
-        ],
-    },
-];
-
-// ─── Helpers ──────────────────────────────────────────────────
-function shiftCfg(shift: ShiftType) {
-    switch (shift) {
-        case "morning": return { label: "صباحي", icon: Sun, bg: "bg-amber-500/10", text: "text-amber-600", border: "border-amber-500/20" };
-        case "evening": return { label: "مسائي", icon: Sunset, bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/20" };
-        case "off": return { label: "إجازة", icon: Coffee, bg: "bg-muted/30", text: "text-muted-foreground", border: "border-border/30" };
-        default: return { label: shift, icon: Clock, bg: "bg-muted/30", text: "text-muted-foreground", border: "border-border/30" };
-    }
+interface Medicine {
+    medicine_name: string;
+    dose: string;
+    instructions: string;
 }
 
-const badgeColors: Record<string, string> = {
-    Antibiotic: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    Painkiller: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-    Antidiabetic: "bg-violet-500/10 text-violet-600 border-violet-500/20",
-    Antihypertensive: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-};
+interface Prescription {
+    prescription_id: number;
+    date: string;
+    medicines_count: number;
+    medicines_details: Medicine[];
+}
+
+interface Patient {
+    patient_id: number;
+    patient_name: string;
+    patient_national_id: string;
+    phone_number: string;
+    birthdate: string;
+    total_prescriptions_by_me: number;
+    prescriptions_history: Prescription[];
+}
+interface Doctor {
+    id: number;
+    name: string;
+    email: string;
+    phone_number: string;
+    avatar: string | null;
+    specialization: string;
+    status: "active" | "inactive";
+    bio: string;
+    rating: number;
+}
+
+interface CurrentShift {
+    day: string;
+    start_time: string;
+    end_time: string;
+    total_hours: number;
+    shift_type: string;
+    shift_type_ar: string;
+}
+
+
+
+// ─── Helpers ──────────────────────────────────────────────────
+function shiftCfg(type: string) {
+    if (type === "صباحية" || type === "morning") {
+        return { label: "صباحي", icon: Sun, bg: "bg-amber-500/10", text: "text-amber-600", border: "border-amber-500/20" };
+    }
+    if (type === "مسائية" || type === "evening") {
+        return { label: "مسائي", icon: Sunset, bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/20" };
+    }
+    if (type === "إجازة" || type === "off") {
+        return { label: "إجازة", icon: Coffee, bg: "bg-muted/30", text: "text-muted-foreground", border: "border-border/30" };
+    }
+    return { label: type, icon: Clock, bg: "bg-muted/30", text: "text-muted-foreground", border: "border-border/30" };
+}
 
 // ─── Mini Patient Card ────────────────────────────────────────
 function MiniPatientCard({ patient, index }: { patient: Patient; index: number }) {
     const [expanded, setExpanded] = useState(false);
-    const totalMeds = patient.prescriptions.reduce((s, rx) => s + rx.medicines.length, 0);
+    const totalMeds = patient.prescriptions_history.reduce((s: number, rx: Prescription) => s + rx.medicines_count, 0);
 
     return (
         <motion.div
@@ -195,11 +184,11 @@ function MiniPatientCard({ patient, index }: { patient: Patient; index: number }
                     "size-9 rounded-lg flex items-center justify-center shrink-0 font-black text-sm transition-all",
                     expanded ? "bg-emerald-500 text-white" : "bg-primary/8 text-primary border border-primary/15"
                 )}>
-                    {patient.name.charAt(0)}
+                    {patient.patient_name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-xs text-foreground truncate mb-0.5">{patient.name}</h3>
-                    <p className="text-[9px] text-muted-foreground font-mono">{patient.nationalId}</p>
+                    <h3 className="font-bold text-xs text-foreground truncate mb-0.5">{patient.patient_name}</h3>
+                    <p className="text-[9px] text-muted-foreground font-mono">{patient.patient_national_id}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                     <span className="hidden sm:block text-[9px] font-bold text-muted-foreground">{totalMeds} دواء</span>
@@ -227,7 +216,7 @@ function MiniPatientCard({ patient, index }: { patient: Patient; index: number }
                                     <Phone className="size-3 text-primary/60 shrink-0" />
                                     <div className="min-w-0">
                                         <p className="text-[7px] text-muted-foreground">هاتف</p>
-                                        <p className="font-bold text-[10px] text-foreground truncate" dir="ltr">{patient.phone}</p>
+                                        <p className="font-bold text-[10px] text-foreground truncate" dir="ltr">{patient.phone_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 bg-card border border-border/40 rounded-lg p-2">
@@ -238,22 +227,25 @@ function MiniPatientCard({ patient, index }: { patient: Patient; index: number }
                                     </div>
                                 </div>
                             </div>
-                            {patient.prescriptions.map(rx => (
-                                <div key={rx.id} className="bg-card border border-border/40 rounded-lg overflow-hidden">
+                            {patient.prescriptions_history.map((rx: Prescription) => (
+                                <div key={rx.prescription_id} className="bg-card border border-border/40 rounded-lg overflow-hidden">
                                     <div className="flex items-center justify-between px-3 py-1.5 bg-muted/20 border-b border-border/30">
-                                        <span className="text-[9px] font-bold text-muted-foreground font-mono">وصفة #{rx.id}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-bold text-muted-foreground font-mono">وصفة #{rx.prescription_id}</span>
+                                            <span className="text-[7px] text-muted-foreground">{rx.date}</span>
+                                        </div>
                                         <ClipboardList className="size-2.5 text-emerald-600" />
                                     </div>
                                     <div className="divide-y divide-border/20">
-                                        {rx.medicines.map(med => (
-                                            <div key={med.id} className="flex items-center gap-2 px-3 py-2">
+                                        {rx.medicines_details.map((med: Medicine, mIdx: number) => (
+                                            <div key={mIdx} className="flex items-center gap-2 px-3 py-2">
                                                 <Pill className="size-2.5 text-primary/50 shrink-0" />
-                                                <span className="font-bold text-[10px] text-foreground flex-1 truncate">{med.name}</span>
-                                                <span className={cn("text-[7px] font-bold px-1.5 py-0.5 rounded-full border shrink-0",
-                                                    badgeColors[med.type] ?? "bg-muted text-muted-foreground border-border/40"
-                                                )}>{med.type}</span>
-                                                <span className="font-black text-[10px] text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-lg shrink-0">
-                                                    {med.quantity}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-bold text-[10px] text-foreground truncate">{med.medicine_name}</p>
+                                                    <p className="text-[8px] text-muted-foreground truncate">{med.instructions}</p>
+                                                </div>
+                                                <span className="text-[8px] font-black px-1.5 py-0.5 rounded-md bg-primary/5 border border-primary/10 text-primary shrink-0">
+                                                    {med.dose}
                                                 </span>
                                             </div>
                                         ))}
@@ -284,17 +276,46 @@ function SectionCard({ children, delay = 0 }: { children: React.ReactNode; delay
 
 // ─── Main Page (Dashboard) ────────────────────────────────────
 export default function DoctorDashboard() {
-    const [isLoading, setIsLoading] = useState(true);
+    const [imgError, setImgError] = useState(false);
 
-    useEffect(() => {
-        // محاكاة جلب البيانات
-        const timer = setTimeout(() => setIsLoading(false), 1200);
-        return () => clearTimeout(timer);
-    }, []);
+    // 1. جلب بيانات الطبيب
+    const { data: profileResponse, isLoading: profileLoading, refetch: refetchProfile } = useQuery({
+        queryKey: ["doctor-profile"],
+        queryFn: async () => {
+            const res = await api.get("/doctor/profile");
+            return res.data.data as Doctor;
+        }
+    });
+
+    // 2. جلب دوام اليوم الحقيقي
+    const { data: shiftResponse, isLoading: shiftLoading } = useQuery({
+        queryKey: ["current-shift"],
+        queryFn: async () => {
+            const res = await api.get("/current-shift");
+            return res.data.data as CurrentShift;
+        }
+    });
+
+    // 3. جلب قائمة المرضى الحديثة
+    const { data: patientsResponse, isLoading: patientsLoading, refetch: refetchPatients } = useQuery({
+        queryKey: ["recent-patients"],
+        queryFn: async () => {
+            const res = await api.get("/doctor/recent-patients");
+            return res.data.data as Patient[];
+        }
+    });
+
+    const isLoading = profileLoading || shiftLoading || patientsLoading;
 
     if (isLoading) return <DashboardSkeleton />;
+    if (!profileResponse) return <ErrorData refetch={refetchProfile} />;
 
-    const todayCfg = todayRow ? shiftCfg(todayRow.shift) : null;
+    const doctorProfile = profileResponse;
+    const initials = doctorProfile.name.charAt(0);
+    const currentShift = shiftResponse;
+    const recentPatients = patientsResponse || [];
+
+    const todayCfg = currentShift ? shiftCfg(currentShift.shift_type_ar) : null;
     const TodayIcon = todayCfg?.icon ?? Clock;
 
     return (
@@ -306,15 +327,18 @@ export default function DoctorDashboard() {
                 <div className="p-5 sm:p-7">
                     <div className="flex items-start gap-4 sm:gap-5">
                         <div className="relative shrink-0">
-                            <div className="size-16 sm:size-20 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shadow-inner">
-                                <Stethoscope className="size-8 sm:size-10 text-primary/80" />
+                            <div className="size-16 sm:size-20 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shadow-inner overflow-hidden">
+                                {doctorProfile.avatar && !imgError ? (
+                                    <img
+                                        src={doctorProfile.avatar}
+                                        alt={doctorProfile.name}
+                                        className="w-full h-full object-cover"
+                                        onError={() => setImgError(true)}
+                                    />
+                                ) : (
+                                    <span className="text-primary font-black text-2xl sm:text-3xl">{initials}</span>
+                                )}
                             </div>
-                            {doctorProfile.status === "active" && (
-                                <div className="absolute -bottom-1 -left-1 flex items-center gap-1 bg-emerald-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                                    <span className="size-1.5 rounded-full bg-white animate-pulse" />
-                                    نشط
-                                </div>
-                            )}
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -329,10 +353,10 @@ export default function DoctorDashboard() {
                                         : "bg-red-500/10 text-red-600 border-red-500/20"
                                 )}>
                                     <Activity className="size-2.5" />
-                                    {doctorProfile.status === "active" ? "Active" : "Inactive"}
+                                    {doctorProfile.status === "active" ? "نشط" : "غير نشط"}
                                 </span>
                             </div>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{doctorProfile.specialize}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{doctorProfile.specialization}</p>
                             <div className="flex items-center gap-1.5">
                                 {[...Array(5)].map((_, i) => (
                                     <Star key={i} className={cn("size-3.5", i < Math.floor(doctorProfile.rating) ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30")} />
@@ -371,7 +395,7 @@ export default function DoctorDashboard() {
                     </Link>
                 </div>
 
-                {todayRow && todayCfg ? (
+                {currentShift && todayCfg ? (
                     <div className="p-4 sm:p-5 flex items-center gap-4">
                         <div className={cn(
                             "size-12 sm:size-14 rounded-2xl flex items-center justify-center shrink-0 border",
@@ -385,18 +409,14 @@ export default function DoctorDashboard() {
                                     {todayCfg.label}
                                 </span>
                             </div>
-                            <p className="font-black text-sm sm:text-base text-foreground">{todayRow.day}</p>
+                            <p className="font-black text-sm sm:text-base text-foreground">{currentShift.day}</p>
                         </div>
-                        {todayRow.shift !== "off" ? (
-                            <div className="shrink-0 text-center">
-                                <p className="font-mono font-black text-base sm:text-xl text-foreground" dir="ltr">
-                                    {todayRow.to} <span className="rotate-180 inline-block">→</span> {todayRow.from}
-                                </p>
-                                <p className="text-[9px] text-muted-foreground mt-0.5">6 ساعات عمل</p>
-                            </div>
-                        ) : (
-                            <span className="text-[10px] font-bold text-muted-foreground/50">لا يوجد دوام</span>
-                        )}
+                        <div className="shrink-0 text-center">
+                            <p className="font-mono font-black text-base sm:text-xl text-foreground" dir="ltr">
+                                {currentShift.end_time} <span className="rotate-180 inline-block">→</span> {currentShift.start_time}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground mt-0.5">{Math.abs(currentShift.total_hours)} ساعات عمل</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="p-5 text-center text-muted-foreground text-sm">لم يتم تحديد دوام لهذا اليوم</div>
@@ -424,7 +444,13 @@ export default function DoctorDashboard() {
                 </div>
 
                 <div className="space-y-2.5">
-                    {recentPatients.map((p, i) => <MiniPatientCard key={p.id} patient={p} index={i} />)}
+                    {recentPatients.length > 0 ? (
+                        recentPatients.slice(0, 5).map((p, i) => <MiniPatientCard key={p.patient_id} patient={p} index={i} />)
+                    ) : (
+                        <div className="text-center py-8 bg-muted/5 border border-dashed rounded-2xl">
+                            <p className="text-xs text-muted-foreground">لا يوجد مرضى حديثون</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

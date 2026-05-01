@@ -7,14 +7,9 @@ import { ClipboardList, CalendarDays, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui";
 
-const prescriptions = [
-    { id: "1", doctor: "د. أحمد كمال", patient: "محمد علي", date: "2026-03-10", items: 3, status: "active" },
-    { id: "2", doctor: "د. سارة علي", patient: "فاطمة حسن", date: "2026-03-09", items: 2, status: "active" },
-    { id: "3", doctor: "د. خالد منصور", patient: "أحمد سالم", date: "2026-03-08", items: 5, status: "completed" },
-    { id: "4", doctor: "د. فاطمة حسين", patient: "خالد محمد", date: "2026-03-07", items: 1, status: "completed" },
-    { id: "5", doctor: "د. أحمد كمال", patient: "سارة يوسف", date: "2026-03-06", items: 4, status: "active" },
-    { id: "6", doctor: "د. نور الدين", patient: "عمر حسين", date: "2026-03-05", items: 2, status: "completed" },
-];
+import { useQuery } from "@tanstack/react-query";
+import api from "@/api/axios";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const getInitials = (name: string) => {
     const clean = name.replace(/^(د\.|م\.)\s+/, "");
@@ -22,24 +17,31 @@ const getInitials = (name: string) => {
 };
 
 export default function DeptHeadPrescriptionsPage() {
-    const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-    }, []);
+    const { data: response, isLoading } = useQuery({
+        queryKey: ["department-head-prescriptions-full", currentPage],
+        queryFn: async () => {
+            const res = await api.get(`/department-head/prescriptions?page=${currentPage}`);
+            return res.data;
+        },
+    });
 
     if (isLoading) return <PrescriptionsSkeleton />;
 
-    const filteredPrescriptions = prescriptions.filter(rx =>
-        rx.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        rx.patient.toLowerCase().includes(searchTerm.toLowerCase())
+    const prescriptions = response?.data || [];
+    const pagination = response?.pagination || { current_page: 1, last_page: 1 };
+
+    const filteredPrescriptions = prescriptions.filter((rx: any) =>
+        rx.doctor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rx.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rx.prescription_number.toString().includes(searchTerm)
     );
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <PageHeader
+            <PageHeader 
                 title="الوصفات الطبية"
                 description="عرض جميع الوصفات الصادرة من أطباء القسم"
                 icon={ClipboardList}
@@ -88,37 +90,46 @@ export default function DeptHeadPrescriptionsPage() {
                                 </div>
                             ) : (
                                 <div className="divide-y divide-border/30">
-                                    {filteredPrescriptions.map((rx) => (
+                                    {filteredPrescriptions.map((rx: any) => (
                                         <div
-                                            key={rx.id}
-                                            className="px-6 py-4 flex items-center gap-4 hover:bg-muted/20 transition-all cursor-pointer group"
+                                            key={rx.prescription_number}
+                                            className="px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-muted/20 transition-all cursor-pointer group"
                                         >
-                                            <div className="h-10 w-10 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0">
-                                                <span className="text-violet-500 font-black text-sm">{getInitials(rx.doctor)}</span>
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="h-10 w-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/5 group-hover:scale-110 transition-transform">
+                                                    <span className="text-violet-500 font-black text-sm">{getInitials(rx.doctor_name)}</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{rx.doctor_name}</h4>
+                                                        <span className={cn(
+                                                            "text-[9px] px-2 py-0.5 rounded-full border font-black uppercase tracking-tight",
+                                                            rx.status === "Dispensed" 
+                                                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                                                                : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                                        )}>
+                                                            {rx.status === "Dispensed" ? "تم الصرف" : "قيد الانتظار"}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                                        <p className="text-[11px] text-muted-foreground font-bold truncate">المريض: {rx.patient_name}</p>
+                                                        <span className="hidden sm:inline size-1 rounded-full bg-muted-foreground/30" />
+                                                        <div className="flex items-center gap-1.5">
+                                                            <CalendarDays size={10} className="text-muted-foreground/40" />
+                                                            <span className="text-[10px] text-muted-foreground font-medium">{rx.created_at}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{rx.doctor}</h4>
-                                                    <span className="text-[8px] px-1.5 py-px rounded-full border font-bold bg-violet-500/10 text-violet-600 border-violet-500/20 shrink-0">
-                                                        {rx.items} أدوية
+                                            
+                                            <div className="flex items-center justify-between sm:justify-end gap-4 pl-0 sm:pl-4">
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <span className="text-[10px] font-black text-violet-600 bg-violet-500/5 px-2.5 py-1 rounded-lg border border-violet-500/10">
+                                                        {rx.medicines_count} أدوية
                                                     </span>
-                                                </div>
-                                                <p className="text-[10px] text-muted-foreground font-medium truncate mt-0.5">
-                                                    المريض: {rx.patient}
-                                                </p>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <CalendarDays size={10} className="text-muted-foreground/50" />
-                                                    <span className="text-[10px] text-muted-foreground font-medium">{rx.date}</span>
+                                                    <span className="text-[9px] text-muted-foreground font-mono">#{rx.prescription_number}</span>
                                                 </div>
                                             </div>
-                                            <span className={cn(
-                                                "text-[9px] px-2 py-0.5 rounded-full border font-bold shrink-0",
-                                                rx.status === "active"
-                                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                                    : "bg-muted text-muted-foreground border-border"
-                                            )}>
-                                                {rx.status === "active" ? "فعّالة" : "مكتملة"}
-                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -127,8 +138,33 @@ export default function DeptHeadPrescriptionsPage() {
                     </AnimatePresence>
                 </div>
 
-                <div className="p-4 bg-muted/10 border-t border-border/50 text-center">
-                    <p className="text-[10px] text-muted-foreground italic">يتم تحديث الوصفات تلقائياً</p>
+                {/* Pagination */}
+                <div className="p-4 bg-muted/10 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-[10px] text-muted-foreground italic order-2 sm:order-1">يتم تحديث الوصفات تلقائياً</p>
+                    
+                    <div className="flex items-center gap-2 order-1 sm:order-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="p-2 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                        
+                        <div className="flex items-center gap-1 mx-2">
+                            <span className="text-xs font-bold text-foreground">{currentPage}</span>
+                            <span className="text-xs text-muted-foreground">من</span>
+                            <span className="text-xs font-bold text-foreground">{pagination.last_page}</span>
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(pagination.last_page, prev + 1))}
+                            disabled={currentPage === pagination.last_page}
+                            className="p-2 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

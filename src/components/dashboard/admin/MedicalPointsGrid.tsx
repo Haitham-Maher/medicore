@@ -40,7 +40,7 @@ export default function MedicalPointsGrid({
 }) {
 
   // يمكنك تغيير هذا المسار لمسار الصورة الافتراضية الموجودة لديك في مجلد public
-  const DEFAULT_IMAGE = "/images/default-dept.png";
+  const DEFAULT_IMAGE = "/images/defaultMediacaPoint.jpg";
 
   const { data: response, isLoading } = useQuery({
     queryKey: isAdmin ? ["medical-points"] : ["departments-detailed"],

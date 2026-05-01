@@ -13,41 +13,13 @@ import {
     ClipboardList,
     ArrowLeft,
 } from "lucide-react";
+import ErrorData from "@/components/inventory/table/components/errorData";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui";
 import AgeDistributionChart from "@/components/dashboard/admin/AgeDistributionChart";
 import Link from "next/link";
 import DashboardSkeleton from "@/components/department-head/skeletons/DashboardSkeleton";
 import api from "@/api/axios";
-
-// ─── Mock Data ──────────────────────────────────────────────
-interface Doctor {
-    id: string;
-    name: string;
-    specialty: string;
-    status: "available" | "busy" | "off-duty";
-    rating: number;
-    patients: number;
-    visits: number;
-    phone: string;
-}
-
-const mockDoctors: Doctor[] = [
-    { id: "1", name: "د. أحمد كمال", specialty: "استشاري جراحة عامة", status: "available", rating: 4.9, patients: 85, visits: 320, phone: "+966 50 111 2222" },
-    { id: "2", name: "د. سارة علي", specialty: "أخصائية جراحة أطفال", status: "busy", rating: 4.8, patients: 62, visits: 245, phone: "+966 50 333 4444" },
-    { id: "3", name: "د. خالد منصور", specialty: "جراح عظام", status: "available", rating: 4.7, patients: 54, visits: 198, phone: "+966 50 555 6666" },
-    { id: "4", name: "د. فاطمة حسين", specialty: "جراحة تجميل", status: "available", rating: 4.6, patients: 48, visits: 176, phone: "+966 50 777 8888" },
-    { id: "5", name: "د. عمر يوسف", specialty: "جراحة قلب", status: "off-duty", rating: 4.5, patients: 40, visits: 152, phone: "+966 50 999 0000" },
-    { id: "6", name: "د. نور الدين", specialty: "جراحة أعصاب", status: "busy", rating: 4.4, patients: 35, visits: 128, phone: "+966 50 222 3333" },
-    { id: "7", name: "د. ليلى محمود", specialty: "جراحة مسالك", status: "available", rating: 4.3, patients: 28, visits: 98, phone: "+966 50 444 5555" },
-    { id: "8", name: "د. حسن إبراهيم", specialty: "جراحة صدر", status: "off-duty", rating: 4.2, patients: 22, visits: 72, phone: "+966 50 666 7777" },
-];
-
-const recentPrescriptions = [
-    { id: "1", doctor: "د. أحمد كمال", patient: "محمد علي", date: "2026-03-10", items: 3, status: "مكتملة" },
-    { id: "2", doctor: "د. سارة علي", patient: "فاطمة حسن", date: "2026-03-09", items: 2, status: "قيد المراجعة" },
-    { id: "3", doctor: "د. خالد منصور", patient: "أحمد سالم", date: "2026-03-08", items: 5, status: "نشطة" },
-];
 
 // ─── Helper ─────────────────────────────────────────────────
 const getInitials = (name: string) => {
@@ -90,7 +62,7 @@ function StatCard({ label, value, icon: Icon, color, bgColor, trend }: {
 // ─── Page Component ─────────────────────────────────────────
 export default function DepartmentHeadDashboard() {
     // جلب الإحصائيات من الـ API
-    const { data: summaryResponse, isLoading, isError } = useQuery({
+    const { data: summaryResponse, isLoading: isSummaryLoading, isError, refetch } = useQuery({
         queryKey: ["department-head-summary"],
         queryFn: async () => {
             const response = await api.get("/department-head/summary");
@@ -98,17 +70,38 @@ export default function DepartmentHeadDashboard() {
         },
     });
 
+    // جلب الأطباء من الـ API
+    const { data: staffResponse, isLoading: isStaffLoading } = useQuery({
+        queryKey: ["department-head-staff"],
+        queryFn: async () => {
+            const response = await api.get("/department-head/staff");
+            return response.data.data;
+        },
+    });
+
+    // جلب الوصفات من الـ API
+    const { data: prescriptionsResponse, isLoading: isPrescriptionsLoading } = useQuery({
+        queryKey: ["department-head-prescriptions"],
+        queryFn: async () => {
+            const response = await api.get("/department-head/prescriptions");
+            return response.data.data;
+        },
+    });
+
+    const isLoading = isSummaryLoading || isStaffLoading || isPrescriptionsLoading;
+
     if (isLoading) return <DashboardSkeleton />;
 
     if (isError) {
-        return (
-            <div className="flex items-center justify-center h-[50vh] text-destructive">
-                حدث خطأ أثناء تحميل إحصائيات القسم.
-            </div>
-        );
+        return <ErrorData refetch={refetch} />;
     }
 
-    const topDoctors = [...mockDoctors].sort((a, b) => b.rating - a.rating).slice(0, 3);
+    const topDoctors = Array.isArray(staffResponse) 
+        ? [...staffResponse].sort((a, b) => b.rating - a.rating).slice(0, 3) 
+        : [];
+    const recentPrescriptions = Array.isArray(prescriptionsResponse) 
+        ? prescriptionsResponse.slice(0, 5) 
+        : [];
     const summaryData = summaryResponse || {};
 
     return (
@@ -125,7 +118,7 @@ export default function DepartmentHeadDashboard() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard 
-                    label="المرضى النشطين" 
+                    label="المرضى" 
                     value={Number(summaryData.active_patients || 0).toLocaleString('en-US')} 
                     icon={Users} 
                     color="text-chart-2" 
@@ -139,7 +132,7 @@ export default function DepartmentHeadDashboard() {
                     bgColor="bg-chart-1/15" 
                 />
                 <StatCard 
-                    label="الأطباء النشطين" 
+                    label="الأطباء" 
                     value={summaryData.active_doctors?.toString() || "0"} 
                     icon={Stethoscope} 
                     color="text-chart-4" 
@@ -195,14 +188,13 @@ export default function DepartmentHeadDashboard() {
 
                             </div>
                             <div className="p-4 space-y-3 flex-1">
-                                {topDoctors.map((doctor, index) => {
+                                {topDoctors.map((doctor: any, index) => {
                                     const rankColors = [
                                         "bg-amber-500/15 text-amber-600 border-amber-500/20",
                                         "bg-slate-400/15 text-slate-500 border-slate-400/20",
                                         "bg-orange-500/15 text-orange-500 border-orange-400/20",
                                     ];
                                     return (
-                                        <Link href={`/department-head/doctors/${doctor.id}`} key={doctor.id}>
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
@@ -217,14 +209,13 @@ export default function DepartmentHeadDashboard() {
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="font-bold text-[11px] md:text-sm text-foreground truncate">{doctor.name}</h4>
-                                                    <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialty}</p>
+                                                    <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialize}</p>
                                                 </div>
                                                 <div className="flex items-center gap-1 bg-amber-500/10 px-1.5 md:px-2 py-0.5 rounded-full shrink-0">
                                                     <Star className="size-2.5 md:size-[10px] text-amber-500 fill-amber-500" />
                                                     <span className="text-[10px] font-black text-amber-600">{doctor.rating}</span>
                                                 </div>
                                             </motion.div>
-                                        </Link>
                                     );
                                 })}
                             </div>
@@ -259,22 +250,41 @@ export default function DepartmentHeadDashboard() {
                             </Link>
                         </div>
                         <div className="divide-y divide-border/30">
-                            {recentPrescriptions.map((rx) => (
-                                <div key={rx.id} className="px-6 py-3.5 flex items-center gap-3 hover:bg-muted/20 transition-all cursor-pointer">
-                                    <div className="h-9 w-9 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0">
-                                        <ClipboardList size={14} className="text-violet-500" />
+                            {recentPrescriptions.map((rx: any) => (
+                                <div key={rx.prescription_number} className="px-6 py-4 flex items-center gap-4 hover:bg-muted/20 transition-all group cursor-pointer">
+                                    <div className="size-10 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/5 group-hover:scale-110 transition-transform">
+                                        <ClipboardList size={16} className="text-violet-500" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <h4 className="font-bold text-[13px] text-foreground truncate">{rx.doctor}</h4>
-                                            <span className="text-[8px] px-1.5 py-px rounded-full border font-bold bg-muted text-muted-foreground border-border shrink-0">
-                                                {rx.items} أدوية
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                            <h4 className="font-bold text-sm text-foreground truncate">{rx.doctor_name}</h4>
+                                            <span className={cn(
+                                                "text-[9px] px-2 py-0.5 rounded-full border font-black uppercase tracking-tight",
+                                                rx.status === "Dispensed" 
+                                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                                                    : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                            )}>
+                                                {rx.status === "Dispensed" ? "تم الصرف" : "قيد الانتظار"}
                                             </span>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground font-medium truncate mt-0.5">المريض: {rx.patient} · {rx.date}</p>
+                                        <div className="flex items-center gap-2 mt-1.5">
+                                            <p className="text-[11px] text-muted-foreground font-bold truncate">المريض: {rx.patient_name}</p>
+                                            <span className="size-1 rounded-full bg-muted-foreground/30" />
+                                            <p className="text-[10px] text-muted-foreground/60 font-medium whitespace-nowrap">{rx.created_at}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-1 shrink-0">
+                                        <span className="text-[10px] font-black text-violet-600 bg-violet-500/5 px-2 py-1 rounded-lg border border-violet-500/10">
+                                            {rx.medicines_count} أدوية
+                                        </span>
                                     </div>
                                 </div>
                             ))}
+                            {recentPrescriptions.length === 0 && (
+                                <div className="p-12 text-center text-muted-foreground font-bold italic">
+                                    لا توجد وصفات طبية مسجلة حالياً
+                                </div>
+                            )}
                         </div>
                     </div>
                 </motion.div>
