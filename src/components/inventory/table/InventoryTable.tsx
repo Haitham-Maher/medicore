@@ -63,15 +63,7 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
             setIsAddModalOpen(false);
         },
         onError: (error: any) => {
-            const serverMessage = error.response?.data?.message || "";
-            // إذا كان الخطأ يحتوي على SQLSTATE، فهذا يعني خطأ تقني في الباك إند
-            if (serverMessage.includes("SQLSTATE")) {
-                toast.error("خطأ في النظام", {
-                    description: "تأكد من تعبئة كافة الحقول المطلوبة بشكل صحيح (مثل الحد الأقصى).",
-                });
-            } else {
-                toast.error(serverMessage || "حدث خطأ أثناء إضافة الصنف");
-            }
+            toast.error(error.response?.data?.message || "حدث خطأ أثناء إضافة الصنف");
         }
     });
 
@@ -80,8 +72,8 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
     const editMutation = useMutation({
         mutationFn: async (updatedItem: any) => {
             const res = await api.put(`/storage/items/${updatedItem.id}`, {
-                quantity:   updatedItem.quantity,
-                max:        updatedItem.max,
+                quantity: updatedItem.quantity,
+                max: updatedItem.max,
                 storage_id: updatedItem.storage_id ?? storageId,
             });
             return res.data;
@@ -92,14 +84,7 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
             setEditingItem(null);
         },
         onError: (error: any) => {
-            const serverMessage = error.response?.data?.message || "";
-            if (serverMessage.includes("SQLSTATE")) {
-                toast.error("خطأ في تحديث البيانات", {
-                    description: "يرجى التأكد من صحة القيم المدخلة للكمية والحد الأقصى.",
-                });
-            } else {
-                toast.error(serverMessage || "حدث خطأ أثناء تعديل الصنف");
-            }
+            toast.error(error.response?.data?.message || "حدث خطأ أثناء تعديل الصنف");
         }
     });
 
@@ -108,7 +93,7 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
     if (isLoading) return <InventoryTableSkeleton />;
 
     const filteredData = inventoryData.filter((item) => {
-        const matchesSearch   = item.name.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = selectedCategory === "الكل" || item.type === selectedCategory;
         return matchesSearch && matchesCategory;
     });

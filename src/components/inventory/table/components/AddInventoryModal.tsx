@@ -16,9 +16,9 @@ interface AddInventoryModalProps {
 
 // الأنواع المقبولة من الباك إند فقط: tablet | syrup | injection
 const MEDICINE_TYPES = [
-    { id: "tablet",    label: "حبوب",  sub: "Tablet"    },
-    { id: "syrup",     label: "شراب",  sub: "Syrup"     },
-    { id: "injection", label: "حقن",   sub: "Injection" },
+    { id: "tablet", label: "حبوب", sub: "Tablet" },
+    { id: "syrup", label: "شراب", sub: "Syrup" },
+    { id: "injection", label: "حقن", sub: "Injection" },
 ];
 
 export default function AddInventoryModal({
@@ -41,12 +41,10 @@ export default function AddInventoryModal({
     const handleSave = () => {
         const newErrors: { [key: string]: string } = {};
 
-        if (!formData.name.trim())  newErrors.name     = "اسم الدواء مطلوب";
-        if (!formData.type)         newErrors.type     = "نوع الدواء مطلوب";
-        if (formData.quantity === undefined || formData.quantity === null) newErrors.quantity = "الكمية مطلوبة";
-        if (formData.quantity < 0)  newErrors.quantity = "الكمية لا يمكن أن تكون سالبة";
-        if (!formData.max)          newErrors.max      = "الحد الأقصى مطلوب لتجنب أخطاء النظام";
-        if (!storageId)             newErrors.storage  = "لا يوجد مخزن مرتبط بهذه المنطقة";
+        if (!formData.name.trim()) newErrors.name = "اسم الدواء مطلوب";
+        if (!formData.type) newErrors.type = "نوع الدواء مطلوب";
+        if (formData.quantity < 0) newErrors.quantity = "الكمية لا يمكن أن تكون سالبة";
+        if (!storageId) newErrors.storage = "لا يوجد مخزن مرتبط بهذه المنطقة";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -55,15 +53,15 @@ export default function AddInventoryModal({
 
         // بناء الـ Payload مطابقاً للباك إند حرفياً
         const payload: Record<string, any> = {
-            name:       formData.name.trim(),
-            type:       formData.type,
-            quantity:   formData.quantity,
+            name: formData.name.trim(),
+            type: formData.type,
+            quantity: formData.quantity,
             storage_id: storageId,          // إجباري
         };
 
         // الحقول الاختيارية — لا نرسلها إلا إذا كانت لها قيمة
-        if (formData.max   && parseInt(formData.max)     >= 1)  payload.max   = parseInt(formData.max);
-        if (formData.price && parseFloat(formData.price) >= 0)  payload.price = parseFloat(formData.price);
+        if (formData.max && parseInt(formData.max) >= 1) payload.max = parseInt(formData.max);
+        if (formData.price && parseFloat(formData.price) >= 0) payload.price = parseFloat(formData.price);
 
         onSave(payload);
     };
@@ -227,26 +225,17 @@ export default function AddInventoryModal({
                                         <AlertCircle size={16} className="text-primary" />
                                         <span>
                                             الحد الأقصى
-                                            <span className="text-destructive mr-1">*</span>
+                                            <span className="text-muted-foreground text-[10px] mr-1 font-medium">(اختياري)</span>
                                         </span>
                                     </label>
                                     <Input
                                         type="number"
                                         min="1"
                                         value={formData.max}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, max: e.target.value });
-                                            if (errors.max) setErrors({ ...errors, max: "" });
-                                        }}
+                                        onChange={(e) => setFormData({ ...formData, max: e.target.value })}
                                         placeholder="مثال: 500"
-                                        className={cn(
-                                            "h-12 rounded-xl bg-muted/20 border-border/30 focus:bg-background transition-all font-bold",
-                                            errors.max && "border-destructive/50 ring-destructive/20"
-                                        )}
+                                        className="h-12 rounded-xl bg-muted/20 border-border/30 focus:bg-background transition-all font-bold"
                                     />
-                                    {errors.max && (
-                                        <p className="text-[10px] font-bold text-destructive">{errors.max}</p>
-                                    )}
                                 </div>
                             </div>
 
