@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { Button, Input } from "@/components/ui";
 import api from "@/api/axios";
 import SupplyRequestsSkeleton from "./SupplyRequestsSkeleton";
+import AddSupplyRequestModal from "./AddSupplyRequestModal";
 
 // ----------------------------------------------------------------------
 // Interfaces
@@ -137,6 +138,22 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
         onError: (error: any) => {
             const msg = error?.response?.data?.message || "حدث خطأ أثناء تنفيذ الإجراء";
             toast.error(msg);
+        }
+    });
+
+    // 3. Mutation for Creating a New Request
+    const createRequestMutation = useMutation({
+        mutationFn: async (data: { description: string; medicines: any[] }) => {
+            const res = await api.post("/point-manager/supply-requests", data);
+            return res.data;
+        },
+        onSuccess: (data) => {
+            toast.success(data.message || "تم إرسال طلب الإمداد بنجاح");
+            queryClient.invalidateQueries({ queryKey: ["supply-requests"] });
+            setIsAddModalOpen(false);
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.error || "حدث خطأ أثناء إرسال الطلب");
         }
     });
 
@@ -255,7 +272,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                                                 </div>
 
                                                 <div className="flex items-center gap-3">
-                                                    {(req.status === "pending" || req.status === "in_progress") ? (
+                                                    {isAdmin && (req.status === "pending" || req.status === "in_progress") ? (
                                                         <div className="flex items-center gap-2 w-full md:w-auto">
                                                             <button
                                                                 onClick={(e) => handleAction(e, req.id, "approve")}
@@ -347,6 +364,14 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                     </div>
                 </div>
             </div>
+
+            {/* Add Request Modal */}
+            <AddSupplyRequestModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={(data) => createRequestMutation.mutate(data)}
+                isLoading={createRequestMutation.isPending}
+            />
         </div>
     );
 }
