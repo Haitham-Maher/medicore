@@ -16,7 +16,8 @@ import {
     ChevronDown,
     Pill,
     User,
-    Calendar
+    Calendar,
+    Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,9 +92,10 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
     const [activeTab, setActiveTab] = useState<"all" | "pending" | "completed" | "cancelled">("all");
     const [searchTerm, setSearchTerm] = useState("");
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // 1. Fetch Data
-    const { data: requestsData, isLoading, isError } = useQuery({
+    const { data: requestsData, isLoading } = useQuery({
         queryKey: ['supply-requests', isAdmin],
         queryFn: async () => {
             const endpoint = isAdmin ? '/supply-requests' : '/point-manager/supply-requests';
@@ -101,16 +103,16 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
             const apiData = response.data.data;
 
             return apiData.map((req: any): MappedSupplyRequest => ({
-                id: req.id.toString(),
-                itemName: isAdmin 
-                    ? (req.medicines?.map((m: any) => m.name).join('، ') || 'طلب إمداد') 
+                id: (req.order_id || req.id || '').toString(),
+                itemName: (req.medicines && req.medicines.length > 0)
+                    ? req.medicines.map((m: any) => m.name).join('، ')
                     : (req.content || 'طلب إمداد'),
-                quantity: isAdmin 
-                    ? (req.medicines?.reduce((total: number, m: any) => total + m.quantity, 0) || 0) 
+                quantity: (req.medicines && req.medicines.length > 0)
+                    ? req.medicines.reduce((total: number, m: any) => total + m.quantity, 0)
                     : (req.total_quantity || 0),
-                clinic: req.point_name || req.storage_name || "جهة غير معروفة",
-                requester: req.point_manager?.name || "النظام",
-                date: new Date(req.created_at).toLocaleDateString('ar-EG', {
+                clinic: req.point_name || req.storage_name || "النقطة الطبية",
+                requester: req.point_manager?.name || (isAdmin ? "النظام" : "أنت"),
+                date: req.time_relative || new Date(req.created_at).toLocaleDateString('ar-EG', {
                     year: 'numeric', month: 'short', day: 'numeric'
                 }),
                 status: req.status,
@@ -164,15 +166,27 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
         <div className="space-y-6 animate-in fade-in duration-500" dir="rtl">
             
             {/* Toolbar & Filters */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border/50 p-4 rounded-3xl shadow-sm">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="بحث عن دواء أو نقطة طبية..."
-                        className="pr-10 bg-muted/30 border-none rounded-2xl h-11"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card border border-border/50 p-4 rounded-3xl shadow-sm">
+                <div className="flex flex-col md:flex-row items-center gap-4 flex-1">
+                    <div className="relative flex-1 w-full max-w-md">
+                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="بحث عن دواء أو نقطة طبية..."
+                            className="pr-10 bg-muted/30 border-none rounded-2xl h-11"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    {!isAdmin && (
+                        <Button 
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="w-full md:w-auto rounded-2xl h-11 px-6 font-black gap-2 shadow-lg shadow-primary/20 cursor-pointer"
+                        >
+                            <Plus size={18} />
+                            <span>طلب إمداد جديد</span>
+                        </Button>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar">

@@ -61,7 +61,14 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                 <div className="shrink-0 pt-1 sm:pt-0">
                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl border-2 border-background shadow-md overflow-hidden bg-primary/10 flex items-center justify-center transition-transform group-hover:scale-105">
                         {person.image ? (
-                            <img src={person.image} alt={person.name} className="h-full w-full object-cover" />
+                            <img 
+                                src={person.image} 
+                                alt={person.name} 
+                                className="h-full w-full object-cover" 
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=0D9488&color=fff`;
+                                }}
+                            />
                         ) : (
                             <span className="text-primary font-black text-sm sm:text-lg">
                                 {getInitials(person.name)}
@@ -138,6 +145,9 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                                 src={person.image}
                                 alt={person.name}
                                 className="w-16 h-16 rounded-2xl object-cover border-2 border-border/50 group-hover:border-primary/30 transition-all shadow-sm"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=0D9488&color=fff`;
+                                }}
                             />
                         </div>
                         <div className="min-w-0">

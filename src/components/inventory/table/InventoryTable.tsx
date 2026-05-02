@@ -11,7 +11,6 @@ import InventoryCategoryFilters from "./components/InventoryCategoryFilters";
 import InventoryDesktopTable from "./components/InventoryDesktopTable";
 import InventoryMobileList from "./components/InventoryMobileList";
 import { InventoryItem } from "./types";
-import EditInventoryModal from "./components/EditInventoryModal";
 import AddInventoryModal from "./components/AddInventoryModal";
 
 // ----------------------------------------------------------------------
@@ -26,14 +25,13 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("الكل");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
     const queryClient = useQueryClient();
 
     // جلب البيانات بناءً على الدور
     const { data: response, isLoading } = useQuery({
         queryKey: ["Inventory-Table", isAdmin],
         queryFn: async () => {
-            const endpoint = isAdmin ? "/storage/items" : "/point-manager/inventory";
+            const endpoint = isAdmin ? "/storage/items" : "/point-manager/inventory"; 
             const table = await api.get(endpoint);
             return table.data;
         }
@@ -64,27 +62,6 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.message || "حدث خطأ أثناء إضافة الصنف");
-        }
-    });
-
-    // تعديل صنف موجود
-    // PUT /api/storage/items/{id} يطلب: quantity, max, storage_id
-    const editMutation = useMutation({
-        mutationFn: async (updatedItem: any) => {
-            const res = await api.put(`/storage/items/${updatedItem.id}`, {
-                quantity: updatedItem.quantity,
-                max: updatedItem.max,
-                storage_id: updatedItem.storage_id ?? storageId,
-            });
-            return res.data;
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["Inventory-Table"] });
-            toast.success(data.message || "تم تحديث الصنف بنجاح");
-            setEditingItem(null);
-        },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || "حدث خطأ أثناء تعديل الصنف");
         }
     });
 
@@ -121,7 +98,6 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                         selectedCategory={selectedCategory}
                         search={search}
                         isAdmin={isAdmin}
-                        onEdit={(item) => setEditingItem(item)}
                     />
                 </div>
 
@@ -131,7 +107,6 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                         selectedCategory={selectedCategory}
                         search={search}
                         isAdmin={isAdmin}
-                        onEdit={(item) => setEditingItem(item)}
                     />
                 </div>
             </div>
@@ -143,15 +118,6 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                 onSave={(newItem) => addMutation.mutate(newItem)}
                 isLoading={addMutation.isPending}
                 storageId={storageId}
-            />
-
-            {/* موديل التعديل */}
-            <EditInventoryModal
-                isOpen={!!editingItem}
-                onClose={() => setEditingItem(null)}
-                item={editingItem}
-                onSave={(updated) => editMutation.mutate(updated)}
-                isLoading={editMutation.isPending}
             />
         </div>
     );

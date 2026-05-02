@@ -1,8 +1,8 @@
 "use client";
-import { HeartPulse, Activity } from "lucide-react";
+import { Activity, ChevronRight, SearchX } from "lucide-react";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axios";
@@ -18,6 +18,7 @@ import { departmentData } from "@/constants/departments-data";
 
 export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: boolean }) {
     const params = useParams();
+    const router = useRouter();
     // Support both admin and manager param naming conventions
     const departmentId = (params.departmentId ?? params.department) as string;
     const clinicId = (params.id ?? params.clinicId) as string;
@@ -54,7 +55,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
 
     const isLoading = isWeeklyLoading || isDoctorsLoading || isListLoading;
     const weeklyData = weeklyStatsResponse?.weekly_data || [];
-    
+
     // تحويل بيانات الأطباء لتناسب واجهة المكونات
     const doctors = (doctorsResponse?.data || []).map((doc: any) => ({
         id: doc.id.toString(),
@@ -75,7 +76,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
         name: apiDept.name,
         icon: Activity,
         color: "bg-primary/10 text-primary border-primary/20",
-        image: apiDept.image || "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&q=80&w=1200",
+        image: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&q=80&w=1200",
         head: {
             name: apiDept.manager_name,
             email: "manager@medicore.com",
@@ -95,18 +96,39 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
         reports: []
     } : null);
 
-    if (isLoading) {
+    if (!department && !isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-        );
-    }
+            <div className="flex flex-col items-center justify-center min-h-[70vh] px-4" dir="rtl">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, type: "spring", damping: 20 }}
+                    className="text-center space-y-6"
+                >
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+                        <div className="relative bg-card border-2 border-dashed border-border w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+                            <SearchX size={64} className="text-primary/40" />
+                        </div>
+                    </div>
 
-    if (!department) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-muted-foreground">القسم غير موجود</p>
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-black text-foreground">القسم غير موجود</h2>
+                        <p className="text-muted-foreground max-w-md mx-auto font-medium leading-relaxed">
+                            عذراً، لم نتمكن من العثور على القسم الذي تبحث عنه. قد يكون الرابط خاطئاً أو تم نقل القسم لمكان آخر.
+                        </p>
+                    </div>
+
+                    <div className="pt-4">
+                        <button
+                            onClick={() => router.back()}
+                            className="inline-flex items-center gap-3 bg-primary text-white px-10 py-4 rounded-2xl font-black hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-primary/25 group cursor-pointer"
+                        >
+                            <ChevronRight size={22} className="transition-transform group-hover:translate-x-1" />
+                            <span>العودة للخلف</span>
+                        </button>
+                    </div>
+                </motion.div>
             </div>
         );
     }

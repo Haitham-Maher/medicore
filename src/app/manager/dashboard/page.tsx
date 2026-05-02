@@ -35,7 +35,7 @@ export default function DashboardPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div className="md:col-span-1 lg:col-span-2">
-                        <AgeDistributionChart />
+                        <AgeDistributionChart isAdmin={false} />
                     </div>
                     <div className="md:col-span-1 lg:col-span-1">
                         <TopDepartments title="الأقسام الأكثر زيارة" isAdmin={false} />
@@ -44,7 +44,7 @@ export default function DashboardPage() {
             )}
 
             {isLoading ? <MedicalPointsGridSkeleton /> : <MedicalPointsGrid title="الأقسام الطبية" desc="قائمة ببعض الأقسام المسجلة في النقطة" isAdmin={false} />}
-            
+
             {isLoading ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <RecentRequestsSkeleton />

@@ -49,7 +49,7 @@ export function MedicalPointCard({ point, isAdmin = true }: MedicalPointCardProp
                         </div>
                     ) : (
                         <Image
-                            src={point.image || "/images/defaultMediacaPoint.jpg"}
+                            src={ "/images/defaultMediacaPoint.jpg"}
                             alt={point.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

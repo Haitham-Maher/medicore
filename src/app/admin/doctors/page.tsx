@@ -11,7 +11,6 @@ import DoctorSection from "@/components/doctors/DoctorSection";
 import { DoctorSectionSkeleton } from "@/components/doctors/DoctorSkeleton";
 
 // Mock Data
-import { pointHeads } from "@/components/doctors/mockData";
 import api from "@/api/axios";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,19 +21,23 @@ export default function DoctorsPage() {
     const [selectedType, setSelectedType] = useState<any>("doctor");
     const [view, setView] = useState<"grid" | "list">("grid");
 
-    const { data: doctors, isLoading } = useQuery({
+    const { data: doctorsResponse, isLoading } = useQuery({
         queryKey: ['doctors'],
         queryFn: async () => {
-            const doctors = await api.get('/inventory/alerts');
-            return doctors.data;
+            const response = await api.get('/region-managers');
+            return response.data;
         }
     })
 
-
-
-    const doctorsData = doctors || [];
-
-
+    const doctorsData = doctorsResponse?.data?.map((m: any) => ({
+        id: m.manager_profile_id.toString(),
+        name: m.name,
+        role: "مدير منطقة",
+        pointName: m.point?.name || "غير محدد",
+        image: m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=0D9488&color=fff`,
+        rating: m.rating,
+        phone: m.phone_number
+    })) || [];
 
     const handleViewClick = (person: any, type: "point-head" | "dept-head" | "doctor") => {
         setSelectedPerson(person);
@@ -44,7 +47,10 @@ export default function DoctorsPage() {
 
     /////////////////////////////////////////////////////////////
     // HANDLE SEARCH DOCTORS
-    const filteredPointHeads = pointHeads.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.pointName.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredDoctors = doctorsData.filter((d: any) => 
+        d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        d.pointName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -54,7 +60,6 @@ export default function DoctorsPage() {
                     title="إدارة الكادر الطبي"
                     description="عرض وإدارة جميع الأطباء ورؤساء الأقسام والنقاط الطبية"
                     icon={Users}
-                    regionName={doctorsData.region}
                 />
 
                 {/* View Toggler */}
@@ -120,18 +125,18 @@ export default function DoctorsPage() {
                         >
                             {/* Point Heads Section */}
                             <DoctorSection
-                                title="رؤساء النقاط الطبية"
+                                title="مدراء المناطق"
                                 icon={ShieldCheck}
                                 iconColor="text-emerald-500"
                                 iconBg="bg-emerald-500/10"
-                                data={filteredPointHeads}
+                                data={filteredDoctors}
                                 type="point-head"
                                 onView={handleViewClick}
                                 view={view}
                             />
 
                             {/* Empty State */}
-                            {filteredPointHeads.length === 0 && (
+                            {filteredDoctors.length === 0 && (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
