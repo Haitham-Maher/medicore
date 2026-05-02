@@ -38,9 +38,9 @@ export function Hero() {
             <Link href="/auth?view=register" className="bg-emerald-500 hover:bg-emerald-600 dark:text-gray-900 text-white/90 font-black px-8 py-4 rounded-xl transition-all flex items-center gap-2 group shadow-xl shadow-emerald-500/20">
               ابدأ رحلتك الآن <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
             </Link>
-            <button className="px-8 py-4 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold hover:bg-gray-100 dark:hover:bg-white/10 transition-all text-gray-700 dark:text-slate-200">
+            {/* <button className="px-8 py-4 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold hover:bg-gray-100 dark:hover:bg-white/10 transition-all text-gray-700 dark:text-slate-200">
               عرض تجريبي (Demo)
-            </button>
+            </button> */}
           </div>
 
           <div className="mt-8 flex items-center gap-8 text-gray-400 dark:text-slate-500">

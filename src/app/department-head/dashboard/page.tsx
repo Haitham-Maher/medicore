@@ -17,6 +17,7 @@ import ErrorData from "@/components/inventory/table/components/errorData";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui";
 import AgeDistributionChart from "@/components/dashboard/admin/AgeDistributionChart";
+import DepartmentAgeChart from "@/components/dashboard/DepartmentAgeChart";
 import Link from "next/link";
 import DashboardSkeleton from "@/components/department-head/skeletons/DashboardSkeleton";
 import api from "@/api/axios";
@@ -96,11 +97,11 @@ export default function DepartmentHeadDashboard() {
         return <ErrorData refetch={refetch} />;
     }
 
-    const topDoctors = Array.isArray(staffResponse) 
-        ? [...staffResponse].sort((a, b) => b.rating - a.rating).slice(0, 3) 
+    const topDoctors = Array.isArray(staffResponse)
+        ? [...staffResponse].sort((a, b) => b.rating - a.rating).slice(0, 3)
         : [];
-    const recentPrescriptions = Array.isArray(prescriptionsResponse) 
-        ? prescriptionsResponse.slice(0, 5) 
+    const recentPrescriptions = Array.isArray(prescriptionsResponse)
+        ? prescriptionsResponse.slice(0, 5)
         : [];
     const summaryData = summaryResponse || {};
 
@@ -117,33 +118,33 @@ export default function DepartmentHeadDashboard() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard 
-                    label="المرضى" 
-                    value={Number(summaryData.active_patients || 0).toLocaleString('en-US')} 
-                    icon={Users} 
-                    color="text-chart-2" 
-                    bgColor="bg-chart-2/15" 
+                <StatCard
+                    label="المرضى"
+                    value={Number(summaryData.active_patients || 0).toLocaleString('en-US')}
+                    icon={Users}
+                    color="text-chart-2"
+                    bgColor="bg-chart-2/15"
                 />
-                <StatCard 
-                    label="إجمالي الزيارات" 
-                    value={Number(summaryData.total_visits || 0).toLocaleString('en-US')} 
-                    icon={Activity} 
-                    color="text-chart-1" 
-                    bgColor="bg-chart-1/15" 
+                <StatCard
+                    label="إجمالي الزيارات"
+                    value={Number(summaryData.total_visits || 0).toLocaleString('en-US')}
+                    icon={Activity}
+                    color="text-chart-1"
+                    bgColor="bg-chart-1/15"
                 />
-                <StatCard 
-                    label="الأطباء" 
-                    value={summaryData.active_doctors?.toString() || "0"} 
-                    icon={Stethoscope} 
-                    color="text-chart-4" 
-                    bgColor="bg-chart-4/15" 
+                <StatCard
+                    label="الأطباء"
+                    value={summaryData.active_doctors?.toString() || "0"}
+                    icon={Stethoscope}
+                    color="text-chart-4"
+                    bgColor="bg-chart-4/15"
                 />
-                <StatCard 
-                    label="متوسط التقييم" 
-                    value={summaryData.average_rating?.toString() || "0"} 
-                    icon={Star} 
-                    color="text-chart-3" 
-                    bgColor="bg-chart-3/15" 
+                <StatCard
+                    label="متوسط التقييم"
+                    value={summaryData.average_rating?.toString() || "0"}
+                    icon={Star}
+                    color="text-chart-3"
+                    bgColor="bg-chart-3/15"
                 />
             </div>
 
@@ -163,9 +164,9 @@ export default function DepartmentHeadDashboard() {
                 >
                     <div className="grid grid-cols-1 xl:grid-cols-3 lg:gap-4 gap-y-8">
                         <div className="bg-card rounded-2xl border border-border/50 shadow-sm flex flex-col xl:col-span-2">
-                            <AgeDistributionChart />
+                            <DepartmentAgeChart />
                         </div>
-                        
+
                         {/* Top Doctors */}
                         <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden flex flex-col ">
                             <div className="p-4 md:p-6 border-b border-border/50 flex items-center justify-between bg-linear-to-br from-primary/5 to-transparent gap-2">
@@ -195,27 +196,27 @@ export default function DepartmentHeadDashboard() {
                                         "bg-orange-500/15 text-orange-500 border-orange-400/20",
                                     ];
                                     return (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: index * 0.08 }}
-                                                className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl bg-muted/20 hover:bg-muted/40 transition-colors group cursor-pointer"
-                                            >
-                                                <div className={cn("size-6 md:size-8 rounded-lg flex items-center justify-center text-[10px] md:text-xs font-black border shrink-0", rankColors[index] ?? rankColors[2])}>
-                                                    {index + 1}
-                                                </div>
-                                                <div className="size-7 md:size-9 rounded-full bg-primary/10 items-center justify-center shrink-0 hidden sm:flex">
-                                                    <span className="text-primary font-black text-[10px] md:text-xs">{getInitials(doctor.name)}</span>
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-bold text-[11px] md:text-sm text-foreground truncate">{doctor.name}</h4>
-                                                    <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialize}</p>
-                                                </div>
-                                                <div className="flex items-center gap-1 bg-amber-500/10 px-1.5 md:px-2 py-0.5 rounded-full shrink-0">
-                                                    <Star className="size-2.5 md:size-[10px] text-amber-500 fill-amber-500" />
-                                                    <span className="text-[10px] font-black text-amber-600">{doctor.rating}</span>
-                                                </div>
-                                            </motion.div>
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.08 }}
+                                            className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl bg-muted/20 hover:bg-muted/40 transition-colors group cursor-pointer"
+                                        >
+                                            <div className={cn("size-6 md:size-8 rounded-lg flex items-center justify-center text-[10px] md:text-xs font-black border shrink-0", rankColors[index] ?? rankColors[2])}>
+                                                {index + 1}
+                                            </div>
+                                            <div className="size-7 md:size-9 rounded-full bg-primary/10 items-center justify-center shrink-0 hidden sm:flex">
+                                                <span className="text-primary font-black text-[10px] md:text-xs">{getInitials(doctor.name)}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-[11px] md:text-sm text-foreground truncate">{doctor.name}</h4>
+                                                <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialize}</p>
+                                            </div>
+                                            <div className="flex items-center gap-1 bg-amber-500/10 px-1.5 md:px-2 py-0.5 rounded-full shrink-0">
+                                                <Star className="size-2.5 md:size-[10px] text-amber-500 fill-amber-500" />
+                                                <span className="text-[10px] font-black text-amber-600">{doctor.rating}</span>
+                                            </div>
+                                        </motion.div>
                                     );
                                 })}
                             </div>
@@ -260,8 +261,8 @@ export default function DepartmentHeadDashboard() {
                                             <h4 className="font-bold text-sm text-foreground truncate">{rx.doctor_name}</h4>
                                             <span className={cn(
                                                 "text-[9px] px-2 py-0.5 rounded-full border font-black uppercase tracking-tight",
-                                                rx.status === "Dispensed" 
-                                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                                                rx.status === "Dispensed"
+                                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                                                     : "bg-amber-500/10 text-amber-600 border-amber-500/20"
                                             )}>
                                                 {rx.status === "Dispensed" ? "تم الصرف" : "قيد الانتظار"}

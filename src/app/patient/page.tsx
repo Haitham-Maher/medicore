@@ -133,15 +133,15 @@ interface PatientProfileResponse {
 
 // ─── Badge Colors ─────────────────────────────────────────────
 const badgeColors: Record<string, string> = {
-    Antibiotic:       "bg-blue-500/10   text-blue-600   border-blue-500/20",
-    Painkiller:       "bg-orange-500/10 text-orange-600 border-orange-500/20",
-    Antidiabetic:     "bg-violet-500/10 text-violet-600 border-violet-500/20",
-    Antacid:          "bg-cyan-500/10   text-cyan-600   border-cyan-500/20",
+    Antibiotic: "bg-blue-500/10   text-blue-600   border-blue-500/20",
+    Painkiller: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+    Antidiabetic: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+    Antacid: "bg-cyan-500/10   text-cyan-600   border-cyan-500/20",
     Antihypertensive: "bg-rose-500/10   text-rose-600   border-rose-500/20",
-    Statin:           "bg-amber-500/10  text-amber-600  border-amber-500/20",
-    Antihistamine:    "bg-green-500/10  text-green-600  border-green-500/20",
-    Antiplatelet:     "bg-pink-500/10   text-pink-600   border-pink-500/20",
-    Supplement:       "bg-teal-500/10   text-teal-600   border-teal-500/20",
+    Statin: "bg-amber-500/10  text-amber-600  border-amber-500/20",
+    Antihistamine: "bg-green-500/10  text-green-600  border-green-500/20",
+    Antiplatelet: "bg-pink-500/10   text-pink-600   border-pink-500/20",
+    Supplement: "bg-teal-500/10   text-teal-600   border-teal-500/20",
 };
 
 function MedicineBadge({ type }: { type: string }) {
@@ -217,7 +217,7 @@ function PrescriptionCard({ rx, index }: { rx: Prescription; index: number }) {
 
                             {/* Table Rows */}
                             <div className="divide-y divide-border/20">
-                                {rx.medicines_details.map((med: Medicine, i: number) => (
+                                {rx.medicines_details?.map((med: Medicine, i: number) => (
                                     <motion.div
                                         key={i}
                                         initial={{ opacity: 0, x: -6 }}
@@ -397,12 +397,12 @@ export default function PatientDashboard() {
 
                 <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {[
-                        { icon: User,       label: "الاسم الكامل",    value: personal_info.name,        dir: "rtl" as const },
+                        { icon: User, label: "الاسم الكامل", value: personal_info.name, dir: "rtl" as const },
                         { icon: CreditCard, label: "رقم الهوية الوطنية", value: personal_info.national_id, dir: "ltr" as const },
-                        { icon: Phone,      label: "رقم الهاتف",      value: personal_info.phone_number,  dir: "ltr" as const },
-                        { icon: Calendar,   label: "تاريخ الميلاد",   value: personal_info.birthdate,    dir: "ltr" as const },
-                        { icon: Activity,   label: "فصيلة الدم",      value: personal_info.blood_type,    dir: "ltr" as const },
-                        { icon: User,       label: "البريد الإلكتروني", value: personal_info.email,         dir: "ltr" as const },
+                        { icon: Phone, label: "رقم الهاتف", value: personal_info.phone_number, dir: "ltr" as const },
+                        { icon: Calendar, label: "تاريخ الميلاد", value: personal_info.birthdate, dir: "ltr" as const },
+                        { icon: Activity, label: "فصيلة الدم", value: personal_info.blood_type, dir: "ltr" as const },
+                        { icon: User, label: "البريد الإلكتروني", value: personal_info.email, dir: "ltr" as const },
                     ].map((item) => (
                         <div
                             key={item.label}

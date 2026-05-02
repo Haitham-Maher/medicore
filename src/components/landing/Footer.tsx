@@ -41,9 +41,9 @@ export default function Footer() {
                                 <span>ابدأ الآن</span>
                                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                             </button>
-                            <button className="w-full sm:w-auto px-8 py-4 bg-emerald-700/50 border border-white/20 text-white font-bold rounded-2xl hover:bg-emerald-700/70 transition-colors backdrop-blur-sm">
+                            {/* <button className="w-full sm:w-auto px-8 py-4 bg-emerald-700/50 border border-white/20 text-white font-bold rounded-2xl hover:bg-emerald-700/70 transition-colors backdrop-blur-sm">
                                 طلب عرض تجريبي
-                            </button>
+                            </button> */}
                         </div>
 
                         {/* Stats Row */}

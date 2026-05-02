@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { Button, Input } from "@/components/ui";
 import api from "@/api/axios";
 import SupplyRequestsSkeleton from "./SupplyRequestsSkeleton";
+import AddSupplyRequestModal from "./addSupplyRequestModal";
 
 // ----------------------------------------------------------------------
 // Interfaces
@@ -140,6 +141,22 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
         }
     });
 
+    // 3. Mutation for Creating a New Request
+    const createRequestMutation = useMutation({
+        mutationFn: async (data: { description: string; medicines: any[] }) => {
+            const res = await api.post("/point-manager/supply-requests", data);
+            return res.data;
+        },
+        onSuccess: (data) => {
+            toast.success(data.message || "تم إرسال طلب الإمداد بنجاح");
+            queryClient.invalidateQueries({ queryKey: ["supply-requests"] });
+            setIsAddModalOpen(false);
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.error || "حدث خطأ أثناء إرسال الطلب");
+        }
+    });
+
     const handleAction = (e: React.MouseEvent, id: string, action: "approve" | "reject") => {
         e.stopPropagation(); // منع فتح الكارد عند الضغط على الأزرار
         actionMutation.mutate({ id, action });
@@ -151,11 +168,11 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
 
     // 3. Filter Logic
     const filteredRequests = requests.filter(req => {
-        const matchesTab = activeTab === "all" || 
+        const matchesTab = activeTab === "all" ||
             (activeTab === "pending" && (req.status === "pending" || req.status === "in_progress")) ||
             (req.status === activeTab);
-            
-        const matchesSearch = 
+
+        const matchesSearch =
             req.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             req.clinic.includes(searchTerm);
 
@@ -164,7 +181,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500" dir="rtl">
-            
+
             {/* Toolbar & Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card border border-border/50 p-4 rounded-3xl shadow-sm">
                 <div className="flex flex-col md:flex-row items-center gap-4 flex-1">
@@ -179,7 +196,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                     </div>
 
                     {!isAdmin && (
-                        <Button 
+                        <Button
                             onClick={() => setIsAddModalOpen(true)}
                             className="w-full md:w-auto rounded-2xl h-11 px-6 font-black gap-2 shadow-lg shadow-primary/20 cursor-pointer"
                         >
@@ -213,7 +230,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
 
             {/* List Container */}
             <div className="bg-card border border-border/50 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                
+
                 <div className="flex-1 overflow-hidden relative">
                     <AnimatePresence mode="wait">
                         {isLoading ? (
@@ -232,7 +249,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                                     return (
                                         <div key={req.id} className={cn("transition-colors", isExpanded ? "bg-muted/30" : "hover:bg-muted/10")}>
                                             {/* Header Row */}
-                                            <div 
+                                            <div
                                                 className="p-5 md:px-8 md:py-6 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6"
                                                 onClick={() => toggleExpand(req.id)}
                                             >
@@ -255,7 +272,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                                                 </div>
 
                                                 <div className="flex items-center gap-3">
-                                                    {(req.status === "pending" || req.status === "in_progress") ? (
+                                                    {isAdmin && (req.status === "pending" || req.status === "in_progress") ? (
                                                         <div className="flex items-center gap-2 w-full md:w-auto">
                                                             <button
                                                                 onClick={(e) => handleAction(e, req.id, "approve")}
@@ -347,6 +364,14 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                     </div>
                 </div>
             </div>
+
+            {/* Add Request Modal */}
+            <AddSupplyRequestModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={(data) => createRequestMutation.mutate(data)}
+                isLoading={createRequestMutation.isPending}
+            />
         </div>
     );
 }

@@ -161,6 +161,16 @@ function shiftCfg(type: string) {
     return { label: type, icon: Clock, bg: "bg-muted/30", text: "text-muted-foreground", border: "border-border/30" };
 }
 
+const DAYS_AR: Record<string, string> = {
+    "Monday": "الاثنين",
+    "Tuesday": "الثلاثاء",
+    "Wednesday": "الأربعاء",
+    "Thursday": "الخميس",
+    "Friday": "الجمعة",
+    "Saturday": "السبت",
+    "Sunday": "الأحد"
+};
+
 // ─── Mini Patient Card ────────────────────────────────────────
 function MiniPatientCard({ patient, index }: { patient: Patient; index: number }) {
     const [expanded, setExpanded] = useState(false);
@@ -291,7 +301,7 @@ export default function DoctorDashboard() {
     const { data: shiftResponse, isLoading: shiftLoading } = useQuery({
         queryKey: ["current-shift"],
         queryFn: async () => {
-            const res = await api.get("/current-shift");
+            const res = await api.get("/doctor/current-shift");
             return res.data.data as CurrentShift;
         }
     });
@@ -409,7 +419,7 @@ export default function DoctorDashboard() {
                                     {todayCfg.label}
                                 </span>
                             </div>
-                            <p className="font-black text-sm sm:text-base text-foreground">{currentShift.day}</p>
+                            <p className="font-black text-sm sm:text-base text-foreground">{DAYS_AR[currentShift.day] || currentShift.day}</p>
                         </div>
                         <div className="shrink-0 text-center">
                             <p className="font-mono font-black text-base sm:text-xl text-foreground" dir="ltr">
