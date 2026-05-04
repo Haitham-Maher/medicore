@@ -1,56 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Plus,
-  Building2,
-} from "lucide-react";
+import { Plus, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MedicalPointsGridSkeleton from "@/components/medical-points/skeletons/MedicalPointsGridSkeleton";
 import MedicalPointsTableSkeleton from "@/components/medical-points/skeletons/MedicalPointsTableSkeleton";
-import { PageHeader } from "@/components/ui";;
+import { PageHeader } from "@/components/ui";
 import { MedicalPointCard } from "@/components/medical-points/MedicalPointCard";
 import { MedicalPointsTableView } from "@/components/medical-points/MedicalPointsTableView";
 import { MedicalPointsControls } from "@/components/medical-points/MedicalPointsControls";
-
 import { MedicalPointsStats } from "@/components/medical-points/MedicalPointsStats";
-
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axios";
 
 export default function MedicalPointsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+
   const { data: alerts } = useQuery({
     queryKey: ['inventory-alerts'],
     queryFn: async () => {
       const alerts = await api.get('/inventory/alerts');
       return alerts.data;
     }
-  })
+  });
   const inventoryData = alerts || [];
 
-
-
-  const { data: pointsData, isPending } = useQuery({
+  // دمج التعديلات هنا: استخدام isLoading و isFetching لمعالجة حالة التحميل بشكل أدق
+  const { data: pointsData, isLoading, isError, error, isFetching } = useQuery({
     queryKey: ['medical-points'],
     queryFn: async () => {
       const res = await api.get("/dashboard/medical-points");
-      const data = res.data.data || [];
+      // التأكد من الوصول للبيانات بشكل صحيح حتى لو اختلفت الاستجابة
+      const data = res.data?.data || res.data || []; 
       return data.map((point: any) => ({
         ...point,
         status: point.status || "active"
       }));
-    }
-  })
+    },
+    staleTime: 0, // يمنع استخدام كاش قديم عند التنقل
+    refetchOnMount: true, // يجبر جلب البيانات عند تركيب المكون (Mount)
+  });
 
   const medicalPoints = Array.isArray(pointsData) ? pointsData : [];
 
   const filteredPoints = medicalPoints.filter((point: any) => {
     const query = searchQuery.toLowerCase().trim();
-    return (
-      point.name?.toLowerCase().includes(query)
-    );
+    return point.name?.toLowerCase().includes(query);
   });
 
   return (
@@ -66,7 +62,7 @@ export default function MedicalPointsPage() {
       </div>
 
       {/* Stats Bar */}
-      <MedicalPointsStats points={medicalPoints} isLoading={isPending} />
+      <MedicalPointsStats points={medicalPoints} isLoading={isLoading || isFetching} />
 
       {/* Controls Bar */}
       <MedicalPointsControls
@@ -75,17 +71,29 @@ export default function MedicalPointsPage() {
         onSearchChange={setSearchQuery}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-
       />
 
       {/* Content Area */}
       <AnimatePresence mode="wait">
-        {isPending ? (
+        {/* التحقق من التحميل: عرض الـ Skeleton إذا كان يحمل أو يجلب بيانات والمصفوفة فارغة */}
+        {isLoading || (isFetching && medicalPoints.length === 0) ? (
           viewMode === "grid" ? (
             <MedicalPointsGridSkeleton key="grid-skeleton" />
           ) : (
             <MedicalPointsTableSkeleton key="table-skeleton" />
           )
+        ) : isError ? (
+          /* معالجة حالة الخطأ لكي لا تظهر شاشة "لا توجد نتائج" بشكل خاطئ */
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center py-20 gap-4 text-center text-red-500"
+          >
+            <p className="font-bold text-lg">حدث خطأ أثناء جلب البيانات</p>
+            <p className="text-sm opacity-80">{error instanceof Error ? error.message : "يرجى التحقق من الاتصال بالخادم"}</p>
+          </motion.div>
         ) : (
           viewMode === "grid" ? (
             <motion.div
