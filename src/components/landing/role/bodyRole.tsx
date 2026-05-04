@@ -127,7 +127,7 @@ export default function BodyRole({ activeTab }: { activeTab: string }) {
         animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
         exit={{ opacity: 0, x: -40, filter: "blur(8px)" }}
         transition={{ duration: .3 }}
-        className="group w-full max-w-5xl mx-auto rounded-4xl border overflow-hidden backdrop-blur-sm mt-10 bg-[hsl(var(--card)/0.5)] shadow-2xl relative"
+        className="group w-full max-w-5xl mx-auto rounded-4xl md:rounded-4xl border overflow-hidden backdrop-blur-sm mt-6 md:mt-10 bg-[hsl(var(--card)/0.5)] shadow-2xl relative"
         dir="rtl"
         style={{ border: `2px solid ${role.color}50` }}
       >
@@ -140,25 +140,25 @@ export default function BodyRole({ activeTab }: { activeTab: string }) {
             ),
           }}
         />
-        <div className="p-8 md:p-10">
+        <div className="p-6 md:p-10">
           {/* ── Header ─────────────────────────────────────────── */}
-          <div className="flex items-start gap-6 mb-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 mb-8 text-center md:text-right">
             {/* Role icon box */}
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="shrink-0 p-4 rounded-2xl bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))]"
+              className="shrink-0 p-3 md:p-4 rounded-2xl bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))]"
               style={{ color: role.color }}
             >
-              <role.icon size={42} strokeWidth={1.5} />
+              <role.icon size={36} className="md:w-[42px] md:h-[42px]" strokeWidth={1.5} />
             </motion.div>
 
             {/* Content: title + badge + summary */}
-            <div className="flex-1 text-right">
-              <div className="flex items-center justify-start gap-3 mb-2">
-                <h3 className="text-3xl font-black text-[hsl(var(--foreground))]">{role.title}</h3>
+            <div className="flex-1">
+              <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-2">
+                <h3 className="text-2xl md:text-3xl font-black text-[hsl(var(--foreground))]">{role.title}</h3>
                 <span
-                  className="text-[11px] font-bold px-2.5 py-1 rounded-md"
+                  className="text-[10px] md:text-[11px] font-bold px-2 md:px-2.5 py-0.5 md:py-1 rounded-md"
                   style={{
                     backgroundColor: `${role.color}22`,
                     color: role.color,
@@ -168,7 +168,7 @@ export default function BodyRole({ activeTab }: { activeTab: string }) {
                   {role.badge}
                 </span>
               </div>
-              <p className="text-[hsl(var(--muted-foreground))] text-lg leading-relaxed max-w-2xl">
+              <p className="text-[hsl(var(--muted-foreground))] text-base md:text-lg leading-relaxed max-w-2xl">
                 {role.summary}
               </p>
             </div>
@@ -183,14 +183,14 @@ export default function BodyRole({ activeTab }: { activeTab: string }) {
               الصلاحيات ومستوى الوصول:
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible sm:pb-0">
               {role.permissions.map((perm, idx) => (
                 <motion.div
                   key={perm.label}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.08 + 0.2 }}
-                  className={`flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200
+                  className={`flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 snap-center shrink-0 w-[85%] sm:w-full
                     ${perm.locked
                       ? "bg-[hsl(var(--secondary)/0.2)] border-[hsl(var(--border))] opacity-50"
                       : "bg-[hsl(var(--secondary)/0.5)] border-[hsl(var(--border))] hover:bg-[hsl(var(--secondary)/0.8)]"

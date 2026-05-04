@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import DoctorSection from "@/components/doctors/DoctorSection";
 import { DoctorSectionSkeleton } from "@/components/doctors/DoctorSkeleton";
 
-// Mock Data
 import api from "@/api/axios";
 import { useQuery } from "@tanstack/react-query";
 
@@ -29,15 +28,19 @@ export default function DoctorsPage() {
         }
     })
 
-    const doctorsData = doctorsResponse?.data?.map((m: any) => ({
-        id: m.manager_profile_id.toString(),
-        name: m.name,
+    const doctorsData = doctorsResponse?.data?.map((m: any, index: number) => ({
+        // إضافة ?. للتأكد من وجود القيمة أولاً، وتوفير قيمة بديلة في حال كانت غير موجودة
+        id: m.manager_profile_id?.toString() || m.id?.toString() || `fallback-id-${index}`, 
+        name: m.name || "اسم غير متوفر",
         role: "مدير منطقة",
         pointName: m.point?.name || "غير محدد",
-        image: m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=0D9488&color=fff`,
-        rating: m.rating,
-        phone: m.phone_number
+        image: m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name || 'User')}&background=0D9488&color=fff`,
+        rating: m.rating || 0,
+        phone: m.phone_number || "غير متوفر"
     })) || [];
+
+    
+
 
     const handleViewClick = (person: any, type: "point-head" | "dept-head" | "doctor") => {
         setSelectedPerson(person);

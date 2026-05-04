@@ -179,6 +179,14 @@ body {
     }
   }
 
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   .animate-shimmer {
     animation: shimmer 1.5s infinite linear;
   }

@@ -8,7 +8,7 @@ import { Pill, Users, Building2, RefreshCw, ArrowUpRight, CheckCircle2 } from "l
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function OrbVisual() {
   return (
-    <div className="relative ml-10 h-full" dir="rtl">
+    <div className="relative ml-10 h-full lg:block hidden" dir="rtl">
       {/* خلفية منقطة خفيفة كما في الصورة */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#059669_1px,transparent_1px)] bg-size-[20px_20px]"></div>
 

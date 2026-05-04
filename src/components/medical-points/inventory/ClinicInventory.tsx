@@ -102,12 +102,18 @@ export default function ClinicInventory({
         return Boxes;
     };
 
-    const items = (data || []).map(item => ({
+    const allItems = (data || []).map(item => ({
         ...item,
         status: item.status || getStatus(item.quantity),
         icon: item.icon || getIcon(item.name),
         max: item.max || 2000 // Arbitrary max for progress bar if not provided
     }));
+
+    // في الوجهة الرئيسية (!showRequests) نعرض أقل 5 أدوية في المخزون
+    // أما في التبويبات نعرض جميع الأصناف
+    const displayedItems = !showRequests 
+        ? [...allItems].sort((a, b) => a.quantity - b.quantity).slice(0, 5)
+        : allItems;
 
     // Map API orders to SupplyRequest structure
     const requests: SupplyRequest[] = requestsData.map((order: any) => {
@@ -148,7 +154,7 @@ export default function ClinicInventory({
                     <div>
                         <h3 className="font-bold text-sm md:text-lg text-foreground">الأصناف المتوفرة</h3>
                         <span className="text-[10px] md:text-sm text-muted-foreground font-medium">
-                            {items.length} أصناف
+                            {allItems.length} أصناف
                         </span>
                     </div>
 
@@ -166,7 +172,7 @@ export default function ClinicInventory({
                 </div>
 
                 <div className="divide-y divide-border/50 flex-1 overflow-y-auto">
-                    {items.map((item) => (
+                    {displayedItems.map((item) => (
                         <div
                             key={item.id}
                             className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 hover:bg-muted/30 transition-colors group"
@@ -216,7 +222,7 @@ export default function ClinicInventory({
                         <PackageCheck size={16} className="text-green-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">متوفرة</span>
-                            <span className="text-sm font-black text-foreground">{items.filter(i => i.status === "good").length}</span>
+                            <span className="text-sm font-black text-foreground">{allItems.filter(i => i.status === "good").length}</span>
                         </div>
                     </div>
                     <div className="h-8 w-px bg-border/50" />
@@ -224,7 +230,7 @@ export default function ClinicInventory({
                         <PackageX size={16} className="text-red-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">نفد / حرج</span>
-                            <span className="text-sm font-black text-foreground">{items.filter(i => i.status !== "good").length}</span>
+                            <span className="text-sm font-black text-foreground">{allItems.filter(i => i.status !== "good").length}</span>
                         </div>
                     </div>
                 </div>
@@ -279,7 +285,7 @@ export default function ClinicInventory({
                             exit={{ opacity: 0, x: -20 }}
                             className="divide-y divide-border/50 h-full overflow-y-auto"
                         >
-                            {items.map((item) => (
+                            {displayedItems.map((item) => (
                                 <div
                                     key={item.id}
                                     className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-muted/30 transition-colors group"
@@ -427,7 +433,7 @@ export default function ClinicInventory({
                         <PackageCheck size={16} className="text-green-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">متوفرة</span>
-                            <span className="text-sm font-black text-foreground">{items.filter(i => i.status === "good").length}</span>
+                            <span className="text-sm font-black text-foreground">{allItems.filter(i => i.status === "good").length}</span>
                         </div>
                     </div>
                     <div className="h-8 w-px bg-border/50" />
@@ -435,7 +441,7 @@ export default function ClinicInventory({
                         <PackageX size={16} className="text-red-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] text-muted-foreground font-bold leading-none mb-1">نفد / حرج</span>
-                            <span className="text-sm font-black text-foreground">{items.filter(i => i.status !== "good").length}</span>
+                            <span className="text-sm font-black text-foreground">{allItems.filter(i => i.status !== "good").length}</span>
                         </div>
                     </div>
                 </div>

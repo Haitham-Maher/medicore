@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import MedicalSkeleton from "../skeletons/MedicalSkeleton";
+import { number } from "zod";
 
 interface IMedicalPoint {
   id: number;
@@ -39,7 +40,6 @@ export default function MedicalPointsGrid({
   desc?: string
 }) {
 
-  // يمكنك تغيير هذا المسار لمسار الصورة الافتراضية الموجودة لديك في مجلد public
   const DEFAULT_IMAGE = "/images/defaultMediacaPoint.jpg";
 
   const { data: response, isLoading } = useQuery({
@@ -54,8 +54,18 @@ export default function MedicalPointsGrid({
     return <MedicalSkeleton />;
   }
 
-  // 🔴 التعديل هنا: فحص ما إذا كانت الاستجابة مصفوفة مباشرة أم كائن يحتوي على data
   const data = Array.isArray(response) ? response : (response?.data || []);
+
+
+  // Handle Click
+  function handleClick(id: string | Number) {
+    console.log(id);
+    console.log(data[2].id);
+
+    const filteredData = data.filter((item: any) => item.id == id);
+    console.log(filteredData);
+  }
+
 
   return (
     <div className="space-y-6 mt-20">
@@ -84,7 +94,9 @@ export default function MedicalPointsGrid({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((item: IMedicalPoint, i: number) => (
+
           <motion.div
+            onClick={() => handleClick(item.id)}
             key={item.id || i}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{
@@ -104,100 +116,102 @@ export default function MedicalPointsGrid({
             }}
             className="bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-md cursor-pointer overflow-hidden flex flex-col h-full group"
           >
-            {/* Image Section */}
-            <div className="relative w-full h-48 shrink-0 overflow-hidden bg-muted">
-              <img
-                src={item.image || DEFAULT_IMAGE}
-                alt={item.name}
-                className="w-full h-full object-cover duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  e.currentTarget.src = DEFAULT_IMAGE;
-                }}
-              />
+            <Link href={isAdmin ? `/admin/medical-points/clinics/${item.id}` : `/manager/departments/${item.id}`}>
+              {/* Image Section */}
+              <div className="relative w-full h-48 shrink-0 overflow-hidden bg-muted">
+                <img
+                  src={item.image || DEFAULT_IMAGE}
+                  alt={item.name}
+                  className="w-full h-full object-cover duration-300 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.src = DEFAULT_IMAGE;
+                  }}
+                />
 
-              {/* Status Badge (Top Right) */}
-              {item.status && (
-                <div className={`absolute top-3 right-3 px-3 py-1 rounded-full border backdrop-blur-sm text-xs font-bold transition-colors ${item.status === "active"
-                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                  : "bg-destructive/10 text-destructive border-destructive/20"
-                  }`}>
-                  {item.status === "active" ? "نشط" : "غير نشط"}
-                </div>
-              )}
+                {/* Status Badge (Top Right) */}
+                {item.status && (
+                  <div className={`absolute top-3 right-3 px-3 py-1 rounded-full border backdrop-blur-sm text-xs font-bold transition-colors ${item.status === "active"
+                    ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                    : "bg-destructive/10 text-destructive border-destructive/20"
+                    }`}>
+                    {item.status === "active" ? "نشط" : "غير نشط"}
+                  </div>
+                )}
 
-              {/* Rating Badge (Top Left) */}
-              <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/50 shadow-sm">
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold">{item.rating || "0.0"}</span>
-                  <Star size={10} className="fill-orange-400 text-orange-400" />
-                </div>
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="p-5 flex flex-col flex-1">
-              <div className="flex-1">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
-                    {item.name}
-                  </h3>
-                </div>
-
-                {/* Location or fallback info */}
-                <div className="flex items-center gap-1.5 text-muted-foreground text-xs md:text-sm mb-4">
-                  {item.location ? (
-                    <>
-                      <MapPin size={14} className="text-primary/60 shrink-0" />
-                      <span className="truncate">{item.location}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Activity size={14} className="text-primary/60 shrink-0" />
-                      <span className="truncate">قسم طبي</span>
-                    </>
-                  )}
+                {/* Rating Badge (Top Left) */}
+                <div className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/50 shadow-sm">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-bold">{item.rating || "0.0"}</span>
+                    <Star size={10} className="fill-orange-400 text-orange-400" />
+                  </div>
                 </div>
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-2 py-4 border-t border-border/40 mt-auto">
-                <div className="space-y-1 text-center px-1">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <UserRound size={12} className="text-chart-1" />
+              {/* Content Section */}
+              <div className="p-5 flex flex-col flex-1">
+                <div className="flex-1">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors line-clamp-1">
+                      {item.name}
+                    </h3>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    {isAdmin ? "المسؤول" : "رئيس القسم"}
-                  </p>
-                  <p className="text-xs font-bold text-foreground truncate w-full" title={item.manager_name}>
-                    {item.manager_name || "غير محدد"}
-                  </p>
+
+                  {/* Location or fallback info */}
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-xs md:text-sm mb-4">
+                    {item.location ? (
+                      <>
+                        <MapPin size={14} className="text-primary/60 shrink-0" />
+                        <span className="truncate">{item.location}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Activity size={14} className="text-primary/60 shrink-0" />
+                        <span className="truncate">قسم طبي</span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-1 text-center px-1 border-r border-border/40">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Stethoscope size={12} className="text-chart-2" />
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-2 py-4 border-t border-border/40 mt-auto">
+                  <div className="space-y-1 text-center px-1">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <UserRound size={12} className="text-chart-1" />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      {isAdmin ? "المسؤول" : "رئيس القسم"}
+                    </p>
+                    <p className="text-xs font-bold text-foreground truncate w-full" title={item.manager_name}>
+                      {item.manager_name || "غير محدد"}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    الأطباء
-                  </p>
-                  <p className="text-xs font-bold text-foreground">
-                    {item.doctors_count || 0}
-                  </p>
-                </div>
 
-                <div className="space-y-1 text-center px-1 border-r border-border/40">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Building2 size={12} className="text-chart-4" />
+                  <div className="space-y-1 text-center px-1 border-r border-border/40">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Stethoscope size={12} className="text-chart-2" />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      الأطباء
+                    </p>
+                    <p className="text-xs font-bold text-foreground">
+                      {item.doctors_count || 0}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                    {isAdmin ? "الأقسام" : "الزيارات"}
-                  </p>
-                  <p className="text-xs font-bold text-foreground">
-                    {isAdmin ? (item.departments_count || 0) : (item.total_visits || 0)}
-                  </p>
+
+                  <div className="space-y-1 text-center px-1 border-r border-border/40">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Building2 size={12} className="text-chart-4" />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                      {isAdmin ? "الأقسام" : "الزيارات"}
+                    </p>
+                    <p className="text-xs font-bold text-foreground">
+                      {isAdmin ? (item.departments_count || 0) : (item.total_visits || 0)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </motion.div>
         ))}
       </div>
