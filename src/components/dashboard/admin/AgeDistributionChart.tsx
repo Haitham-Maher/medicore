@@ -65,7 +65,7 @@ export default function AgeDistributionChart({ isAdmin = true }: { isAdmin?: boo
         <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm h-full flex flex-col">
             <div className="mb-6">
                 <h3 className="text-lg font-bold text-foreground">
-                    التوزيع العمري للمراجعين 
+                    التوزيع العمري للمراجعين
                     {/* إضافة اسم النقطة ديناميكياً إذا كانت موجودة في الـ API (مثل: جباليا) */}
                     {response?.point && <span className="text-muted-foreground font-normal text-sm mr-2">({response.point})</span>}
                 </h3>

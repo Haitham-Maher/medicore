@@ -76,15 +76,15 @@ interface Prescription {
 
 // ─── Badge Colors ─────────────────────────────────────────────
 const badgeColors: Record<string, string> = {
-    Antibiotic:       "bg-blue-500/10   text-blue-600   border-blue-500/20",
-    Painkiller:       "bg-orange-500/10 text-orange-600 border-orange-500/20",
-    Antidiabetic:     "bg-violet-500/10 text-violet-600 border-violet-500/20",
-    Antacid:          "bg-cyan-500/10   text-cyan-600   border-cyan-500/20",
+    Antibiotic: "bg-blue-500/10   text-blue-600   border-blue-500/20",
+    Painkiller: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+    Antidiabetic: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+    Antacid: "bg-cyan-500/10   text-cyan-600   border-cyan-500/20",
     Antihypertensive: "bg-rose-500/10   text-rose-600   border-rose-500/20",
-    Statin:           "bg-amber-500/10  text-amber-600  border-amber-500/20",
-    Antihistamine:    "bg-green-500/10  text-green-600  border-green-500/20",
-    Antiplatelet:     "bg-pink-500/10   text-pink-600   border-pink-500/20",
-    Supplement:       "bg-teal-500/10   text-teal-600   border-teal-500/20",
+    Statin: "bg-amber-500/10  text-amber-600  border-amber-500/20",
+    Antihistamine: "bg-green-500/10  text-green-600  border-green-500/20",
+    Antiplatelet: "bg-pink-500/10   text-pink-600   border-pink-500/20",
+    Supplement: "bg-teal-500/10   text-teal-600   border-teal-500/20",
 };
 
 function MedicineBadge({ type }: { type: string }) {
@@ -105,11 +105,10 @@ function PrescriptionCard({
     const [open, setOpen] = useState(false);
 
     // فلترة الأدوية حسب البحث
-    const filteredMeds = rx.medicines_details.filter(
-        (m: Medicine) =>
-            searchQuery === "" ||
-            m.medicine_name.toLowerCase().includes(searchQuery) ||
-            m.instructions.toLowerCase().includes(searchQuery)
+    const filteredMeds = (rx.medicines_details || []).filter((m: Medicine) =>
+        searchQuery === "" ||
+        m.medicine_name.toLowerCase().includes(searchQuery) ||
+        m.instructions.toLowerCase().includes(searchQuery)
     );
 
     if (filteredMeds.length === 0 && searchQuery !== "") return null;
@@ -142,7 +141,7 @@ function PrescriptionCard({
                     {/* Labels */}
                     <div>
                         <p className="font-black text-sm sm:text-base text-foreground">
-                         {rx.prescription_id}# وصفة 
+                            {rx.prescription_id}# وصفة
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[9px] text-muted-foreground">
@@ -252,7 +251,7 @@ export default function PatientPrescriptionsPage() {
     // وصفات تحتوي على نتيجة بحث
     const filteredPrescriptions = allPrescriptions.filter(
         (rx) =>
-            q === "" || 
+            q === "" ||
             rx.prescription_id.toString().includes(q) ||
             rx.medicines_details.some(
                 (m) => m.medicine_name.toLowerCase().includes(q) || m.instructions.toLowerCase().includes(q)
@@ -313,8 +312,8 @@ export default function PatientPrescriptionsPage() {
             {/* ── Summary Stats ── */}
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {[
-                    { label: "إجمالي الوصفات", value: allPrescriptions.length, color: "text-primary",     bg: "bg-primary/8 border-primary/15" },
-                    { label: "إجمالي الأدوية",  value: totalMeds,               color: "text-emerald-600", bg: "bg-emerald-500/8 border-emerald-500/15" },
+                    { label: "إجمالي الوصفات", value: allPrescriptions.length, color: "text-primary", bg: "bg-primary/8 border-primary/15" },
+                    { label: "إجمالي الأدوية", value: totalMeds, color: "text-emerald-600", bg: "bg-emerald-500/8 border-emerald-500/15" },
                 ].map((s, i) => (
                     <motion.div
                         key={s.label}
@@ -349,7 +348,7 @@ export default function PatientPrescriptionsPage() {
                                     {allPrescriptions.length === 0 ? "لا توجد وصفات" : "لا توجد نتائج"}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    {allPrescriptions.length === 0 
+                                    {allPrescriptions.length === 0
                                         ? "لم يتم تسجيل أي وصفات طبية لك في النظام بعد."
                                         : "لا يوجد دواء أو وصفة تطابق بحثك"}
                                 </p>
