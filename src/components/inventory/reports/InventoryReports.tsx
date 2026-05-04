@@ -44,6 +44,7 @@ interface MappedSupplyRequest {
     clinic: string;
     requester: string;
     date: string;
+    createdAt: string; // تم الإضافة من أجل الترتيب
     status: "pending" | "in_progress" | "completed" | "cancelled";
     medicines: Medicine[];
 }
@@ -116,6 +117,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                 date: req.time_relative || new Date(req.created_at).toLocaleDateString('ar-EG', {
                     year: 'numeric', month: 'short', day: 'numeric'
                 }),
+                createdAt: req.created_at || new Date().toISOString(), // الإضافة هنا لتمرير التاريخ
                 status: req.status,
                 medicines: req.medicines || []
             }));
@@ -166,18 +168,39 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
         setExpandedId(expandedId === id ? null : id);
     };
 
-    // 3. Filter Logic
-    const filteredRequests = requests.filter(req => {
-        const matchesTab = activeTab === "all" ||
-            (activeTab === "pending" && (req.status === "pending" || req.status === "in_progress")) ||
-            (req.status === activeTab);
+    // 4. Filter and Sort Logic (تطبيق الفلترة والترتيب بالأولويات ثم التاريخ)
+    const filteredRequests = requests
+        .filter(req => {
+            const matchesTab = activeTab === "all" ||
+                (activeTab === "pending" && (req.status === "pending" || req.status === "in_progress")) ||
+                (req.status === activeTab);
 
-        const matchesSearch =
-            req.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            req.clinic.includes(searchTerm);
+            const matchesSearch =
+                req.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                req.clinic.includes(searchTerm);
 
-        return matchesTab && matchesSearch;
-    });
+            return matchesTab && matchesSearch;
+        })
+        .sort((a, b) => {
+            // 1. تحديد أولوية الحالات (الرقم الأقل يظهر أولاً)
+            const statusPriority: Record<string, number> = {
+                pending: 1,
+                in_progress: 2,
+                completed: 3,
+                cancelled: 4
+            };
+
+            const priorityA = statusPriority[a.status] || 5;
+            const priorityB = statusPriority[b.status] || 5;
+
+            // إذا كانت الحالة مختلفة، رتب بناءً على الأولوية
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB;
+            }
+
+            // 2. إذا كانت الحالة متطابقة، رتب بناءً على التاريخ (الأحدث أولاً)
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500" dir="rtl">
@@ -217,12 +240,21 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={cn(
-                                "relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap",
-                                activeTab === tab.id ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted"
+                                "relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap group outline-none",
+                                activeTab === tab.id ? "text-white" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
-                            <tab.icon size={14} />
-                            <span>{tab.label}</span>
+                            {activeTab === tab.id && (
+                                <motion.div
+                                    layoutId="activeTabReports"
+                                    className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <div className="relative z-10 flex items-center gap-2">
+                                <tab.icon size={14} />
+                                <span>{tab.label}</span>
+                            </div>
                         </button>
                     ))}
                 </div>
@@ -234,18 +266,31 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                 <div className="flex-1 overflow-hidden relative">
                     <AnimatePresence mode="wait">
                         {isLoading ? (
-                            <SupplyRequestsSkeleton />
+                            <SupplyRequestsSkeleton key="skeleton" />
                         ) : filteredRequests.length === 0 ? (
-                            <div className="p-20 text-center flex flex-col items-center justify-center gap-4">
+                            <motion.div
+                                key="empty"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="p-20 text-center flex flex-col items-center justify-center gap-4"
+                            >
                                 <ClipboardList size={48} className="text-muted-foreground/20" />
                                 <p className="text-muted-foreground font-bold">لا توجد طلبات حالياً</p>
-                            </div>
+                            </motion.div>
                         ) : (
-                            <div className="divide-y divide-border/40">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="divide-y divide-border/40"
+                            >
                                 {filteredRequests.map((req) => {
                                     const isExpanded = expandedId === req.id;
                                     const isPendingAction = actionMutation.isPending && actionMutation.variables?.id === req.id;
-
+ 
                                     return (
                                         <div key={req.id} className={cn("transition-colors", isExpanded ? "bg-muted/30" : "hover:bg-muted/10")}>
                                             {/* Header Row */}
@@ -351,7 +396,7 @@ export default function InventoryReports({ isAdmin = true }: InventoryReportsPro
                                         </div>
                                     );
                                 })}
-                            </div>
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>

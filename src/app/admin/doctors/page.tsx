@@ -51,10 +51,9 @@ export default function DoctorsPage() {
     /////////////////////////////////////////////////////////////
     // HANDLE SEARCH DOCTORS
     // الكود الجديد الذي يستخدم البيانات من السيرفر
-    const actualData = doctorsData?.data || []; // التأكد من وجود المصفوفة
-    const filteredPointHeads = actualData.filter((d: any) =>
-        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (d.pointName && d.pointName.toLowerCase().includes(searchQuery.toLowerCase()))
+   const filteredDoctors = doctorsData.filter((d: any) => 
+        d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        d.pointName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -134,14 +133,14 @@ export default function DoctorsPage() {
                                 icon={ShieldCheck}
                                 iconColor="text-emerald-500"
                                 iconBg="bg-emerald-500/10"
-                                data={filteredPointHeads}
+                                data={filteredDoctors}
                                 type="point-head"
                                 onView={handleViewClick}
                                 view={view}
                             />
 
                             {/* Empty State */}
-                            {filteredPointHeads.length === 0 && (
+                            {filteredDoctors.length === 0 && (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}

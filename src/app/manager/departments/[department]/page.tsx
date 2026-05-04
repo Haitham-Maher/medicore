@@ -143,18 +143,18 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
             {/* Breadcrumb / Back Navigation */}
             <DeptBreadcrumbs
                 clinicId={clinicId}
-                departmentName={department.name}
+                departmentName={department?.name || "جاري التحميل..."}
                 isLoading={isLoading}
                 isAdmin={false}
             />
 
             {/* Header Section */}
             <DeptDetailsHeader
-                name={department.name}
-                icon={department.icon}
-                color={department.color}
-                image={department.image}
-                rating={department.stats.avgRating}
+               name={department?.name || "جاري التحميل..."}
+                icon={department?.icon || Activity}
+                color={department?.color || ""}
+                image={department?.image || ""}
+                rating={department?.stats?.avgRating || 0}
                 isLoading={isLoading}
             />
 
@@ -176,10 +176,10 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
                     {activeTab === "overview" && (
                         <DeptOverview
                             isLoading={isLoading}
-                            stats={department.stats}
-                            head={department.head}
+                            stats={department?.stats || {}}
+                            head={department?.head || {}}
                             doctors={doctors}
-                            accentColor={department.accentColor}
+                            accentColor={department?.accentColor || ""}
                             weeklyData={weeklyData}
                             onViewAllDoctors={() => {
                                 handleTabChange("doctors");
