@@ -1,5 +1,12 @@
+import RoleGuard from "@/components/auth/RoleGuard";
 import { AdminDashboardLayout } from "@/components/dashboard/admin/AdminDashboardLayout";
 
 export default function DoctorLayout({ children }: { children: React.ReactNode }) {
-    return <AdminDashboardLayout role="doctor">{children}</AdminDashboardLayout>;
+    return (
+        <RoleGuard allowedRole="doctor">
+            <AdminDashboardLayout role="doctor">
+                {children}
+            </AdminDashboardLayout>
+        </RoleGuard>
+    );
 }

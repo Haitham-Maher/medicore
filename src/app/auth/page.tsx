@@ -43,7 +43,7 @@ export default function AuthPage() {
             freshlySavedRole = "department-head";
         } else if (freshlySavedRole === "manager") {
             freshlySavedRole = "manager"; // مشرف النقطة
-        }
+        } 
 
         setFinalRole(freshlySavedRole);
         setDone(true);
