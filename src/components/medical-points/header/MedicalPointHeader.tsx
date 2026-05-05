@@ -81,7 +81,7 @@ export default function MedicalPointHeader({ name, location, rating, status, ima
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                     <button
                         onClick={() => setIsEditOpen(true)}
                         className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 p-2.5 rounded-xl transition-all cursor-pointer">
@@ -93,7 +93,7 @@ export default function MedicalPointHeader({ name, location, rating, status, ima
                     >
                         <Trash2 size={20} />
                     </button>
-                </div>
+                </div> */}
             </div>
 
             {/* Delete Confirmation Modal */}

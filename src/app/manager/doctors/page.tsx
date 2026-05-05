@@ -39,7 +39,7 @@ export default function DoctorsPage() {
         name: doc.name,
         role: isHead ? "رئيس قسم" : "طبيب",
         specialize: doc.specialize,
-        pointName: "نقطة Medicore الطبية",
+        pointName: doc.pointName,
         department: doc.department?.name || "عام",
         rating: doc.rating,
         phone: doc.phone_number,
@@ -165,7 +165,7 @@ export default function DoctorsPage() {
                                     iconBg="bg-blue-500/10"
                                     data={filteredDeptHeads}
                                     type="dept-head"
-                                    onDelete={handleDeleteClick}
+                                    // onDelete={handleDeleteClick}
                                     onView={handleViewClick}
                                     isAdmin={false}
                                     view={view}
@@ -181,7 +181,7 @@ export default function DoctorsPage() {
                                     iconBg="bg-purple-500/10"
                                     data={filteredDoctors}
                                     type="doctor"
-                                    onDelete={handleDeleteClick}
+                                    // onDelete={handleDeleteClick}
                                     onView={handleViewClick}
                                     isAdmin={false}
                                     view={view}

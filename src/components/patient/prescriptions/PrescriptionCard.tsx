@@ -16,7 +16,7 @@ export default function PrescriptionCard({ rx, searchQuery = "", defaultOpen = f
     const [open, setOpen] = useState(defaultOpen);
 
     // Filter medicines based on search
-    const filteredMeds = (rx.medicines || []).filter((m: Medicine) => {
+    const filteredMeds = (rx.medicines_details || []).filter((m: Medicine) => {
         if (!searchQuery) return true;
         const name = String(m.name || "").toLowerCase();
         const instr = String(m.instructions || "").toLowerCase();

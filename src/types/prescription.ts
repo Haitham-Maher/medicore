@@ -11,5 +11,5 @@ export interface Prescription {
     doctor_name: string;
     created_at: string;
     medicines_count: number;
-    medicines: Medicine[];
+    medicines_details: Medicine[];
 }

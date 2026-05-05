@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PrescriptionsSkeleton from "@/components/department-head/skeletons/PrescriptionsSkeleton";
-import { ClipboardList, CalendarDays, Search } from "lucide-react";
+import { ClipboardList, CalendarDays, Search, Pill } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui";
 
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axios";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
 const getInitials = (name: string) => {
     const clean = name.replace(/^(د\.|م\.)\s+/, "");
@@ -19,6 +19,7 @@ const getInitials = (name: string) => {
 export default function DeptHeadPrescriptionsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [expandedRx, setExpandedRx] = useState<number | null>(null);
 
     const { data: response, isLoading } = useQuery({
         queryKey: ["department-head-prescriptions-full", currentPage],
@@ -29,14 +30,15 @@ export default function DeptHeadPrescriptionsPage() {
     });
 
     if (isLoading) return <PrescriptionsSkeleton />;
+    if (!response) return <div className="text-center py-12 text-muted-foreground">لم يتمكن من تحميل البيانات</div>;
 
-    const prescriptions = response?.data || [];
+    const prescriptions = Array.isArray(response?.data) ? response.data : [];
     const pagination = response?.pagination || { current_page: 1, last_page: 1 };
 
     const filteredPrescriptions = prescriptions.filter((rx: any) =>
-        rx.doctor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        rx.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        rx.prescription_number.toString().includes(searchTerm)
+        rx.doctor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rx.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        rx.prescription_number?.toString().includes(searchTerm)
     );
 
     return (
@@ -91,46 +93,105 @@ export default function DeptHeadPrescriptionsPage() {
                             ) : (
                                 <div className="divide-y divide-border/30">
                                     {filteredPrescriptions.map((rx: any) => (
-                                        <div
-                                            key={rx.prescription_number}
-                                            className="px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-muted/20 transition-all cursor-pointer group"
-                                        >
-                                            <div className="flex items-center gap-4 flex-1">
-                                                <div className="h-10 w-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/5 group-hover:scale-110 transition-transform">
-                                                    <span className="text-violet-500 font-black text-sm">{getInitials(rx.doctor_name)}</span>
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{rx.doctor_name}</h4>
-                                                        <span className={cn(
-                                                            "text-[9px] px-2 py-0.5 rounded-full border font-black uppercase tracking-tight",
-                                                            rx.status === "Dispensed" 
-                                                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                                                                : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                                                        )}>
-                                                            {rx.status === "Dispensed" ? "تم الصرف" : "قيد الانتظار"}
-                                                        </span>
+                                        <motion.div key={rx.prescription_number}>
+                                            <div
+                                                onClick={() => setExpandedRx(expandedRx === rx.prescription_id ? null : rx.prescription_id)}
+                                                className="px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-muted/20 transition-all cursor-pointer group"
+                                            >
+                                                <div className="flex items-center gap-4 flex-1">
+                                                    <div className="h-10 w-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/5 group-hover:scale-110 transition-transform">
+                                                        <span className="text-violet-500 font-black text-sm">{getInitials(rx.doctor_name)}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                                                        <p className="text-[11px] text-muted-foreground font-bold truncate">المريض: {rx.patient_name}</p>
-                                                        <span className="hidden sm:inline size-1 rounded-full bg-muted-foreground/30" />
-                                                        <div className="flex items-center gap-1.5">
-                                                            <CalendarDays size={10} className="text-muted-foreground/40" />
-                                                            <span className="text-[10px] text-muted-foreground font-medium">{rx.created_at}</span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{rx.doctor_name}</h4>
+                                                            <span className={cn(
+                                                                "text-[9px] px-2 py-0.5 rounded-full border font-black uppercase tracking-tight",
+                                                                rx.status === "Not_Dispensed" 
+                                                                    ? "bg-amber-500/10 text-amber-600 border-amber-500/20" 
+                                                                    : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                                            )}>
+                                                                {rx.status === "Not_Dispensed" ? "قيد الانتظار" : "تم الصرف"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                                            <p className="text-[11px] text-muted-foreground font-bold truncate">المريض: {rx.patient_name}</p>
+                                                            <span className="hidden sm:inline size-1 rounded-full bg-muted-foreground/30" />
+                                                            <div className="flex items-center gap-1.5">
+                                                                <CalendarDays size={10} className="text-muted-foreground/40" />
+                                                                <span className="text-[10px] text-muted-foreground font-medium">{rx.created_at}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            
-                                            <div className="flex items-center justify-between sm:justify-end gap-4 pl-0 sm:pl-4">
-                                                <div className="flex flex-col items-end gap-1">
-                                                    <span className="text-[10px] font-black text-violet-600 bg-violet-500/5 px-2.5 py-1 rounded-lg border border-violet-500/10">
-                                                        {rx.medicines_count} أدوية
-                                                    </span>
-                                                    <span className="text-[9px] text-muted-foreground font-mono">#{rx.prescription_number}</span>
+                                                
+                                                <div className="flex items-center justify-between sm:justify-end gap-4 pl-0 sm:pl-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className="text-[10px] font-black text-violet-600 bg-violet-500/5 px-2.5 py-1 rounded-lg border border-violet-500/10">
+                                                                {rx.medicines_count} أدوية
+                                                            </span>
+                                                            <span className="text-[9px] text-muted-foreground font-mono">#{rx.prescription_number}</span>
+                                                        </div>
+                                                        <ChevronDown 
+                                                            size={18} 
+                                                            className={cn(
+                                                                "text-muted-foreground transition-transform",
+                                                                expandedRx === rx.prescription_id && "rotate-180"
+                                                            )}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+
+                                            {/* Medicines Accordion */}
+                                            <AnimatePresence>
+                                                {expandedRx === rx.prescription_id && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                                                        className="overflow-hidden border-t border-border/20 bg-muted/5"
+                                                    >
+                                                        <div className="px-6 py-4 space-y-3">
+                                                            <h5 className="font-bold text-sm text-foreground mb-3">الأدوية:</h5>
+                                                            {rx.medicines && rx.medicines.length > 0 ? (
+                                                                rx.medicines.map((med: any, idx: number) => (
+                                                                    <motion.div
+                                                                        key={idx}
+                                                                        initial={{ opacity: 0, x: -10 }}
+                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                        transition={{ delay: idx * 0.05 }}
+                                                                        className="flex items-start gap-3 p-3 bg-background rounded-lg border border-border/30"
+                                                                    >
+                                                                        <div className="size-8 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/20">
+                                                                            <Pill size={16} className="text-violet-600" />
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0 text-right">
+                                                                            <p className="font-bold text-sm text-foreground">{med.name}</p>
+                                                                            <div className="flex items-center gap-2 mt-1 flex-wrap justify-end">
+                                                                                <span className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                                                                                    {med.type}
+                                                                                </span>
+                                                                                <span className="text-[10px] font-bold text-violet-600 bg-violet-500/10 px-2 py-1 rounded">
+                                                                                    {med.dose}
+                                                                                </span>
+                                                                                <span className="text-[10px] text-muted-foreground">
+                                                                                    {med.instructions}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </motion.div>
+                                                                ))
+                                                            ) : (
+                                                                <p className="text-[12px] text-muted-foreground italic text-center py-4">لا توجد أدوية في هذه الوصفة</p>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </motion.div>
                                     ))}
                                 </div>
                             )}

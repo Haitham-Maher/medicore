@@ -12,8 +12,8 @@ export default function InventoryPage() {
     return (
         <div className="space-y-8 p-6 pb-20" dir="rtl">
             <PageHeader
-                title="المخزون المركزي"
-                description="إدارة ومراقبة المخزون الطبي لجميع النقاط والمراكز"
+                title="المخزون في صيدلية النقطة"
+                description="إدارة ومراقبة المخزون الطبي للصيدلية"
                 icon={Package}
             />
 

@@ -34,7 +34,7 @@ const sidebarItems = [
 const managerSidebarItems = [
     { name: "لوحة التحكم", href: "/manager/dashboard", icon: LayoutDashboard },
     { name: "إدارة الأقسام الطبية", href: "/manager/departments", icon: Hospital },
-    { name: "المخزون المركزي", href: "/manager/inventory", icon: Package },
+    { name: "الصيدلية", href: "/manager/inventory", icon: Package },
     { name: "طلبات الإمداد", href: "/manager/reports", icon: ClipboardList },
     { name: "الأطباء", href: "/manager/doctors", icon: Users },
 ];

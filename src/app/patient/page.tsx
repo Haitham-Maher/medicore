@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     User, Phone, Calendar, ClipboardList, Pill,
-    ChevronDown, Activity, CreditCard, Stethoscope,
+    ChevronDown, Activity, CreditCard, Stethoscope, Mail, Droplet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/api/axios";
@@ -229,6 +229,18 @@ export default function PatientDashboard() {
                                         {personal_info.birthdate} · {personal_info.age} سنة
                                     </span>
                                 </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Mail className="size-3 text-muted-foreground/50" />
+                                    <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                                        {personal_info.email}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Droplet className="size-3 text-muted-foreground/50" />
+                                    <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                                        {personal_info.blood_type}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -275,7 +287,8 @@ export default function PatientDashboard() {
                         { icon: CreditCard, label: "رقم الهوية الوطنية", value: personal_info.national_id, dir: "ltr" as const },
                         { icon: Phone, label: "رقم الهاتف", value: personal_info.phone_number, dir: "ltr" as const },
                         { icon: Calendar, label: "تاريخ الميلاد", value: personal_info.birthdate, dir: "ltr" as const },
-                        { icon: User, label: "البريد الإلكتروني", value: personal_info.email, dir: "ltr" as const },
+                        { icon: Mail, label: "البريد الإلكتروني", value: personal_info.email, dir: "ltr" as const },
+                        { icon: Droplet, label: "فصيلة الدم", value: personal_info.blood_type, dir: "ltr" as const },
                     ].map((item) => (
                         <div
                             key={item.label}

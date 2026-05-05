@@ -16,7 +16,7 @@ export default function InventoryReportsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
                 <PageHeader
                     title="طلبات الإمداد"
-                    description="إدارة واعتماد طلبات المستلزمات الطبية الواردة من جميع العيادات"
+                    description="عرض حالة الطلبات المرسلة من مدير النقطة الحالي"
                     icon={ClipboardList}
                 />
             </div>

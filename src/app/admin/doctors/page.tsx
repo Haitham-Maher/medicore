@@ -63,7 +63,7 @@ export default function DoctorsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <PageHeader
                     title="إدارة الكادر الطبي"
-                    description="عرض وإدارة جميع الأطباء ورؤساء الأقسام والنقاط الطبية"
+                    description="عرض وإدارة جميع رؤساء النقاط الطبية"
                     icon={Users}
                     regionName={doctors?.region}
                 />

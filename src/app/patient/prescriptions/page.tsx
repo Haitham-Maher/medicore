@@ -47,7 +47,7 @@ export default function PatientPrescriptionsPage() {
             const docName = String(rx.doctor_name || "").toLowerCase();
             const matchesHeader = rxId.includes(q) || rxNum.includes(q) || docName.includes(q);
             
-            const matchesMeds = rx.medicines?.some((m) => {
+            const matchesMeds = rx.medicines_details?.some((m) => {
                 const name = String(m.name || "").toLowerCase();
                 const instr = String(m.instructions || "").toLowerCase();
                 return name.includes(q) || instr.includes(q);
