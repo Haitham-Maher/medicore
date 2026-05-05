@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { Button, Input } from "@/components/ui";
 import api from "@/api/axios";
 import SupplyRequestsSkeleton from "./SupplyRequestsSkeleton";
-import AddSupplyRequestModal from "./addSupplyRequestModal";
+import AddSupplyRequestModal from "./AddSupplyRequestModal";
 
 // ----------------------------------------------------------------------
 // Interfaces
