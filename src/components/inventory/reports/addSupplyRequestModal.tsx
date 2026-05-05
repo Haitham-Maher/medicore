@@ -46,7 +46,7 @@ export default function AddSupplyRequestModal({
     const availableMedicines = medicinesResponse?.medicines || [];
 
     // تصفية الأدوية بناءً على البحث
-    const filteredMedicines = availableMedicines.filter((med: any) => 
+    const filteredMedicines = availableMedicines.filter((med: any) =>
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !selectedMedicines.some(selected => selected.medicine_id === med.id)
     );
@@ -54,9 +54,9 @@ export default function AddSupplyRequestModal({
     const addMedicine = (med: any) => {
         setSelectedMedicines([
             ...selectedMedicines,
-            { 
-                medicine_id: med.id, 
-                name: med.name, 
+            {
+                medicine_id: med.id,
+                name: med.name,
                 quantity: 1,
                 available_stock: med.available_stock,
                 max: med.pivot?.max || 0
@@ -71,7 +71,7 @@ export default function AddSupplyRequestModal({
 
     const updateQuantity = (id: number, qty: number) => {
         setSelectedMedicines(
-            selectedMedicines.map(m => 
+            selectedMedicines.map(m =>
                 m.medicine_id === id ? { ...m, quantity: Math.max(1, qty) } : m
             )
         );
@@ -81,10 +81,10 @@ export default function AddSupplyRequestModal({
         if (selectedMedicines.length === 0) return;
         onSave({
             description,
-            medicines: selectedMedicines.map(({ medicine_id, quantity, max }) => ({ 
-                medicine_id, 
-                quantity, 
-                max 
+            medicines: selectedMedicines.map(({ medicine_id, quantity, max }) => ({
+                medicine_id,
+                quantity,
+                max
             }))
         });
     };
@@ -137,7 +137,7 @@ export default function AddSupplyRequestModal({
 
                         {/* Body */}
                         <div className="p-6 sm:p-8 space-y-6 max-h-[65vh] overflow-y-auto custom-scrollbar">
-                            
+
                             {/* Medicine Search */}
                             {/* Medicine Selection Section */}
                             <div className="space-y-4">
@@ -145,7 +145,7 @@ export default function AddSupplyRequestModal({
                                     <Search size={16} className="text-primary" />
                                     <span>اختر الأدوية المطلوبة من القائمة</span>
                                 </label>
-                                
+
                                 <div className="space-y-3">
                                     <div className="relative">
                                         <Input
@@ -202,7 +202,7 @@ export default function AddSupplyRequestModal({
                                     <Package size={16} className="text-primary" />
                                     <span>الأصناف المختارة ({selectedMedicines.length})</span>
                                 </label>
-                                
+
                                 {selectedMedicines.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedMedicines.map((item) => (
@@ -222,7 +222,7 @@ export default function AddSupplyRequestModal({
                                                         <span className="text-[10px] text-muted-foreground">متوفر في المخزن: {item.available_stock}</span>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex items-center gap-2">
                                                         <label className="text-[10px] font-black text-muted-foreground">الكمية:</label>
