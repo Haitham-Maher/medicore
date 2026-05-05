@@ -30,13 +30,15 @@ export default function DoctorsPage() {
     })
 
     const doctorsData = doctors?.data?.map((m: any, index: number) => ({
-        id: m.manager_profile_id?.toString() || m.id?.toString() || `fallback-id-${index}`,
+        id: m.id?.toString() || `fallback-id-${index}`,
         name: m.name || "اسم غير متوفر",
-        role: "مدير منطقة",
-        pointName: m.point?.name || "غير محدد",
+        role: m.role === "point-head" ? "رئيس نقطة" : "مدير منطقة",
+        pointName: m.pointName || "غير محدد",
         image: m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name || 'User')}&background=0D9488&color=fff`,
         rating: m.rating || 0,
-        phone: m.phone_number || "غير متوفر"
+        phone: m.phone_number || "غير متوفر",
+        specialize: m.specialize || "إدارة طبية",
+        email: m.email
     })) || [];
 
 
@@ -63,7 +65,7 @@ export default function DoctorsPage() {
                     title="إدارة الكادر الطبي"
                     description="عرض وإدارة جميع الأطباء ورؤساء الأقسام والنقاط الطبية"
                     icon={Users}
-                    regionName={doctorsData.region}
+                    regionName={doctors?.region}
                 />
 
                 {/* View Toggler */}

@@ -25,8 +25,16 @@ export default function RoleGuard({ children, allowedRole }: RoleGuardProps) {
             return;
         }
 
-        const normalizedRole = rawRole.toLowerCase();
+        let normalizedRole = rawRole.toLowerCase();
         const requiredRole = allowedRole.toLowerCase();
+
+        // توحيد المسميات بين الفرونت والباك
+        if (normalizedRole === "department_manager") {
+            normalizedRole = "department-head";
+        } else if (normalizedRole === "point-head") {
+            normalizedRole = "manager";
+        }
+
         setUserRole(normalizedRole);
 
         if (normalizedRole !== requiredRole) {
@@ -40,7 +48,7 @@ export default function RoleGuard({ children, allowedRole }: RoleGuardProps) {
     const dashboardUrls: Record<string, string> = {
         "admin": "/admin/dashboard",
         "manager": "/manager/dashboard",
-        "department-head": "/department-head/dashboard",
+        "department_manager": "/department-head/dashboard",
         "doctor": "/doctor",
         "patient": "/patient"
     };

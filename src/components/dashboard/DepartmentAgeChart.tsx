@@ -76,23 +76,23 @@ export default function DepartmentAgeChart() {
                         barSize={isMobile ? 30 : 50}
                     >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
-                        
-                        <XAxis 
-                            dataKey="name" 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{ fill: "hsl(var(--foreground))", fontSize: isMobile ? 9 : 11, fontWeight: "600" }} 
-                            dy={10} 
+
+                        <XAxis
+                            dataKey="name"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "hsl(var(--foreground))", fontSize: isMobile ? 9 : 11, fontWeight: "600" }}
+                            dy={10}
                         />
-                        
-                        <YAxis 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: "500" }} 
-                            width={40} 
+
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: "500" }}
+                            width={40}
                         />
-                        
-                        <Tooltip 
+
+                        <Tooltip
                             cursor={{ fill: "hsl(var(--muted)/0.1)" }}
                             contentStyle={{
                                 backgroundColor: "hsl(var(--card))",
@@ -104,16 +104,16 @@ export default function DepartmentAgeChart() {
                             }}
                             formatter={(value) => [`${value} مريض`, "العدد"]}
                         />
-                        
+
                         <Bar dataKey="count" radius={[6, 6, 0, 0]} animationDuration={1000}>
                             {formattedData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                             {!isMobile && (
-                                <LabelList 
-                                    dataKey="count" 
-                                    position="top" 
-                                    style={{ fontSize: '12px', fontWeight: 'bold', fill: 'hsl(var(--foreground))' }} 
+                                <LabelList
+                                    dataKey="count"
+                                    position="top"
+                                    style={{ fontSize: '12px', fontWeight: 'bold', fill: 'hsl(var(--foreground))' }}
                                 />
                             )}
                         </Bar>

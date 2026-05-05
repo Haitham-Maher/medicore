@@ -1,4 +1,4 @@
-import { Star, MapPin, Building2, Stethoscope, Phone } from "lucide-react";
+import { Star, MapPin, Building2, Stethoscope, Phone, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DoctorCardProps {
@@ -12,6 +12,7 @@ interface DoctorCardProps {
         phone: string;
         department?: string;
         specialize?: string;
+        email?: string;
     };
     type: "point-head" | "dept-head" | "doctor";
     index: number;
@@ -113,6 +114,14 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                                 <Phone size={10} className="text-primary/70 sm:size-3" />
                                 <span className="font-mono text-[10px] sm:text-[11px] text-muted-foreground font-bold" dir="ltr">{person.phone}</span>
                             </div>
+
+                            {/* Email */}
+                            {person.email && (
+                                <div className="flex items-center gap-1.5 shrink-0 opacity-70">
+                                    <Mail size={10} className="text-primary/70 sm:size-3" />
+                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground font-bold truncate max-w-[150px]">{person.email}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -184,6 +193,13 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                         <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-bold">
                             <Stethoscope size={14} className="shrink-0 text-primary" />
                             <span className="truncate">{person.specialize}</span>
+                        </div>
+                    )}
+
+                    {person.email && (
+                        <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-bold">
+                            <Mail size={14} className="shrink-0 text-primary" />
+                            <span className="truncate">{person.email}</span>
                         </div>
                     )}
                 </div>

@@ -200,6 +200,7 @@ export default function DepartmentHeadDashboard() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: index * 0.08 }}
+                                            key={index}
                                             className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl bg-muted/20 hover:bg-muted/40 transition-colors group cursor-pointer"
                                         >
                                             <div className={cn("size-6 md:size-8 rounded-lg flex items-center justify-center text-[10px] md:text-xs font-black border shrink-0", rankColors[index] ?? rankColors[2])}>
