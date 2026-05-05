@@ -71,6 +71,7 @@ export default function ClinicInventory({
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["medical-point-requests", id] });
+            queryClient.invalidateQueries({ queryKey: ["medical-point-inventory", id] });
             toast.success("تم تحديث حالة الطلب بنجاح");
         },
         onError: (error: any) => {

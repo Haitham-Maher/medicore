@@ -110,6 +110,12 @@ export default function RecentRequests({
             // تحديث الكاش الصحيح بناءً على المستخدم الحالي
             const currentKey = isAdmin ? ["recent-requests"] : ["point-manager-supply-requests"];
             await queryClient.invalidateQueries({ queryKey: currentKey });
+            
+            // إذا كنا داخل صفحة نقطة طبية معينة، نقوم بتحديث بيانات المخزون والطلبات الخاصة بها
+            if (id) {
+                await queryClient.invalidateQueries({ queryKey: ["medical-point-inventory", id] });
+                await queryClient.invalidateQueries({ queryKey: ["medical-point-requests", id] });
+            }
 
             const isApproved = variables.action === "approved";
             toast.success(isApproved ? "تمت الموافقة على الطلب" : "تم رفض الطلب بنجاح");
