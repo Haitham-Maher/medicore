@@ -46,6 +46,14 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
         }
     });
 
+    const { data: weeklyStatsResponse, isLoading: isWeeklyLoading } = useQuery({
+        queryKey: ["department-weekly-stats", departmentId],
+        queryFn: async () => {
+            const res = await api.get(`/medical-points/departments/${departmentId}/weekly-stats`);
+            return res.data;
+        }
+    });
+
     const getDeptAssets = (name: string) => {
         const n = (name || "").toLowerCase();
         if (n.includes("قلب")) return { icon: HeartPulse, color: "bg-red-500/10 text-red-500 border-red-500/20", accent: "#ef4444" };
@@ -99,7 +107,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
         doctors: doctorsList
     };
 
-    const isLoading = isSummaryLoading || isStaffLoading || isHeadLoading;
+    const isLoading = isSummaryLoading || isStaffLoading || isHeadLoading || isWeeklyLoading;
 
     const handleTabChange = (tabId: string) => {
         if (tabId === activeTab) return;
@@ -148,6 +156,7 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
                             head={department.head}
                             doctors={department.doctors}
                             accentColor={department.accentColor}
+                            weeklyData={weeklyStatsResponse?.weekly_data}
                             onViewAllDoctors={() => {
                                 handleTabChange("doctors");
                                 window.scrollTo({ top: 0, behavior: 'smooth' });

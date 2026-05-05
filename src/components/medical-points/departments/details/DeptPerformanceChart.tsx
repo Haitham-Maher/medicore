@@ -14,13 +14,13 @@ import {
 import { Skeleton } from "@/components/ui";
 
 const data = [
-    { name: "السبت", "الزيارات": 40 },
-    { name: "الأحد", "الزيارات": 30 },
-    { name: "الأثنين", "الزيارات": 65 },
-    { name: "الثلاثاء", "الزيارات": 45 },
-    { name: "الأربعاء", "الزيارات": 90 },
-    { name: "الخميس", "الزيارات": 120 },
-    { name: "الجمعة", "الزيارات": 20 },
+    { name: "السبت", "الزيارات": 2 },
+    { name: "الأحد", "الزيارات": 1 },
+    { name: "الإثنين", "الزيارات": 1 },
+    { name: "الثلاثاء", "الزيارات": 1 },
+    { name: "الأربعاء", "الزيارات": 1 },
+    { name: "الخميس", "الزيارات": 0 },
+    { name: "الجمعة", "الزيارات": 4 },
 ];
 
 interface DeptPerformanceChartProps {
@@ -38,7 +38,7 @@ export default function DeptPerformanceChart({
         return <Skeleton className="w-full h-[350px] rounded-2xl" />;
     }
 
-    const chartData = weeklyData.length > 0
+    const chartData = weeklyData && weeklyData.length > 0
         ? weeklyData.map(item => ({ name: item.day, "الزيارات": item.visits }))
         : data;
 
