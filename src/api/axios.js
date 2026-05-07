@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://medical-system-master.test/api',
+    baseURL: 'https://medical-system-zw2b.onrender.com',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
