@@ -7,6 +7,8 @@ import { AuthField } from "./AuthField";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/api/axios";
+import { MockCredentials } from "./MockCredentials";
+
 
 interface LoginFormProps {
     onSuccess: () => void;
@@ -170,7 +172,16 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
             </form>
 
+            <MockCredentials 
+                onSelect={(selectedEmail) => {
+                    setEmail(selectedEmail);
+                    setPassword("password");
+                    setErrors({});
+                }} 
+            />
+
             <p className="text-center text-xs text-muted-foreground/40 mt-8">🔒 مشفر 256-bit · متوافق مع معايير HIPAA</p>
+
         </motion.div>
     );
 }
