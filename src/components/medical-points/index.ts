@@ -2,7 +2,7 @@
 export { default as MedicalPointHeader } from "./header/MedicalPointHeader";
 
 // Stats
-export { default as MedicalPointStats, ManagerSection } from "./stats/MedicalPointStats";
+export { default as ManagerSection } from "./stats/MedicalPointStats";
 
 // Staff
 export { default as ClinicStaffList } from "./staff/ClinicStaffList";
