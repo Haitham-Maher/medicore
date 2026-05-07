@@ -1,4 +1,4 @@
-import { Star, MapPin, Building2, Stethoscope, Phone, Mail } from "lucide-react";
+import { Star, MapPin, Building2, Stethoscope, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DoctorCardProps {
@@ -12,11 +12,9 @@ interface DoctorCardProps {
         phone: string;
         department?: string;
         specialize?: string;
-        email?: string;
     };
     type: "point-head" | "dept-head" | "doctor";
     index: number;
-    onView?: (person: any, type: "point-head" | "dept-head" | "doctor") => void;
     isAdmin?: boolean;
     view?: "grid" | "list";
 }
@@ -32,7 +30,7 @@ function RatingBadge({ rating, reviews = 45 }: { rating: number, reviews?: numbe
     );
 }
 
-export default function DoctorCard({ person, type, index, onView, isAdmin = true, view = "grid" }: DoctorCardProps) {
+export default function DoctorCard({ person, type, index, isAdmin = true, view = "grid" }: DoctorCardProps) {
     const roleBadgeColor =
         type === "point-head"
             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
@@ -54,18 +52,17 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
 
     if (view === "list") {
         return (
-            <div 
-                onClick={() => onView?.(person, type)}
+            <div
                 className="p-4 sm:p-5 flex items-start sm:items-center gap-3 sm:gap-4 hover:bg-muted/30 transition-all group relative overflow-hidden cursor-pointer"
             >
                 {/* Avatar */}
                 <div className="shrink-0 pt-1 sm:pt-0">
                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl border-2 border-background shadow-md overflow-hidden bg-primary/10 flex items-center justify-center transition-transform group-hover:scale-105">
                         {person.image ? (
-                            <img 
-                                src={person.image} 
-                                alt={person.name} 
-                                className="h-full w-full object-cover" 
+                            <img
+                                src={person.image}
+                                alt={person.name}
+                                className="h-full w-full object-cover"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=0D9488&color=fff`;
                                 }}
@@ -114,14 +111,6 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                                 <Phone size={10} className="text-primary/70 sm:size-3" />
                                 <span className="font-mono text-[10px] sm:text-[11px] text-muted-foreground font-bold" dir="ltr">{person.phone}</span>
                             </div>
-
-                            {/* Email */}
-                            {person.email && (
-                                <div className="flex items-center gap-1.5 shrink-0 opacity-70">
-                                    <Mail size={10} className="text-primary/70 sm:size-3" />
-                                    <span className="text-[10px] sm:text-[11px] text-muted-foreground font-bold truncate max-w-[150px]">{person.email}</span>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -143,7 +132,6 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
 
     return (
         <div
-            onClick={() => onView?.(person, type)}
             className="bg-card rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all group overflow-hidden cursor-pointer"
         >
             <div className="p-6">
@@ -166,14 +154,6 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                             </div>
                         </div>
                     </div>
-
-                    {/* Delete button removed */}
-                </div>
-
-                <div className="mb-5">
-                    <span className={cn("inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-black border uppercase tracking-widest", roleBadgeColor)}>
-                        {roleLabel}
-                    </span>
                 </div>
 
                 <div className="space-y-3">
@@ -193,13 +173,6 @@ export default function DoctorCard({ person, type, index, onView, isAdmin = true
                         <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-bold">
                             <Stethoscope size={14} className="shrink-0 text-primary" />
                             <span className="truncate">{person.specialize}</span>
-                        </div>
-                    )}
-
-                    {person.email && (
-                        <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-bold">
-                            <Mail size={14} className="shrink-0 text-primary" />
-                            <span className="truncate">{person.email}</span>
                         </div>
                     )}
                 </div>

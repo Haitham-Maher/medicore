@@ -16,7 +16,6 @@ import {
 import ErrorData from "@/components/inventory/table/components/errorData";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui";
-import AgeDistributionChart from "@/components/dashboard/admin/AgeDistributionChart";
 import DepartmentAgeChart from "@/components/dashboard/DepartmentAgeChart";
 import Link from "next/link";
 import DashboardSkeleton from "@/components/department-head/skeletons/DashboardSkeleton";

@@ -70,7 +70,7 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
         }
     });
 
-    const categories = ["الكل", "tablet", "syrup", "injection"];
+    const categories = ["الكل", "tablet", "syrup", "injection", "Ointment"];
 
     if (isLoading) return <InventoryTableSkeleton />;
 
@@ -148,8 +148,8 @@ export default function InventoryTable({ isAdmin = true }: InventoryTableProps) 
                                                 key={p}
                                                 onClick={() => setCurrentPage(p as number)}
                                                 className={`w-8 h-8 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${currentPage === p
-                                                        ? "bg-primary text-white shadow-sm"
-                                                        : "border border-border/50 hover:bg-muted/50"
+                                                    ? "bg-primary text-white shadow-sm"
+                                                    : "border border-border/50 hover:bg-muted/50"
                                                     }`}
                                             >
                                                 {p}

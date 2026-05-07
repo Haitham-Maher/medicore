@@ -49,7 +49,6 @@ export default function DoctorSection({
                             person={person}
                             type={type}
                             index={i}
-                            onView={onView}
                             isAdmin={isAdmin}
                             view={view}
                         />
@@ -63,7 +62,6 @@ export default function DoctorSection({
                             person={person}
                             type={type}
                             index={i}
-                            onView={onView}
                             isAdmin={isAdmin}
                             view={view}
                         />

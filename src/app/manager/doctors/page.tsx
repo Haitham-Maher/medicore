@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Shield, Stethoscope, LayoutGrid, List, TableIcon } from "lucide-react";
+import { Users, Shield, Stethoscope, LayoutGrid, TableIcon } from "lucide-react";
 import { PageHeader } from "@/components/ui";
-import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -181,7 +180,6 @@ export default function DoctorsPage() {
                                     iconBg="bg-purple-500/10"
                                     data={filteredDoctors}
                                     type="doctor"
-                                    // onDelete={handleDeleteClick}
                                     onView={handleViewClick}
                                     isAdmin={false}
                                     view={view}
@@ -208,18 +206,6 @@ export default function DoctorsPage() {
                     </AnimatePresence>
                 )}
             </div>
-
-            {/* Delete Confirmation Modal */}
-            <DeleteConfirmation
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={() => {
-                    setIsDeleteModalOpen(false);
-                    setSelectedPerson(null);
-                }}
-                title="حذف من الكادر الطبي"
-                description={`هل أنت متأكد من رغبتك في حذف "${selectedPerson?.name}"؟ سيتم إزالته من منصبه الحالي ولا يمكن التراجع عن هذا الإجراء.`}
-            />
 
             {/* Doctor Details Modal */}
             <DoctorDetailsModal

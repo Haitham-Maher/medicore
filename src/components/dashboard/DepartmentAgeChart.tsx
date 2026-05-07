@@ -47,21 +47,31 @@ export default function DepartmentAgeChart() {
     // تحويل البيانات لتناسب الرسم البياني
     const formattedData = weeklyData.map((item: any) => ({
         name: item.day,
-        child: item.child,
-        adult: item.adult,
-        elderly: item.elderly,
+        الأطفال: item.child,
+        الشباب: item.adult,
+        كبار_السن: item.elderly,
     }));
+
+    // حساب إجمالي المرضى
+    const totalPatients = weeklyData.reduce((acc: number, curr: any) => 
+        acc + (curr.child || 0) + (curr.adult || 0) + (curr.elderly || 0), 0
+    );
+
+    const COLORS = {
+        child: "#14b8a6",
+        adult: "#3b82f6",
+        elderly: "#8b5cf6"
+    };
 
     return (
         <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm h-full flex flex-col">
-            <div className="mb-6">
-                <h3 className="text-lg font-bold text-foreground">
-                    التوزيع العمري للمراجعين
-                    {departmentName && <span className="text-muted-foreground font-normal text-sm mr-2">({departmentName})</span>}
-                </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                    تحليل الفئات العمرية لتوجيه صرف الأدوية
-                </p>
+            <div className="mb-6 flex justify-between items-start">
+                <div>
+                    <h3 className="text-lg font-bold text-foreground">
+                        التوزيع العمري لمرضى القسم
+                        {departmentName && <span className="text-muted-foreground font-normal text-sm mr-2">({departmentName})</span>}
+                    </h3>
+                </div>
             </div>
 
             <div className="h-[300px] md:h-[350px] w-full mt-auto" dir="ltr">
@@ -72,12 +82,7 @@ export default function DepartmentAgeChart() {
                         barCategoryGap={isMobile ? "15%" : "20%"}
                         barGap={isMobile ? 2 : 4}
                     >
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            vertical={false}
-                            stroke="hsl(var(--border))"
-                            strokeOpacity={0.5}
-                        />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" strokeOpacity={0.5} />
 
                         <XAxis
                             dataKey="name"
@@ -118,36 +123,36 @@ export default function DepartmentAgeChart() {
                             iconSize={8}
                         />
 
-                        <Bar
+                        <Bar 
                             name="أطفال"
-                            dataKey="child"
-                            fill="#14b8a6"
-                            radius={[4, 4, 0, 0]}
-                            animationDuration={1000}
+                            dataKey="الأطفال" 
+                            fill={COLORS.child} 
+                            radius={[4, 4, 0, 0]} 
+                            animationDuration={1000} 
                         >
-                            {!isMobile && <LabelList dataKey="child" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                            {!isMobile && <LabelList dataKey="الأطفال" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
                         </Bar>
 
-                        <Bar
+                        <Bar 
                             name="بالغين"
-                            dataKey="adult"
-                            fill="#3b82f6"
-                            radius={[4, 4, 0, 0]}
-                            animationDuration={1000}
+                            dataKey="الشباب" 
+                            fill={COLORS.adult} 
+                            radius={[4, 4, 0, 0]} 
+                            animationDuration={1000} 
                             animationBegin={100}
                         >
-                            {!isMobile && <LabelList dataKey="adult" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                            {!isMobile && <LabelList dataKey="الشباب" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
                         </Bar>
 
-                        <Bar
+                        <Bar 
                             name="كبار السن"
-                            dataKey="elderly"
-                            fill="#8b5cf6"
-                            radius={[4, 4, 0, 0]}
-                            animationDuration={1000}
+                            dataKey="كبار_السن" 
+                            fill={COLORS.elderly} 
+                            radius={[4, 4, 0, 0]} 
+                            animationDuration={1000} 
                             animationBegin={200}
                         >
-                            {!isMobile && <LabelList dataKey="elderly" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
+                            {!isMobile && <LabelList dataKey="كبار_السن" position="top" style={{ fontSize: '10px', fill: 'hsl(var(--muted-foreground))' }} />}
                         </Bar>
                     </BarChart>
                 </ResponsiveContainer>
