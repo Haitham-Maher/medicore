@@ -36,7 +36,7 @@ const credentials = [
     },
 
     {
-        email: "allan.effertz@example.com",
+        email: "laury55@example.org",
         role: "doctor",
         label: "طبيب (Doctor)",
         icon: User,
@@ -44,7 +44,7 @@ const credentials = [
         bg: "bg-emerald-500/10",
     },
     {
-        email: "ilakin@example.org",
+        email: "hmraz@example.net",
         role: "patient",
         label: "مريض (Patient)",
         icon: User,
@@ -70,7 +70,7 @@ export function MockCredentials({ onSelect }: MockCredentialsProps) {
                     <button
                         key={cred.email}
                         onClick={() => onSelect(cred.email)}
-                        className="flex items-center justify-between p-2.5 rounded-xl border border-border/50 bg-card/50 hover:bg-accent/50 hover:border-accent transition-all group text-right"
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-border/50 bg-card/50 hover:bg-accent/50 hover:border-accent transition-all group text-right cursor-pointer"
                     >
                         <div className="flex items-center gap-3">
                             <div className={`p-1.5 rounded-lg ${cred.bg} ${cred.color}`}>
