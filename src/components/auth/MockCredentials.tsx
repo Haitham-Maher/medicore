@@ -16,22 +16,25 @@ const credentials = [
         color: "text-red-500",
         bg: "bg-red-500/10",
     },
+
     {
-        email: "dayna73@example.com",
-        role: "department_manager",
-        label: "رئيس الأقسام (Dept Manager)",
-        icon: UserCircle,
-        color: "text-amber-500",
-        bg: "bg-amber-500/10",
-    },
-    {
-        email: "zhill@example.org",
+        email: "ocrist@example.org",
         role: "manager",
         label: "مدير نقطة (Point Manager)",
         icon: Activity,
         color: "text-blue-500",
         bg: "bg-blue-500/10",
     },
+
+    {
+        email: "upton.sylvester@example.com",
+        role: "department_manager",
+        label: "رئيس الأقسام (Dept Manager)",
+        icon: UserCircle,
+        color: "text-amber-500",
+        bg: "bg-amber-500/10",
+    },
+
     {
         email: "allan.effertz@example.com",
         role: "doctor",
@@ -79,7 +82,7 @@ export function MockCredentials({ onSelect }: MockCredentialsProps) {
                             </div>
                         </div>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                             <Key className="size-3 text-muted-foreground" />
+                            <Key className="size-3 text-muted-foreground" />
                         </div>
                     </button>
                 ))}
