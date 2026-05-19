@@ -27,7 +27,7 @@ const credentials = [
     },
 
     {
-        email: "upton.sylvester@example.com",
+        email: "scottie08@example.com",
         role: "department_manager",
         label: "رئيس الأقسام (Dept Manager)",
         icon: UserCircle,
