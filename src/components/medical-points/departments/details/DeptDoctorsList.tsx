@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 interface Doctor {
     id: string;
     name: string;
-    specialize: string;     // doctors.specialize
+    specialize?: string;     // doctors.specialize
+    specialization?: string; // Support other API models mapping
     rating: number;         // doctors.rating
-    patients: number;       // COUNT from prescriptions
+    patients?: number;       // COUNT from prescriptions
     status?: "available" | "busy" | "off-duty";  // doctors.status ENUM
     bio?: string;           // doctors.bio
     phone: string;
@@ -37,11 +38,14 @@ export default function DeptDoctorsList({
 
     if (isLoading) return <ClinicStaffListSkeleton />;
 
-    const filteredDoctors = doctors.filter(item =>
-        item.name.includes(search) ||
-        item.specialize.includes(search) ||
-        (item.bio && item.bio.includes(search))
-    );
+    const filteredDoctors = doctors.filter(item => {
+        const specialty = item.specialize || item.specialization || "";
+        return (
+            (item.name || "").includes(search) ||
+            specialty.includes(search) ||
+            (item.bio && item.bio.includes(search))
+        );
+    });
 
     const displayDoctors = variant === "top"
         ? [...filteredDoctors].sort((a, b) => b.rating - a.rating).slice(0, 3)
@@ -151,7 +155,7 @@ export default function DeptDoctorsList({
                                             {/* Info */}
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-[11px] md:text-sm text-foreground truncate group-hover:text-primary transition-colors">{doctor.name}</h4>
-                                                <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialize}</p>
+                                                <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">{doctor.specialize || doctor.specialization}</p>
                                             </div>
 
                                             {/* Rating */}
@@ -197,7 +201,7 @@ export default function DeptDoctorsList({
                                                     )}
                                                 </div>
                                                 <p className="text-[10px] md:text-[11px] text-muted-foreground/80 font-medium truncate mt-0.5">
-                                                    {doctor.specialize} · {doctor.patients} مريض
+                                                    {doctor.specialize || doctor.specialization} · {doctor.patients || 0} مريض
                                                 </p>
                                             </div>
                                         </div>

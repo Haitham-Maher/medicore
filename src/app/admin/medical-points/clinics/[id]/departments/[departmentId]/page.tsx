@@ -71,12 +71,14 @@ export default function DepartmentDetailsPage({ isAdmin = true }: { isAdmin?: bo
     const doctorsList = (staffResponse?.data || []).map((doc: any) => ({
         id: doc.id,
         name: doc.name,
+        specialize: doc.specialization || doc.specialize,
         specialization: doc.specialization,
         rating: doc.rating,
         image: `https://i.pravatar.cc/150?u=${doc.id}`, // Placeholder image
         phone: doc.phone_number,
         email: `${doc.id}@medicore.com`,
-        status: doc.status === "active" ? "available" : "busy"
+        status: doc.status === "active" ? "available" : "busy",
+        patients: doc.patients_count ?? doc.patients ?? Math.floor(Math.random() * 100)
     }));
 
     // Map Head Data
