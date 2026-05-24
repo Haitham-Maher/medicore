@@ -13,6 +13,9 @@ const developers = [
         shadow: "shadow-purple-500/20",
         badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
         hoverGlow: "#9333ea",
+        linkedin: "https://www.linkedin.com/in/atef-sarsour",
+        github: "https://github.com/AtefSarsour",
+        whatsapp: "https://wa.me/972566432004"
     },
     {
         name: "جميل أبو دلال",
@@ -23,6 +26,9 @@ const developers = [
         shadow: "shadow-blue-500/20",
         badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
         hoverGlow: "#2563eb",
+        linkedin: "https://www.linkedin.com/in/jamil-abu-dalal-50ba29394/",
+        github: "https://github.com/Jamil-Dalal",
+        whatsapp: "https://wa.me/970567352090"
     },
     {
         name: "هيثم النملة",
@@ -81,7 +87,7 @@ const ProfileCard = ({ dev }: { dev: any }) => {
             {/* الصورة الشخصية */}
             <div className="relative -mt-16 md:-mt-12 flex justify-center">
                 <div className="p-1 rounded-full bg-[hsl(var(--card))]">
-                    <div className={`rounded-full p-[2px] bg-linear-to-b ${dev.gradient}`}>
+                    <div className={`rounded-full p-0.5 bg-linear-to-b ${dev.gradient}`}>
                         <div className="size-40 md:size-40 rounded-full overflow-hidden border-4 border-[hsl(var(--card))] bg-[hsl(var(--secondary))] flex items-center justify-center">
                             {imageError ? (
                                 <span className={`text-6xl font-black text-transparent bg-clip-text bg-linear-to-br ${dev.gradient} select-none`}>
@@ -111,7 +117,7 @@ const ProfileCard = ({ dev }: { dev: any }) => {
                 </div>
 
                 {/* خط فاصل مع شعاع متحرك */}
-                <div className="w-full h-[2px] bg-[hsl(var(--border)/0.3)] mb-6 relative overflow-hidden rounded-full">
+                <div className="w-full h-0.5 bg-[hsl(var(--border)/0.3)] mb-6 relative overflow-hidden rounded-full">
                 </div>
 
                 {/* أزرار التواصل */}
@@ -119,7 +125,7 @@ const ProfileCard = ({ dev }: { dev: any }) => {
                     <SocialIcon 
                         href={dev.whatsapp}
                         icon={
-                            <svg viewBox="0 0 24 24" fontSize={18} className="size-[18px] fill-current" xmlns="http://www.w3.org/2000/svg">
+                            <svg viewBox="0 0 24 24" fontSize={18} className="size-4.5 fill-current" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.396.015 12.03c0 2.12.553 4.189 1.606 6.006L0 24l6.135-1.61a11.83 11.83 0 005.912 1.569h.005c6.632 0 12.032-5.4 12.035-12.032a11.85 11.85 0 00-3.48-8.504z"/>
                             </svg>
                         } 

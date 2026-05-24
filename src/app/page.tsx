@@ -20,10 +20,10 @@ export default function LandingPage() {
           }}
         />
         {/* Glow blob */}
-        <div className="absolute -bottom-32 -left-32 w-[700px] h-[700px] rounded-full
+        <div className="absolute -bottom-32 -left-32 w-175 h-175 rounded-full
           bg-emerald-100 dark:bg-emerald-500/10
           blur-[120px] opacity-70 dark:opacity-40" />
-        <div className="absolute top-0 left-0 w-[500px] h-[400px] rounded-full
+        <div className="absolute top-0 left-0 w-125 h-100 rounded-full
           bg-emerald-50 dark:bg-transparent
           blur-[80px] opacity-60" />
       </div>
